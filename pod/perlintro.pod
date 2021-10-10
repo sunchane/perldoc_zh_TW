@@ -1,0 +1,900 @@
+﻿=head1 NAME
+
+perlintro - a brief introduction and overview of Perl
+perlintro - Perl 簡短介紹及導覽
+
+=head1 DESCRIPTION
+
+This document is intended to give you a quick overview of the Perl
+programming language, along with pointers to further documentation.  It
+is intended as a "bootstrap" guide for those who are new to the
+language, and provides just enough information for you to be able to
+read other peoples' Perl and understand roughly what it's doing, or
+write your own simple scripts.
+這份文件試圖給您 Perl 程式語言快速導覽，進而指向其他說明文件。
+本文作為新手『起步』教學文件，只提供些許資訊，讓您足以閱讀其他人的 Perl，
+粗略了解 Perl 做些什麼，撰寫簡單的腳本。
+
+This introductory document does not aim to be complete.  It does not
+even aim to be entirely accurate.  In some cases perfection has been
+sacrificed in the goal of getting the general idea across.  You are
+I<strongly> advised to follow this introduction with more information
+from the full Perl manual, the table of contents to which can be found
+in L<perltoc>.
+本介紹文件並不以完整為目的，甚至不以完全精準為目的。
+有時候太過精準反而犧牲了全面性概念的目標。
+I<強烈>建議您閱讀本介紹時參閱完整的 Perl 說明文件，說明文件的目錄，
+可以使用指令 L<pertoc> 找到。
+
+Throughout this document you'll see references to other parts of the
+Perl documentation.  You can read that documentation using the C<perldoc>
+command or whatever method you're using to read this document.
+透過本說明文件您會需要參照其他說明文件，您可以使用 C<perldoc> 或其他方法閱讀。
+
+Throughout Perl's documentation, you'll find numerous examples intended
+to help explain the discussed features.  Please keep in mind that many
+of them are code fragments rather than complete programs.
+Perl 說明文件中，您會發現相當多的範例，幫助您解釋特性。
+請記住有很多是片斷的，並不是完整的程式。
+
+These examples often reflect the style and preference of the author of
+that piece of the documentation, and may be briefer than a corresponding
+line of code in a real program.  Except where otherwise noted, you
+should assume that C<use strict> and C<use warnings> statements
+appear earlier in the "program", and that any variables used have
+already been declared, even if those declarations have been omitted
+to make the example easier to read.
+這些範例往往反映部份文件作者的編寫風格及偏好，也可能相對真實世界的程式較為簡短。
+除非有特別標注，您應該假設 C<use strict> 及 C<use warning> 述句之前已存在於程式中，
+以及所有的變數已經宣告過了，就算基於閱讀方便，省略的宣告，
+
+Do note that the examples have been written by many different authors over
+a period of several decades.  Styles and techniques will therefore differ,
+although some effort has been made to not vary styles too widely in the
+same sections.  Do not consider one style to be better than others - "There's
+More Than One Way To Do It" is one of Perl's mottos.  After all, in your
+journey as a programmer, you are likely to encounter different styles.
+記住程式範例這幾十年都已經被許多作者重新寫過了。
+風格及技術也會不盡相同，就算已經努力不讓同章節的風格太迴異，別認為某風格一定比別的好，
+"一件事總有各種不同辦法" 是 Perl 的座右銘。
+總之，您的程式設計之路，會遇到不同的程式設計風格。
+
+=head2 What is Perl?
+=head2 什麼是 Perl?
+
+
+Perl is a general-purpose programming language originally developed for
+text manipulation and now used for a wide range of tasks including
+system administration, web development, network programming, GUI
+development, and more.
+Perl 是通用程式設計語言，最初為了文字處理開發，現在則是廣泛運用在各種任務，
+包含系統管理，網頁設計，網路管理，GUI 開發，等等。
+
+The language is intended to be practical (easy to use, efficient,
+這個程式語言傾向於實用(簡單使用，高效率，全面)
+complete) rather than beautiful (tiny, elegant, minimal).  Its major
+而不是美觀 (輕巧，優雅，迷你)。
+features are that it's easy to use, supports both procedural and
+主要的特性是讓您容易使用，提供程序式及物件導向程式設計，
+object-oriented (OO) programming, has powerful built-in support for text
+強大的內建文字處理功能，以及世界知名的第三方模組典藏網。
+processing, and has one of the world's most impressive collections of
+third-party modules.
+
+
+Different definitions of Perl are given in L<perl>, L<perlfaq1> and
+no doubt other places.  From this we can determine that Perl is different
+things to different people, but that lots of people think it's at least
+worth writing about.
+Perl 不同的看法放在 L<perl>，L<perlfaq1>，毫無疑問的在其他地方。
+由此可見我們認為不同的人有不同的看法，值得大部份人寫出來。
+
+=head2 Running Perl programs
+=head2 執行 Perl 程式
+
+To run a Perl program from the Unix command line:
+要在 Unix 執行 Perl 程式於指令列：
+
+ perl progname.pl
+
+Alternatively, put this as the first line of your script:
+或是把這行放在腳本的開頭：
+
+ #!/usr/bin/env perl
+
+... and run the script as F</path/to/script.pl>.  Of course, it'll need
+to be executable first, so C<chmod 755 script.pl> (under Unix).
+... 然後執行這個檔案 F</path/to/script.pl>.  當然，
+你需要將檔案設定為可執行，C<chmod 755 script.pl> (Unix 系統)。
+
+(This start line assumes you have the B<env> program.  You can also put
+directly the path to your perl executable, like in C<#!/usr/bin/perl>).
+(腳本開頭假設您有安裝 B<env> 這個程式。
+您也可以直接把腳本程式放在 PATH 環境變數目錄，像是放在 C<#!/usr/bin/perl>。)
+
+For more information, including instructions for other platforms such as
+Windows and Mac OS, read L<perlrun>.
+更多資訊，包括其他作業系統平台例如 Windows 和 Mac OS，閱讀 L<perlrun>。
+
+=head2 Safety net
+=head2 安全網
+
+
+Perl by default is very forgiving.  In order to make it more robust
+it is recommended to start every program with the following lines:
+Perl 預設非常健忘，為了讓它更加健全，建議執行每個程式加入下面幾行：
+
+ #!/usr/bin/perl
+ use strict;
+ use warnings;
+
+The two additional lines request from perl to catch various common
+problems in your code.  They check different things so you need both.  A
+potential problem caught by C<use strict;> will cause your code to stop
+immediately when it is encountered, while C<use warnings;> will merely
+give a warning (like the command-line switch B<-w>) and let your code run.
+To read more about them check their respective manual pages at L<strict>
+and L<warnings>.
+增加的兩行對 Perl 請求捕獲程式碼中常見的問題，它們檢查不同的東西所以兩行都要，
+C<use strict;> 捕捉潛在的問題並且立即中止，而 C<use warnings;> 僅顯示警告並繼續執行程式
+(像命令列 B<-w> 選項)。詳請閱讀各自的說明文件 L<strict> L<warnings>。
+
+=head2 Basic syntax overview
+=head2 簡單文法概述
+
+A Perl script or program consists of one or more statements.  These
+statements are simply written in the script in a straightforward
+fashion.  There is no need to have a C<main()> function or anything of
+that kind.
+Perl 腳本程式由多個述句組成，述句由直接了當的型式寫成，不需要 C<main()> 函式或類似的東西。
+
+
+Perl statements end in a semi-colon:
+Perl 述句由分號結尾：
+
+ print "Hello, world";
+
+Comments start with a hash symbol and run to the end of the line
+井字號開頭代表註解直到行尾
+
+ # This is a comment
+
+Whitespace is irrelevant:
+空白會被忽略：
+
+ print
+     "Hello, world"
+     ;
+
+... except inside quoted strings:
+... 排除內部引號字串：
+
+ # this would print with a linebreak in the middle
+ # 會在中間印出斷行
+ print "Hello
+ world";
+
+Double quotes or single quotes may be used around literal strings:
+雙引號或單引號可能在字串中出現：
+
+ print "Hello, world";
+ print 'Hello, world';
+
+However, only double quotes "interpolate" variables and special
+characters such as newlines (C<\n>):
+然而，雙引號 "插入" 變數及特殊字元例如換行 (C<\n>)：
+
+ print "Hello, $name\n";     # works fine
+ print 'Hello, $name\n';     # prints $name\n literally
+
+Numbers don't need quotes around them:
+數字不需要引號：
+
+ print 42;
+
+You can use parentheses for functions' arguments or omit them
+according to your personal taste.  They are only required
+occasionally to clarify issues of precedence.
+您可以不需要使用括號，根據您的喜好忽略它
+
+ print("Hello, world\n");
+ print "Hello, world\n";
+
+More detailed information about Perl syntax can be found in L<perlsyn>.
+更多詳細有關 Perl 語法可以在 L<perlsyn> 找到。
+
+=head2 Perl variable types
+=head2 Perl 變數型別
+
+Perl has three main variable types: scalars, arrays, and hashes.
+Perl 有三種主要的變數型別：純量，陣列，雜湊。
+
+=over 4
+
+=item Scalars
+=item 純量
+
+A scalar represents a single value:
+純量代表單一變數：
+
+ my $animal = "camel";
+ my $answer = 42;
+
+Scalar values can be strings, integers or floating point numbers, and Perl
+will automatically convert between them as required.  There is no need
+to pre-declare your variable types, but you have to declare them using
+the C<my> keyword the first time you use them.  (This is one of the
+requirements of C<use strict;>.)
+純量可以是字串，整數或浮點數，Perl 視需要轉換，您不需要事先宣告變數型別，
+但您必須宣告 C<my> 當第一次使用時(這是設定 C<use strict;> 之後的限制)。
+
+Scalar values can be used in various ways:
+純量變數有幾種用法：
+
+ print $animal;
+ print "The animal is $animal\n";
+ print "The square of $answer is ", $answer * $answer, "\n";
+
+There are a number of "magic" scalars with names that look like
+punctuation or line noise.  These special variables are used for all
+kinds of purposes, and are documented in L<perlvar>.  The only one you
+need to know about for now is C<$_> which is the "default variable".
+It's used as the default argument to a number of functions in Perl, and
+it's set implicitly by certain looping constructs.
+純量變數有很多 "魔術符號" 長的像標點符號或像線路雜訊。
+這些特殊的變數用在各種目的，說明文件在 L<perlvar>。
+目前你只需要知道一個變數 C<$_> 為 "預設變數"。
+這個變數用在 Perl 函數式預設參數，還有暗中在回圈中被設定。
+
+ print;          # prints contents of $_ by default
+ print;          # 預設印出 $_ 的內容
+
+=item Arrays
+=item 陣列
+
+An array represents a list of values:
+陣列代表一串變數：
+
+ my @animals = ("camel", "llama", "owl");
+ my @numbers = (23, 42, 69);
+ my @mixed   = ("camel", 42, 1.23);
+
+Arrays are zero-indexed.  Here's how you get at elements in an array:
+陣列從 0 起算。 下面是存取陣列的方式。
+
+ print $animals[0];              # prints "camel"
+ print $animals[1];              # prints "llama"
+
+The special variable C<$#array> tells you the index of the last element
+of an array:
+特殊變數 C<$#array> 告訴您陣列最後一個元素的位置
+
+ print $mixed[$#mixed];       # last element, prints 1.23
+ print $mixed[$#mixed];       # 最後一個元素印出 1.23
+
+You might be tempted to use C<$#array + 1> to tell you how many items there
+are in an array.  Don't bother.  As it happens, using C<@array> where Perl
+expects to find a scalar value ("in scalar context") will give you the number
+of elements in the array:
+以也許會用 C<$#array +1> 告訴您陣列有幾個元素。
+不用您費心，使用 C<@array> 純量值 ("純量語境之下") 會給你陣列的元素數量。
+
+
+ if (@animals < 5) { ... }
+
+The elements we're getting from the array start with a C<$> because
+we're getting just a single value out of the array; you ask for a scalar,
+you get a scalar.
+我們從陣列取得的元素，以 C<$> 開頭，因為我們只想要陣列的單一變數；您請求一個純量，
+而得到一個純量。
+
+To get multiple values from an array:
+從陣列取得數個變數：
+
+ @animals[0,1];                 # gives ("camel", "llama");
+ @animals[0..2];                # gives ("camel", "llama", "owl");
+ @animals[1..$#animals];        # gives all except the first element
+
+ @animals[0,1];                 # 得到 ("camel", "llama");
+ @animals[0..2];                # 得到 ("camel", "llama", "owl");
+ @animals[1..$#animals];        # 除了第一個的所有元素
+
+This is called an "array slice".
+這稱之為 "陣列分割"
+
+You can do various useful things to lists:
+您可以為串列做些有用的事：
+
+ my @sorted    = sort @animals;
+ my @backwards = reverse @numbers;
+
+There are a couple of special arrays too, such as C<@ARGV> (the command
+line arguments to your script) and C<@_> (the arguments passed to a
+subroutine).  These are documented in L<perlvar>.
+也有很多特殊的陣列，例如 C<@ARGV> (命令列執行腳本程式的參數) 和 C<@_> (副程式傳遞的參數)。
+說明文件位於 L<perlvar>。
+
+=item Hashes
+=item 雜湊
+
+A hash represents a set of key/value pairs:
+雜湊代表一組鍵/值對：
+
+ my %fruit_color = ("apple", "red", "banana", "yellow");
+
+You can use whitespace and the C<< => >> operator to lay them out more
+nicely:
+您可以用空白及 C<< => >> 運算符更好的佈局：
+
+ my %fruit_color = (
+     apple  => "red",
+     banana => "yellow",
+ );
+
+To get at hash elements:
+獲取一個雜湊元素：
+
+ $fruit_color{"apple"};           # gives "red"
+
+You can get at lists of keys and values with C<keys()> and
+C<values()>.
+您可以使用 C<keys()> 及 C<values()> 獲取鍵或值的列表。
+
+ my @fruits = keys %fruit_color;
+ my @colors = values %fruit_color;
+
+Hashes have no particular internal order, though you can sort the keys
+and loop through them.
+雜湊沒有特定的內部順序，但是您可以排序 keys 及引入迴圈。
+
+Just like special scalars and arrays, there are also special hashes.
+The most well known of these is C<%ENV> which contains environment
+variables.  Read all about it (and other special variables) in
+L<perlvar>.
+就像純量及陣列，雜湊也有特殊符號。
+最常見的雜湊變數 C<%ENV> 存放系統環境變數。
+詳請閱讀 (及其他特殊符號) L<perlvar>。
+
+=back
+
+Scalars, arrays and hashes are documented more fully in L<perldata>.
+純量，陣列及雜湊的所有說明文件在 L<perldata>。
+
+More complex data types can be constructed using references, which allow
+you to build lists and hashes within lists and hashes.
+更複雜的資料型態可以是由參照組成，如列表或雜湊中又包含其他列表或雜湊。
+
+A reference is a scalar value and can refer to any other Perl data
+type.  So by storing a reference as the value of an array or hash
+element, you can easily create lists and hashes within lists and
+hashes.  The following example shows a 2 level hash of hash
+structure using anonymous hash references.
+參照是一個純量指向任何一個 Perl 資料型態。
+所以存放陣列或雜湊的元素參照，您可以更容易的建立陣列或雜湊中的陣列及雜湊。
+下面的範例表示 2 層雜湊中的雜湊，並使用匿名雜湊參照。
+
+ my $variables = {
+     scalar  =>  {
+                  description => "single item",
+                  sigil => '$',
+                 },
+     array   =>  {
+                  description => "ordered list of items",
+                  sigil => '@',
+                 },
+     hash    =>  {
+                  description => "key/value pairs",
+                  sigil => '%',
+                 },
+ };
+
+ print "Scalars begin with a $variables->{'scalar'}->{'sigil'}\n";
+
+Exhaustive information on the topic of references can be found in
+L<perlreftut>, L<perllol>, L<perlref> and L<perldsc>.
+詳細的資訊在參照的主題，可以在 L<perlreftut> L<perllol>，L<perlref> 及 L<perldsc> 中。
+
+=head2 Variable scoping
+=head2 變數作用域
+
+Throughout the previous section all the examples have used the syntax:
+透過前面的章節範例，使用了如下語法：
+
+ my $var = "value";
+
+The C<my> is actually not required; you could just use:
+C<my> 事實上不是必要；您可以只用：
+
+ $var = "value";
+
+However, the above usage will create global variables throughout your
+program, which is bad programming practice.  C<my> creates lexically
+scoped variables instead.  The variables are scoped to the block
+(i.e. a bunch of statements surrounded by curly-braces) in which they
+are defined.
+然而，前面建立了程式的全域變數，不是很好的練習。
+C<my> 建立了詞法作用域變數。
+此變數作用於定義的區塊中 (例如大括號中的多行述句)。
+
+ my $x = "foo";
+ my $some_condition = 1;
+ if ($some_condition) {
+     my $y = "bar";
+     print $x;           # prints "foo"
+     print $y;           # prints "bar"
+ }
+ print $x;               # prints "foo"
+ print $y;               # prints nothing; $y has fallen out of scope
+
+Using C<my> in combination with a C<use strict;> at the top of
+your Perl scripts means that the interpreter will pick up certain common
+programming errors.  For instance, in the example above, the final
+C<print $y> would cause a compile-time error and prevent you from
+running the program.  Using C<strict> is highly recommended.
+結合使用 C<my> 和 C<use strict;> 於 Perl 腳本程式開頭，
+意思是指示編譯器找出常見的錯誤訊息。
+例如，上面的範例，最後一行 C<print $y> 會造成編譯時期錯誤並阻止程式進行。
+強烈建議於腳本中使用 C<use strict;>。
+
+=head2 Conditional and looping constructs
+=head2 條件式及迴圈結構
+
+Perl has most of the usual conditional and looping constructs.  As of Perl
+5.10, it even has a case/switch statement (spelled C<given>/C<when>).  See
+L<perlsyn/"Switch Statements"> for more details.
+Perl 有最常見的條件式及迴圈結構。
+Perl 5.10 之後，更加入了 case/switch 述句 (詳細 C<given>/C<when>)。
+請看 L<perlsyn/"Switch 述句" 更多資訊。
+
+The conditions can be any Perl expression.  See the list of operators in
+the next section for information on comparison and boolean logic operators,
+which are commonly used in conditional statements.
+條件式可以是任何 Perl 表達式。
+請看接下來的運算子列表章節，比較及布林邏輯運算元，並運用在條件述句中。
+
+=over 4
+
+=item if
+
+ if ( condition ) {
+     ...
+ } elsif ( other condition ) {
+     ...
+ } else {
+     ...
+ }
+
+There's also a negated version of it:
+也有否定述句的版本：
+
+ unless ( condition ) {
+     ...
+ }
+
+This is provided as a more readable version of C<if (!I<condition>)>.
+更容易閱讀的版本 C<if (!I<condition>)>。
+
+Note that the braces are required in Perl, even if you've only got one
+line in the block.  However, there is a clever way of making your one-line
+conditional blocks more English like:
+請注意大括號在 Perl 是必須的，就算區塊中只有一行程式。
+然而，另一種聰明的條件式更接近自然語言。
+
+ # the traditional way
+ if ($zippy) {
+     print "Yow!";
+ }
+
+ # the Perlish post-condition way
+ print "Yow!" if $zippy;
+ print "We have no bananas" unless $bananas;
+
+=item while
+
+ while ( condition ) {
+     ...
+ }
+
+There's also a negated version, for the same reason we have C<unless>:
+否定的版本，某些理由我們有 C<unless>：
+
+ until ( condition ) {
+     ...
+ }
+
+You can also use C<while> in a post-condition:
+你也可以把 C<while> 用在句尾：
+
+ print "LA LA LA\n" while 1;          # loops forever
+
+=item for
+
+Exactly like C:
+跟 C 語言長的一樣：
+
+ for ($i = 0; $i <= $max; $i++) {
+     ...
+ }
+
+The C style for loop is rarely needed in Perl since Perl provides
+the more friendly list scanning C<foreach> loop.
+C 風格的 for 迴圈很少在 Perl 被需要，因為 Perl 提供更友好的串列解析 C<foreach> 迴圈。
+
+=item foreach
+
+ foreach (@array) {
+     print "This element is $_\n";
+ }
+
+ print $list[$_] foreach 0 .. $max;
+
+ # you don't have to use the default $_ either...
+ foreach my $key (keys %hash) {
+     print "The value of $key is $hash{$key}\n";
+ }
+
+The C<foreach> keyword is actually a synonym for the C<for>
+keyword.  See C<L<perlsyn/"Foreach Loops">>.
+C<foreach> 關鍵字事實上是 C<for> 的代名詞。 請看 C<L<perlsyn/"Foreach 迴圈">>。
+
+=back
+
+For more detail on looping constructs (and some that weren't mentioned in
+this overview) see L<perlsyn>.
+迴圈結構的詳細介紹 (本介導覽尚未提到的) 請看 L<perlsyn>。
+
+=head2 Builtin operators and functions
+=head2 內建運算子及函式
+
+Perl comes with a wide selection of builtin functions.  Some of the ones
+we've already seen include C<print>, C<sort> and C<reverse>.  A list of
+them is given at the start of L<perlfunc> and you can easily read
+about any given function by using C<perldoc -f I<functionname>>.
+Perl 自帶廣泛的內建函式。 有些我們之前就看過了包括 C<print>， C<sort> 及 C<reverse>。
+這些函式條列在 L<perlfunc> 開頭的部份，您也可以指定要閱讀的函式，命列列 C<perldoc -f I<functionname>>。
+
+Perl operators are documented in full in L<perlop>, but here are a few
+of the most common ones:
+Perl 運算子完整的介紹位於 L<perlop>， 但下面介紹一些常見的。
+
+=over 4
+
+=item Arithmetic
+=item 算術
+
+ +   addition
+ -   subtraction
+ *   multiplication
+ /   division
+
+=item Numeric comparison
+=item 數值比較
+
+ ==  equality
+ !=  inequality
+ <   less than
+ >   greater than
+ <=  less than or equal
+ >=  greater than or equal
+
+=item String comparison
+=item 字串比較
+
+ eq  equality
+ ne  inequality
+ lt  less than
+ gt  greater than
+ le  less than or equal
+ ge  greater than or equal
+
+(Why do we have separate numeric and string comparisons?  Because we don't
+have special variable types, and Perl needs to know whether to sort
+numerically (where 99 is less than 100) or alphabetically (where 100 comes
+before 99).
+(為什麼我們要區別數值跟字串比較？ 因為我們沒有特殊的型別，Perl 必須知道是排序數字 
+ (99 比 100 小) 或是排序字元 (字元 100 比 99 在前面))。
+
+=item Boolean logic
+=item 布林邏輯
+
+ &&  and
+ ||  or
+ !   not
+
+(C<and>, C<or> and C<not> aren't just in the above table as descriptions
+of the operators.  They're also supported as operators in their own
+right.  They're more readable than the C-style operators, but have
+different precedence to C<&&> and friends.  Check L<perlop> for more
+detail.)
+(C<and>， C<or> 及 C<not> 不只是前面表中敘述而已，它們可以擁有自己的運算，並且比 C 風格運算子容易閱讀，
+ 優先級也跟 C<&&> 及其他朋友不同。 請看 L<perlop> 了解更多資訊。)
+
+=item Miscellaneous
+=item 其他
+
+ =   assignment
+ .   string concatenation
+ x   string multiplication (repeats strings)
+ ..  range operator (creates a list of numbers or strings)
+
+=back
+
+Many operators can be combined with a C<=> as follows:
+許多運算子可以結合 C<=> 如下。
+
+ $a += 1;        # same as $a = $a + 1
+ $a -= 1;        # same as $a = $a - 1
+ $a .= "\n";     # same as $a = $a . "\n";
+
+=head2 Files and I/O
+=head2 檔案及輸入/輸出
+
+You can open a file for input or output using the C<open()> function.
+It's documented in extravagant detail in L<perlfunc> and L<perlopentut>,
+but in short:
+您可以使用 C<open()> 開啟檔案輸入或輸出。
+豐富的詳細說明文件在 L<perlfunc> 及 L<perlopentut>，但簡短介紹。
+
+ open(my $in,  "<",  "input.txt")  or die "Can't open input.txt: $!";
+ open(my $out, ">",  "output.txt") or die "Can't open output.txt: $!";
+ open(my $log, ">>", "my.log")     or die "Can't open my.log: $!";
+
+You can read from an open filehandle using the C<< <> >> operator.  In
+scalar context it reads a single line from the filehandle, and in list
+context it reads the whole file in, assigning each line to an element of
+the list:
+您可以使用鑽石符號 C<< <> >> 運算符開啟檔案控制器。
+在純量語境中讀取檔案的單行，串列語境中閱讀全部的檔案，每個元素賦值為每一行內容。
+
+ my $line  = <$in>;
+ my @lines = <$in>;
+
+Reading in the whole file at one time is called slurping.  It can
+be useful but it may be a memory hog.  Most text file processing
+can be done a line at a time with Perl's looping constructs.
+一次讀入全部檔案稱之為狂嗑 (slurping)。
+有時很有用但會耗用大量的記憶體。 大部分的文字檔案處理可以在迴圈中一次讀入一行。
+
+
+The C<< <> >> operator is most often seen in a C<while> loop:
+C<< <> >> 運算元最常被使用，請看 C<while> 迴圈：
+
+ while (<$in>) {     # assigns each line in turn to $_
+     print "Just read in this line: $_";
+ }
+
+We've already seen how to print to standard output using C<print()>.
+However, C<print()> can also take an optional first argument specifying
+which filehandle to print to:
+我們已經看過如何使用 C<print()> print 至標準輸出。
+然而， C<print()> 也有選項可以指定輸出的檔案控制器。
+
+ print STDERR "This is your final warning.\n";
+ print $out $record;
+ print $log $logmessage;
+
+When you're done with your filehandles, you should C<close()> them
+(though to be honest, Perl will clean up after you if you forget):
+當您使用完畢檔案控制器之後，您應該 C<close()> 它們 (雖然老實說， Perl 會在您忘記時幫您清乾淨)：
+
+ close $in or die "$in: $!";
+
+=head2 Regular expressions
+
+Perl's regular expression support is both broad and deep, and is the
+subject of lengthy documentation in L<perlrequick>, L<perlretut>, and
+elsewhere.  However, in short:
+Perl 正規表達式的支援深入且廣泛，說明文件也相當冗長 L<perlrequick>， L<perlretut> 還有其他地方，總之簡短地說：
+
+=over 4
+
+=item Simple matching
+=item 簡單比對
+
+ if (/foo/)       { ... }  # true if $_ contains "foo"
+ if ($a =~ /foo/) { ... }  # true if $a contains "foo"
+
+The C<//> matching operator is documented in L<perlop>.  It operates on
+C<$_> by default, or can be bound to another variable using the C<=~>
+binding operator (also documented in L<perlop>).
+C<//> 比對運算符的說明文件在 L<perlop>。
+預設比對 C<$_> 變數，或使用 C<=~> 明確比對其他變數，繫結運算符 (說明文件在 L<perlop>)。
+
+=item Simple substitution
+=item 簡單替換
+
+ s/foo/bar/;               # replaces foo with bar in $_
+ $a =~ s/foo/bar/;         # replaces foo with bar in $a
+ $a =~ s/foo/bar/g;        # replaces ALL INSTANCES of foo with bar
+                           # in $a
+
+The C<s///> substitution operator is documented in L<perlop>.
+C<s///> 替換運算符說明文件在 L<perlop>。
+
+=item More complex regular expressions
+=item 更多複雜的正規表達式
+
+You don't just have to match on fixed strings.  In fact, you can match
+on just about anything you could dream of by using more complex regular
+expressions.  These are documented at great length in L<perlre>, but for
+the meantime, here's a quick cheat sheet:
+您不是只有比對固定的字串。 事實上，您可以比對任何您想的到的複雜正規表達式。
+說明文件放在偉大的 L<perlre>，但目前為止，下面是快捷速成表。
+
+ .                   a single character
+ \s                  a whitespace character (space, tab, newline,
+                     ...)
+ \S                  non-whitespace character
+ \d                  a digit (0-9)
+ \D                  a non-digit
+ \w                  a word character (a-z, A-Z, 0-9, _)
+ \W                  a non-word character
+ [aeiou]             matches a single character in the given set
+ [^aeiou]            matches a single character outside the given
+                     set
+ (foo|bar|baz)       matches any of the alternatives specified
+
+ ^                   start of string
+ $                   end of string
+
+Quantifiers can be used to specify how many of the previous thing you
+want to match on, where "thing" means either a literal character, one
+of the metacharacters listed above, or a group of characters or
+metacharacters in parentheses.
+量詞可以用在指定比對多少數量，指的是多少字面值，上面提到的字元巨集，或括號中的字元分組或字元巨集。
+
+ *                   zero or more of the previous thing
+ +                   one or more of the previous thing
+ ?                   zero or one of the previous thing
+ {3}                 matches exactly 3 of the previous thing
+ {3,6}               matches between 3 and 6 of the previous thing
+ {3,}                matches 3 or more of the previous thing
+
+Some brief examples:
+一些聰明的範例：
+
+ /^\d+/              string starts with one or more digits
+ /^$/                nothing in the string (start and end are
+                     adjacent)
+ /(\d\s){3}/         three digits, each followed by a whitespace
+                     character (eg "3 4 5 ")
+ /(a.)+/             matches a string in which every odd-numbered
+                     letter is a (eg "abacadaf")
+
+ # This loop reads from STDIN, and prints non-blank lines:
+ while (<>) {
+     next if /^$/;
+     print;
+ }
+
+=item Parentheses for capturing
+=item 括號用於擷取
+
+As well as grouping, parentheses serve a second purpose.  They can be
+used to capture the results of parts of the regexp match for later use.
+The results end up in C<$1>, C<$2> and so on.
+除了分組，括號提供了第二種目的。
+擷取部份比對成功的內容供後續使用。
+結果成為 C<$1>，C<@2> 以此類推。
+
+ # a cheap and nasty way to break an email address up into parts
+ # 低廉緊湊的方法把 E-mail 拆解成部份
+
+ if ($email =~ /([^@]+)@(.+)/) {
+     print "Username is $1\n";
+     print "Hostname is $2\n";
+ }
+
+=item Other regexp features
+
+Perl regexps also support backreferences, lookaheads, and all kinds of
+other complex details.  Read all about them in L<perlrequick>,
+L<perlretut>, and L<perlre>.
+Perl 正規表達式支援向前向後參照，各種複雜操作。 請閱讀 L<perlrequick>，L<perlretut>，及 L<perlre>。
+
+=back
+
+=head2 Writing subroutines
+=head2 編寫副程式
+
+Writing subroutines is easy:
+編寫副程式很簡單：
+
+ sub logger {
+    my $logmessage = shift;
+    open my $logfile, ">>", "my.log" or die "Could not open my.log: $!";
+    print $logfile $logmessage;
+ }
+
+Now we can use the subroutine just as any other built-in function:
+現在可以像使用內建含式一樣使用這個副程式：
+
+ logger("We have a logger subroutine!");
+
+What's that C<shift>?  Well, the arguments to a subroutine are available
+to us as a special array called C<@_> (see L<perlvar> for more on that).
+The default argument to the C<shift> function just happens to be C<@_>.
+So C<my $logmessage = shift;> shifts the first item off the list of
+arguments and assigns it to C<$logmessage>.
+C<shift> 是什麼？ 這個副程式的參數內容位於一個特殊的陣列 C<@_> 之中 (請看 L<perlvar> 更多內容)。
+C<shift> 函式預設的參數只會對 C<@_> 產生作用。
+所以 C<my $logmessage = shift;> 擷取這個陣列的第一個內容，並且指派到 C<$logmessage> 變數中。
+
+We can manipulate C<@_> in other ways too:
+我們用不同方法操作 C<@_>：
+
+ my ($logmessage, $priority) = @_;       # common
+ my $logmessage = $_[0];                 # uncommon, and ugly
+
+Subroutines can also return values:
+副程式也能回傳運算後的結果值：
+
+ sub square {
+     my $num = shift;
+     my $result = $num * $num;
+     return $result;
+ }
+
+Then use it like:
+然後使用它：
+
+ $sq = square(8);
+
+For more information on writing subroutines, see L<perlsub>.
+更多有關編寫副程式的資訊，請看 L<perlsub>。
+
+=head2 OO Perl
+=head2 Perl 物件導向
+
+OO Perl is relatively simple and is implemented using references which
+know what sort of object they are based on Perl's concept of packages.
+However, OO Perl is largely beyond the scope of this document.
+Read L<perlootut> and L<perlobj>.
+物件導向在 Perl 中相對容易使用，而且結合了參照的實作，Perl 套件的概念也讓程式了解有哪些物件，物件基於何處。
+總之，Perl 物件導向大大的偏離了本文的範圍，請閱讀 L<perlootut> 及 L<perlobj>。 
+
+As a beginning Perl programmer, your most common use of OO Perl will be
+in using third-party modules, which are documented below.
+身為 Perl 程式設計的初學者，使用物件導向的機會比較長發生在使用第三方模組的時候，如下說明。
+
+=head2 Using Perl modules
+=head2 使用 Perl 模組
+
+Perl modules provide a range of features to help you avoid reinventing
+the wheel, and can be downloaded from CPAN ( L<http://www.cpan.org/> ).  A
+number of popular modules are included with the Perl distribution
+itself.
+Perl 模組提供廣泛的功能讓您避免重新發明輪子，並且可在 CPAN 網站下載 ( L<http://www.cpan.org/> )。
+很多熱門的模組本身已放在 Perl 發行版之中。
+
+Categories of modules range from text manipulation to network protocols
+to database integration to graphics.  A categorized list of modules is
+also available from CPAN.
+模組的種類從文字操作到網路協議、資料庫、圖形。
+CPAN 上也有分列表可查詢。
+
+To learn how to install modules you download from CPAN, read
+L<perlmodinstall>.
+學習如何從 CPAN 安裝模組，請閱讀 L<perlmodinstall>。
+
+To learn how to use a particular module, use C<perldoc I<Module::Name>>.
+Typically you will want to C<use I<Module::Name>>, which will then give
+you access to exported functions or an OO interface to the module.
+學習如何使用特定模組，使用 C<perldoc I<Module::Name>>。
+通常您會使用 C<use I<Module::Name>>，讓您使用模組匯出的函數或物件導向的介面功能。
+
+L<perlfaq> contains questions and answers related to many common
+tasks, and often provides suggestions for good CPAN modules to use.
+L<perlfaq> 包含常見的問題，常會提供推荐的 CPAN 模組。
+
+L<perlmod> describes Perl modules in general.  L<perlmodlib> lists the
+modules which came with your Perl installation.
+L<perlmod> 一般來說解釋 Perl 模組。 L<perlmodlib> 列出 Perl 安裝後的模組列表。
+
+If you feel the urge to write Perl modules, L<perlnewmod> will give you
+good advice.
+如果您有撰寫 Perl 模組的幹勁， L<perlnewmod> 可以給您很好的建議。
+
+=head1 AUTHOR
+
+Kirrily "Skud" Robert <skud@cpan.org>

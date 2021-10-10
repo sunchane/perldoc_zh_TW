@@ -1,0 +1,112 @@
+
+=head1 Declaring and Detecting Prerequisites
+
+The CPAN clients that will be used to install your distribution will first look
+at its F<META.yml> or F<META.json> files or interact with its install tool to
+decide what libraries, if any, have to be installed before your code can be
+built, tested, and installed.  These are your dist's I<prereqs>.
+
+There are two common ways to set up your prerequisites.  You can declare them
+explicitly, or you can let Dist::Zilla detect them by analyzing your code.
+
+=head2 Declaring Your Prereqs
+
+The Prereqs plugin is about as straightforward as it gets:
+
+  #!vim dosini
+  [Prereqs]
+  Sub::Exporter     = 0.979 ; to get INIT arg
+  Acme::ProgressBar = 1.002 ; includes needed bug fixes
+
+If you need to declare special kind of prereqs, like prereqs only needed to
+test your dist, you could add either of the configuration sections in the
+following sample -- they'd have the same effect.
+
+  #!vim dosini
+  [Prereqs]
+  -phase = test
+
+  Test::BinaryData = 0
+  Test::More       = 0.88 ; for done_testing
+
+X<>
+
+  #!vim dosini
+  [Prereqs / TestRequires]
+  Test::BinaryData = 0
+  Test::More       = 0.88 ; for done_testing
+
+Because you can't have two sections with the same name, the second example will
+probably be simpler to use all around.
+
+In general, the only prereq plugins you should need are RuntimeRequires (the
+default), TestRequires, ConfigureRequires, and BuildRequires.  For more
+information about these, consult L<the CPAN META file specification|https://metacpan.org/pod/CPAN::Meta::Spec>.
+
+=head2 Detecting Your Prereqs
+
+The problem with maintaining your list of prerequisites in your F<dist.ini> is
+the same as maintaining it in your F<Makefile.PL>: the versions required in
+your code and your configuration diverge.  The most common version of this is
+having a lot of bare C<use Some::Module> lines in your code, but specific
+versions in your installer.
+
+Dist::Zilla solves this problem by figuring out your prerequisites from your
+code.  You specify the version in your C<use> statement and Dist::Zilla
+requires that version.  All you have to add to your configuration is:
+
+  #!vim dosini
+  [AutoPrereqs]
+
+It will look at all the C<use> and C<require> statements in your code,
+along with some special cases for L<Moose>.  Requirements found for code
+that's going to be installed (like programs or libraries) are made runtime
+prereqs.  Requirements found for test libraries become test prereqs.
+
+To specify I<particular> versions of a prerequisite, you need to use the
+C<< use MODULE VERSION >> form, which is actually a I<very good> thing,
+because it means that we can no longer compile our code if the prereqs
+aren't met.  It keeps our code and install data in sync.  For example:
+
+  use Moose 1.00;
+  use JSON 2 (); # don't import any functions
+
+(At this point, you'll probably want to make sure that you're requiring the
+right version in your code.  Many dists require one version in the code and
+one in the prereq listing.  Now that you've only got one place to list the
+required version, make sure you get it right.)
+
+If AutoPrereqs makes mistakes, you can always tell it to skip things or add
+things manually with Prereqs:
+
+  #!vim dosini
+  [AutoPrereqs]
+  skip = ^Library::Bogus$
+  skip = ^Bundled::
+
+  [Prereqs]
+  Something::AutoPrereqs::Misses = 1.234
+
+=head2 Declaring Author Prereqs
+
+Sometimes author prereqs (modules used by Dist::Zilla) are indirectly
+needed, e.g. via a Pod::Weaver configuration. You can declare them in
+F<dist.ini> with
+
+  #!vim dosini
+  ; authordep Pod::Weaver::Plugin::StopWords
+  ; authordep Pod::Weaver::Section::Support
+
+=head2 Dist::Zilla-level Prereqs
+
+If you want to specify prereqs that aren't for users who'll install your
+release, but are instead for people building your dist with Dist::Zilla, you
+can use syntax like this in your F<dist.ini>:
+
+  #!vim dosini
+  [Some::Plugin]
+  :version = 1.23
+
+This will require v1.23 or later of the plugin.  You can also put C<:version>
+in the root section of F<dist.ini> to require a minimum version of Dist::Zilla
+itself.

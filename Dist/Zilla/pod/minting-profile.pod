@@ -1,0 +1,170 @@
+=head1 Customizing the Minting Process
+
+Dist::Zilla lets you create any number of "minting profiles" to create
+distributions with different default contents.  You might have one for
+work and one for personal code; one for object-oriented code and one
+for functional code; or one for web applications and one for command-line
+applications, etc.
+
+=head2 Preparation
+For the tasks below, you'll want to:
+
+=for :list
+* install L<Dist::Zilla>, version 4.101780 or later
+* run C<L<dzil setup|@initial-setup>>
+
+The rest of this document assumes that you haven't already made a custom
+minting profile, meaning that you haven't got anything in F<~/.dzil/profiles>.
+If you have a default profile, just rename it if you want to follow the steps
+exactly as described below.
+
+=head2 Create a default profile
+
+Create a directory called F<~/.dzil/profiles/default>.  This will hold
+your default minting profile, overriding the very simple default that
+ships with Dist::Zilla.
+
+The first thing you want to do is change into that directory and create
+a F<profile.ini>.  That file picks and configures the plugins that will
+contribute to minting new distributions.  For now, populate the file with
+the following content:
+
+  #!vim dosini
+  [TemplateModule/:DefaultModuleMaker]
+  template = Module.pm
+
+  [DistINI]
+  append_file = plugins.ini
+
+  [GatherDir::Template]
+  root = skel
+
+The F<profile.ini> file defines two components for minting your
+new distribution.  The first one, TemplateModule, is given a special
+name C<:DefaultModuleMaker>, to tell Dist::Zilla that this component
+will be used for creating the new module file.  The C<template> parameter
+tells it a file to use, so create a F<Module.pm> file (in the same
+directory as F<profile.ini>) with the following content:
+
+  use strict;
+  use warnings;
+  package {{$name}};
+
+  1;
+
+The second component in F<profile.ini> is DistINI, which
+says to build a F<dist.ini> file based on your L<initial
+configuration|@initial-setup> plus the contents of F<plugins.ini>.  That's
+where you'll put any special plugins you want.
+
+We'll create a C<plugins.ini> and put in our preferred default configuration,
+which might look like this:
+
+  #!vim dosini
+  [@Basic]
+  [NextRelease]
+  [@Git]
+
+The third component in our F<profile.ini> was GatherDir::Template, which
+specifies a directory of templates that will also be created in your new
+distribution.  We could put templates there that would be rendered into files
+in our new distribution.
+
+Just create F<~/.dzil/profiles/default/skel>, change to that directory, and add
+normal Text::Template template files.
+
+Instead of using this for a starter F<Changes> file, though, we'll use the
+GenerateFile plugin, which lets us specify the file's content right in our
+F<profile.ini>.  We'll add this to the profile:
+
+  #!vim dosini
+  [GenerateFile / Generate-Changes ]
+  filename    = Changes
+  is_template = 0
+  content = Revision history for {{$dist->name}}
+  content =
+  content = {{$NEXT}}
+
+Change to your work directory and run C<dzil new My::Module>.  You should get a
+new distribution that is almost exactly like the original default included with
+Dist::Zilla, except that it has the addition of the plugins we wanted in our
+F<dist.ini>, and there's a F<Changes> file.
+
+Now, all you have to do is customize the F<plugins.ini> and F<Module.pm> files
+in the minting profile to suit your own personal style.
+
+=head2 Setting up an alternate minting profile
+
+The easiest way to set up an alternate profile is to copy your default profile
+to a new directory.  For example, if you wanted to set up a profile that
+provided a Moose-specific starter module, you could create a copy like this:
+
+  $ cp -a ~/.dzil/profiles/default ~/.dzil/profiles/moose
+
+Then, customize the F<~/.dzil/profiles/moose/Module.pm> file to
+load Moose and provide any boilerplate you like.
+
+You can run C<dzil new> with the C<-p> flag to use the alternate profile:
+
+  $ dzil new -p moose My::Moose::Module
+
+=head2 Distifying Your Profile
+
+Maybe you want to be able to install your minting profile along with your
+plugin bundle.  Maybe, more usefully, you run a project (or a department) that
+needs to have consistent settings for all new dists.  In these cases, putting a
+profile in your home directory isn't enough.  You want something that can be
+shared across many users.  This is easy: you can include your profile in a
+distribution for installation.
+
+There are lots of ways to do this, and you can accomplish lots of interesting
+things with minting profiles, but the simplest way is I<very> simple, and will
+work for just about everything.
+
+First, make a new distribution, with a module in it named
+Dist::Zilla::MintingProfile::I<ProviderNameHere> -- replacing ProviderNameHere
+with a name for your provider.  A provider is a module that can provide minting
+profiles.  Here, it's just there to get a File::ShareDir slot, so it doesn't
+need much code.  This should do it:
+
+  #!perl
+  package Dist::Zilla::MintingProfile::ProviderNameHere;
+
+  use Moose;
+  with 'Dist::Zilla::Role::MintingProfile::ShareDir';
+
+The MintingProfile::ShareDir role means that the profile will try look in the
+module's ShareDir for the profile's F<profile.ini> and other files.  To get
+them into the ShareDir, you'll need to use ModuleShareDirs in your F<dist.ini>:
+
+  #!vim dosini
+  [ModuleShareDirs]
+  Dist::Zilla::MintingProfile::ProviderNameHere = profiles
+
+This says "the files in my dist's F<./profiles> directory will get installed
+into the sharedir for this module."  It's I<critical> that you use
+B<Module>ShareDirs, and not just ShareDirs, here.
+
+Notice that we called the directory F<profileB<s>>.  That's because you can
+have many profiles for this one module.  As with the profiles in your home
+directory, the default profile goes under F<default>.  Make the directory
+F<./profiles/default> in your distribution and put your F<profile.ini> and
+other files in it.  If you want to make other profiles, put them in other
+subdirectories.  Now, when you install the minting profile distribution, you
+can use these profiles.  Instead of C<-p>, which gave an alternate profile
+name, use C<-P> to give an alternate profile provider.  For example, you could
+run:
+
+  $ dzil new -P ProviderNameHere  New::Module
+
+Or, to get a non-default profile from that provider:
+
+  $ dzil new -P ProviderNameHere -p otherprofile New::Module
+
+=for cyoa
+? vcs-git      ? learn how to use Dist::Zilla (including minting) with Git
+? prereq       ? learn about declaring prerequisites
+? writing-docs ? learn how Dist::Zilla helps you write docs
+? testing      ? learn how to test your distribution
+? versioning   ? learn about managing version numbers with Dist::Zilla
+? release      ? learn how to release your distribution to the CPAN

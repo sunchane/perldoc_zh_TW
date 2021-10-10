@@ -1,0 +1,192 @@
+=head1 NAME
+
+Perl::LanguageServer - Language Server and Debug Protocol Adapter for Perl
+
+=head1 VERSION
+
+Version 2.3.0
+
+
+=cut
+
+=head1 SYNOPSIS
+
+This is a Language Server and Debug Protocol Adapter for Perl
+
+It implements the Language Server Protocol which provides
+syntax-checking, symbol search, etc. Perl to various editors, for
+example Visual Studio Code or Atom.
+
+L<https://microsoft.github.io/language-server-protocol/specification>
+
+It also implements the Debug Adapter Protocol, which allow debugging
+with various editors/includes
+
+L<https://microsoft.github.io/debug-adapter-protocol/overview>
+
+Should work with any Editor/IDE that support the Language-Server-Protocol.
+
+To use both with Visual Studio Code, install the extension "perl"
+
+Any comments and patches are welcome.
+
+=head2 Features
+
+=over 4
+
+=item * Language Server
+
+=over 4
+
+=item * Syntax checking
+
+=item * Symbols in file
+
+=item * Symbols in workspace/directory
+
+=item * Goto Definition
+
+=item * Find References
+
+=item * Call Signatures
+
+=item * Supports multiple workspace folders
+
+=item * Document and selection formatting via perltidy
+
+=item * Run on remote system via ssh
+
+=back
+
+=item * Debugger
+
+=over 4
+
+=item * Run, pause, step, next, return
+
+=item * Support for coro threads
+
+=item * Breakpoints 
+
+=item * Conditional breakpoints
+
+=item * Breakpoints can be set while program runs and for modules not yet loaded
+
+=item * Variable view, can switch to every stack frame or coro thread
+
+=item * Set variable
+
+=item * Watch variable
+
+=item * Tooltips with variable values
+
+=item * Evaluate perl code in debuggee, in context of every stack frame of coro thread
+
+=item * Automatically reload changed Perl modules while debugging
+
+=item * Debug multiple perl programs at once
+
+=item * Run on remote system via ssh
+
+=back
+
+=back
+
+
+=cut
+
+=pod
+
+
+
+=head1 AUTHOR
+
+grichter, C<< <richter at ecos.de> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-perl-languageserver at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Perl-LanguageServer>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+
+
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Perl::LanguageServer
+
+Presentation on German Perl Workshop 2020:
+
+L<https://github.com/richterger/Perl-LanguageServer/blob/master/docs/Perl-LanguageServer%20und%20Debugger%20f%C3%BCr%20Visual%20Studio%20Code%20u.a.%20Editoren%20-%20Perl%20Workshop%202020.pdf>
+
+
+You can also look for information at:
+
+=over 4
+
+=item * Github:
+ L<https://github.com/richterger/Perl-LanguageServer>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/Perl-LanguageServer>
+
+=item * MetaCPAN
+
+L<https://metacpan.org/release/Perl-LanguageServer>
+
+=back
+
+For reporting bugs please use GitHub issues.
+
+
+=head1 ACKNOWLEDGEMENTS
+
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2018-2021 grichter.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the the Artistic License (2.0). You may obtain a
+copy of the full license at:
+
+L<http://www.perlfoundation.org/artistic_license_2_0>
+
+Any use, modification, and distribution of the Standard or Modified
+Versions is governed by this Artistic License. By using, modifying or
+distributing the Package, you accept this license. Do not use, modify,
+or distribute the Package, if you do not accept this license.
+
+If your Modified Version has been derived from a Modified Version made
+by someone other than you, you are nevertheless required to ensure that
+your Modified Version complies with the requirements of this license.
+
+This license does not grant you the right to use any trademark, service
+mark, tradename, or logo of the Copyright Holder.
+
+This license includes the non-exclusive, worldwide, free-of-charge
+patent license to make, have made, use, offer to sell, sell, import and
+otherwise transfer the Package with respect to any patent claims
+licensable by the Copyright Holder that are necessarily infringed by the
+Package. If you institute patent litigation (including a cross-claim or
+counterclaim) against any party alleging that the Package constitutes
+direct or contributory patent infringement, then this Artistic License
+to you shall terminate on the date that such litigation is filed.
+
+Disclaimer of Warranty: THE PACKAGE IS PROVIDED BY THE COPYRIGHT HOLDER
+AND CONTRIBUTORS "AS IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
+THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, OR NON-INFRINGEMENT ARE DISCLAIMED TO THE EXTENT PERMITTED BY
+YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
+CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
+CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+=cut
+

@@ -1,0 +1,13 @@
+=head1 NAME
+
+perllexwarn - Perl Lexical Warnings
+perllexwarn - Perl 詞法警告
+
+=head1 DESCRIPTION
+
+Perl v5.6.0 introduced lexical control over the handling of warnings by
+category.  The C<warnings> pragma generally replaces the command line flag
+B<-w>.  Documentation on the use of lexical warnings, once partly found in
+this document, is now found in the L<warnings> documentation.
+自從 Perl v5.6.0 發表了處理警告分類的詞法控制， C<warnings> 編譯命令通常作為 B<-w> 命令列旗標的替代。
+使用詞法警告的說明文件，以前是部份放在這裡，現在統一放在 L<warnings> 說明文件。
