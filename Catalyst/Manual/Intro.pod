@@ -63,16 +63,21 @@ examples of well-known Perl modules you may want to use for each.
 
 Access and modify content (data). L<DBIx::Class>, L<Class::DBI>,
 L<Xapian>, L<Net::LDAP>...
+存取並且修改內容 (資料)。 L<DBIx::Class>, L<Class::DBI>,
+L<Xapian>, L<Net::LDAP>...
 
 =item * B<View>
 
 Present content to the user. L<Template Toolkit|Template>,
+L<Mason|HTML::Mason>, L<HTML::Template>...
+瀏覽器使用者內容呈現。 L<Template Toolkit|Template>,
 L<Mason|HTML::Mason>, L<HTML::Template>...
 
 =item * B<Controller>
 
 Control the whole request phase, check parameters, dispatch actions, flow
 control. This is the meat of where Catalyst works.
+控制所有的請求階段，檢查參數，發送動作，流程控制。這是 Catalyst 運行的主要部份。
 
 =back
 
@@ -81,15 +86,21 @@ check out the original book on the subject, I<Design Patterns>, by
 Gamma, Helm, Johnson, and Vlissides, also known as the Gang of Four
 (GoF).  Many, many web application frameworks are based on MVC, which
 is becoming a popular design paradigm for the world wide web.
+如果您不熟悉 MVC 和設計框架，建議您可以去找這方面的原創，知名的四人幫 (GoF) 
+Gamma, Helm, Johnson, 和 Vlissides 著作的 I<模式設計>。
+很多很多的網頁程式框架根據 MVC，已經成為了網站流行的設計範式。
 
 =head3 Flexibility
+=head3 彈性
 
 Catalyst is much more flexible than many other frameworks. Rest assured
 you can use your favorite Perl modules with Catalyst.
+Catalyst 比起其他的框架更加的彈性，剩下的就看您如何運用您熟悉的 Perl 套件來使用 Catalyst。
 
 =over 4
 
 =item * B<Multiple Models, Views, and Controllers>
+=item * B<多重模組, 視點, 和控制器>
 
 To build a Catalyst application, you handle each type of concern inside
 special modules called L</Components>. Often this code will be very
@@ -100,21 +111,33 @@ different Perl modules as you like, all in the same application. Want to
 manipulate multiple databases, and retrieve some data via LDAP? No
 problem. Want to present data from the same Model using L<Template
 Toolkit|Template> and L<PDF::Template>? Easy.
+建制一個 Catalyst 應用程式，每一個您會關注的內部套件稱之為 L</元件>。
+通常編寫程式很簡單，只要呼叫 Perl 模組如 L</MVC> 列出的。
+Catalyst 處理這些元件的方式非常彈性。根據您要用多少模型，視圖，和控制器都可以，
+要用多少 Perl 套件也都可以，所有東西都放在這個應用程式中。
+想要控制多個資料庫，想要從 LDAP 取回資料？沒問題，想要用同個模型呈現 L<PDF::Template> 資料 
+( L<模板工具|模板>)？簡單。
 
 =item * B<Reuseable Components>
+=item * B<可重用的元件>
 
 Not only does Catalyst promote the re-use of already existing Perl
 modules, it also allows you to re-use your Catalyst components in
 multiple Catalyst applications.
+不只 Catalyst 推廣重複使用現有的 Perl 套件，同時也允許您在不同的應用程式重用您的 Catalyst 元件。
 
 =item * B<Unrestrained URL-to-Action Dispatching>
+=item * B<不受限制的 URL-動作分派>
 
 Catalyst allows you to dispatch any URLs to any application L</Actions>,
 even through regular expressions! Unlike most other frameworks, it
 doesn't require mod_rewrite or class and method names in URLs.
+Catalyst 允許您分派各種 UML 到各種應用程式L<動作>，甚至是正規表達式！
+不像大部分其他框架，URL 分派不需要 mod_rewrite 或類別及方法名稱。
 
 With Catalyst you register your actions and address them directly. For
 example:
+註冊一個動作到 Catalyst 並且給予定址。例如：
 
     sub hello : Local {
         my ( $self, $context ) = @_;
@@ -122,10 +145,13 @@ example:
     }
 
 Now http://localhost:3000/hello prints "Hello World!".
+現在打開 http://localhost:3000/hello 印出 "Hello World!".
 
 Note that actions with the C< :Local > attribute are equivalent to
 using a C<:Path('action_name') > attribute, so our action could be
 equivalently:
+請注意動作包含 C< :Local > 屬性和使用 C< :Path('action_name') > 屬性相同，
+所以下面的動作相同。
 
     sub hi : Path('hello') {
         my ( $self, $context ) = @_;
@@ -134,29 +160,39 @@ equivalently:
 
 
 =item * B<Support for CGI, mod_perl, Apache::Request, FastCGI>
+=item * B<支援 CGI，mod_perl，Apache::Request，FastCGI>
 
 Use L<Catalyst::Engine::Apache> or L<Catalyst::Engine::CGI>. Another
 interesting engine is L<Catalyst::Engine::HTTP::Prefork> - available from CPAN
 separately - which will turn the built server into a fully fledged production
 ready server (although you'll probably want to run it behind a front end proxy
 if you end up using it).
+使用 L<Catalyst::Engine::Apache> 或 L<Catalyst::Engine::CGI>。
+其他有趣的模組 L<Catalyst::Engine::HTTP::Prefork> - 分別為不同 CPAN 模組，
+可以讓您的網頁伺服器成為成熟的生產階段 (就算您的應用程式之前是運行在代理的後端，然而最後考慮使用)。
 
 =item * PSGI Support
+=item * PSGI 支援
 
 Starting with Catalyst version 5.9 Catalyst ships with L<PSGI> integration
 for even more powerful and flexible testing and deployment options.  See
 L<Catalyst::PSGI> for details.
+Catalyst 5.9 版之後隨附 L<PSGI> 於套件中，整合進更強大及彈性的測試及部屬選項。
+請看 L<Catalyst::PSGI> 詳細資訊。
 
 =back
 
 =head3 Simplicity
+=head3 簡易
 
 The best part is that Catalyst implements all this flexibility in a very
 simple way.
+Catalyst 最棒的是以簡單的方式實踐了彈性。
 
 =over 4
 
 =item * B<Building Block Interface>
+=item * B<建置區塊界面
 
 Components interoperate very smoothly. For example, Catalyst
 automatically makes a L</Context> object available to every
@@ -164,45 +200,63 @@ component. Via the context, you can access the request object, share
 data between components, and control the flow of your
 application. Building a Catalyst application feels a lot like snapping
 together toy building blocks, and everything just works.
+元件的協同能力非常流暢。例如，Catalyst 會為每一個元件建立 L</Context> 物件。
+透過語境物件，您可以存取請求的物件，元件之間分享資料，及為您的應用程式設定控制流程。
+建置 Catalyst 應用程式像是把樂高積木黏在一起，然後所有事情順利運作。
 
 =item * B<Component Auto-Discovery>
+=item * B<元件自動偵測>
 
 No need to C<use> all of your components. Catalyst automatically finds
 and loads them.
+不需要 C<use> 您所有的元件，Catalyst 自動偵測及載入它們。
 
 =item * B<Pre-Built Components for Popular Modules>
+=item * B<使用熱門模組的內建元件>
 
 See L<Catalyst::Model::DBIC::Schema> for L<DBIx::Class>, or
 L<Catalyst::View::TT> for L<Template Toolkit|Template>.
+請看 L<Catalyst::Model::DBIC::Schema> 模組 L<DBIx::Class>, 或
+L<Catalyst::View::TT> 模組 L<Template Toolkit|Template>
 
 =item * B<Built-in Test Framework>
+=item * B<建置測試框架>
 
 Catalyst comes with a built-in, lightweight http server and test
 framework, making it easy to test applications from the web browser,
 and the command line.
+Catalyst 隨附內建輕巧的網頁伺服器及測試框架，讓您可以在網頁瀏覽器上或終端命令列上測試您的應用程式，
 
 =item * B<Helper Scripts>
+=item * B<協助腳本>
 
 Catalyst provides helper scripts to quickly generate running starter
 code for components and unit tests. Install L<Catalyst::Devel> and see
 L<Catalyst::Helper>.
+Catalyst 提供協助腳本讓您快速生成元件或單元測試的可啟動程式碼。
+請安裝 L<Catalyst::Devel> 及請看 L<Catalyst::Helper>
 
 =back
 
 =head2 Quickstart
+=head2 快速入門
 
 Here's how to install Catalyst and get a simple application up and
 running, using the helper scripts described above.
+本節說明如何安裝 Catalyst 及建置一個簡單的應用程式並且運行，如前面敘述使用協助腳本達成。
 
 =head3 Install
+=head3 安裝
 
 Installation of Catalyst should be straightforward:
+安裝 Catalyst 應該很直觀：
 
     # perl -MCPAN -e 'install Catalyst::Runtime'
     # perl -MCPAN -e 'install Catalyst::Devel'
     # perl -MCPAN -e 'install Catalyst::View::TT'
 
 =head3 Setup
+=head3 設定
 
     $ catalyst.pl MyApp
     # output omitted
@@ -217,17 +271,22 @@ developing in a fully functional Catalyst environment within
 minutes. See
 L<Catalyst::Manual::Installation> for
 more details.
-
+目前有兩個不同特點的映像檔公開在 Amazon Machine Images (AMI)，包含所有您在開發時所有您需要的元件，
+可讓您幾分鐘內建置全功能的 Catalyst 環境。
+請看 L<Catalyst::Manual::Installation> 詳細介紹。
 
 =head3 Run
+=head3 運行
 
     $ script/myapp_server.pl
 
 Now visit these locations with your favorite browser or user agent to see
 Catalyst in action:
+然後馬上用您最愛的瀏覽器造訪這個網址。
 
 (NOTE: Although we create a controller here, we don't actually use it.
 Both of these URLs should take you to the welcome page.)
+(請注意：雖然我們新增了控制器，但我們事實上還沒用上。這 2 個 URL 都會帶您到歡迎畫面。)
 
 
 =over 4
@@ -239,11 +298,14 @@ Both of these URLs should take you to the welcome page.)
 =back
 
 =head2 How It Works
+=head2 如何運作
 
 Let's see how Catalyst works, by taking a closer look at the components
 and other parts of a Catalyst application.
+讓我們來看 Catalyst 如何運作，靠近瞧瞧元件及 Catalyst 應用程式的其他部份。
 
 =head3 Components
+=head3 元件
 
 Catalyst has an uncommonly flexible component system. You can define as
 many L</Models>, L</Views>, and L</Controllers> as you like. As discussed
@@ -253,6 +315,10 @@ also generate PDFs or e-mails, for example); the Model is responsible
 for providing data (typically from a relational database); and the
 Controller is responsible for interacting with the user and deciding
 how user input determines what actions the application takes.
+Catalyst 具有少見又彈性的元件系統。您可以定義愛定義多少 L</模型>, L</視圖>, 和 L</控制器> 都可以。
+如前面討論過，視圖一般概念是為使用者輸出資料畫面 (通常是網頁瀏覽器，但是視圖也可以是 PDF 或 e-mail，舉例來說)；
+模型職責為提供資料 (通常是關聯資料庫)；
+而控制器的職責為與使用者互動及根據使用者的輸入決定應用程式的動作。
 
 In the world of MVC, there are frequent discussions and disagreements
 about the nature of each element - whether certain types of logic
@@ -260,11 +326,18 @@ belong in the Model or the Controller, etc. Catalyst's flexibility
 means that this decision is entirely up to you, the programmer;
 Catalyst doesn't enforce anything. See L<Catalyst::Manual::About> for
 a general discussion of these issues.
+世界上的 MVC 框架，經常討論和否定每個元件的生態 - 比如哪些類型的邏輯，應該歸於模型還是控制器。
+Catalyst 的彈性將決定權完全讓給您，程式設計師；
+Catalyst 不會強迫您任何事。請看 L<Catalyst::Manual::About>，這方面常見的討論議題。
 
 Model, View and Controller components must inherit from L<Catalyst::Model>,
 L<Catalyst::View> and L<Catalyst::Controller>, respectively. These, in turn, inherit
 from L<Catalyst::Component> which provides a simple class structure and some
 common class methods like C<config> and C<new> (constructor).
+模型，視圖及控制器元件必須分別繼承自 L<Catalyst::Model>，L<Catalyst::View> 以及 L<Catalyst::Controller>，
+反過來說，繼承自 L<Catalyst::Component> 
+提供簡單的類別結構及一些常用的類別方法像是 C<config> 及 C<new> (建構子)。
+
 
     package MyApp::Controller::Catalog;
     use Moose;
@@ -281,6 +354,10 @@ Controllers.  Catalyst automatically discovers and instantiates them
 when you call C<setup> in the main application. All you need to do is
 put them in directories named for each Component type. You can use a
 short alias for each one.
+您不必使用 C<use> 或其他方法註冊模型，視圖，以及控制器。
+Catalyst 在您主要的應用程式使用 C<setup> 指令會自動偵測並且實例化它們。
+所有您要做的只是把程式放在正確的資料夾，並為各種型態的元件命名。
+也可以為每個元件設定別名。
 
 =over 4
 
@@ -293,10 +370,13 @@ short alias for each one.
 =back
 
 =head4 Views
+=head3 視圖
 
 To show how to define views, we'll use an already-existing base class for the
 L<Template Toolkit|Template>, L<Catalyst::View::TT>. All we need to do is
 inherit from this class:
+為了展示如何定義視圖，我們使用基礎類別 L<模板工具|模板>, L<Catalyst::View::TT>。
+我們要做的全部只不過是繼承這個類別。
 
     package MyApp::View::TT;
 
@@ -306,6 +386,7 @@ inherit from this class:
     1;
 
 (You can also generate this automatically by using the helper script:
+(您也可以使用協助腳本自動產生程式碼)
 
     script/myapp_create.pl view TT TT
 

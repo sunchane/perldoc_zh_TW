@@ -61,6 +61,7 @@ L<Catalyst::Manual::Internals>
 =head2 Books
 
 For additional information on Catalyst, there are currently two books available:
+有關 Catalyst 更多的資訊，目前有 2 本實體書供販售。
 
 =over 4
 

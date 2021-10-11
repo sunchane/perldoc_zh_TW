@@ -1,0 +1,20 @@
+=for comment
+西元2021年10月11日 (週一) 13時26分21秒 CST
+=encoding utf8
+本 Github Repositories 資源庫為 Perl 直譯器官方說明手冊的翻譯，或以指令 C<perldoc -u> 產生的文件，
+加上參考眾多 O'Reilly 書籍，提供同好及自己了解 Perl 文件系統的特色，作者的最初思維。
+檔案取自 Perl 發行版內 pod/ 官方說明文件，CPAN 社群一些知名的套件 C<*.pm> 轉換成 C<*.pod> 
+，有些套件開發使用 C<*.md> 或製作成 HTML 網頁形式，都盡量以 B<POD (舊式簡明文件)> 呈現這些套件官方的入門介紹文。
+
+=head1 perldoc_zh_TW 繁體中文 POD 翻譯
+Perl 雖然是以文字處理功能為名，但是卻包含大量的系統管理、直譯器後端控制，甚至存在大量的編寫慣例指南。
+意謂程式語言本身雖可以自由發揮，但是卻存在大量的指南讓使用者自我約束。
+
+官方說明文件放在 C</pod> 資料夾內，特徵為以 perl 開頭以 .pod 結尾。
+Perl 函式庫套件在 Linux 上預設可以用以下指令找到 C<perl -e "print @INC">。
+Perl 開發程式小工具本身也是用 Perl 編寫的，內部也崁入 POD 文件，用 C<perldoc -u> 可以擷取說明文的部份。
+Perl 小工具存放的位置要根據您 Linux 發行版的 Perl 為主，以 Archlinux 為例存放在 C</usr/bin/core_perl>，
+C</usr/bin/site_perl>，C</usr/bin/vendor_perl>。
+
+=head2 TODO Catalyst 網頁框架
+近期翻譯為有關 Catalyst 為主，為了能夠跟 Docker 容器配合，實驗並且部屬。
