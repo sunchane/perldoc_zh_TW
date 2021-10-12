@@ -4,18 +4,28 @@
 
 Catalyst::Manual::Cookbook - Cooking with Catalyst
 
+Catalyst::Manual::Cookbook - 與 Catalyst 一起烹調
+
 =head1 DESCRIPTION
 
 Yummy code like your mum used to bake!
+
+跟您母親煮的一樣好吃！
 
 =head1 RECIPES
 
 =head1 Basics
 
+=head1 基本
+
 These recipes cover some basic stuff that is worth knowing for
 Catalyst developers.
 
+這本食譜包含一些基本的玩意，身為 Catalyst 開發者值得一看。
+
 =head2 Delivering a Custom Error Page
+
+=head2 提交客製化網站錯誤頁
 
 By default, Catalyst will display its own error page whenever it
 encounters an error in your application. When running under C<-Debug>

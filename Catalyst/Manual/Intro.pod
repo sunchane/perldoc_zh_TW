@@ -11,6 +11,7 @@ up and running quickly. For an introduction (without code) to Catalyst
 itself, and why you should be using it, see L<Catalyst::Manual::About>.
 For a systematic step-by-step introduction to writing an application
 with Catalyst, see L<Catalyst::Manual::Tuorial>.
+
 本文是 Catalyst 簡明的介紹文件。
 解釋 Catalyst 運行最重要的特性，並且為您展示如何快速建立簡單的網路應用程式並且運行。
 另外有關 Catalyst 本身的介紹 (沒有程式碼)，以及為什麼您應該使用，請看 L<Catalyst::Manual::About>。
@@ -279,6 +280,7 @@ Catalyst 提供協助腳本讓您快速生成元件或單元測試的可啟動�
 
 Here's how to install Catalyst and get a simple application up and
 running, using the helper scripts described above.
+
 本節說明如何安裝 Catalyst 及建置一個簡單的應用程式並且運行，如前面敘述使用協助腳本達成。
 
 =head3 Install
@@ -629,7 +631,7 @@ totally independent of these needs.
 
 對於 Catalyst，您的應用程式編寫B<包裹通用模型>的B<模型>是個不錯的起步 (例如 L<DBIx::Class::Schema>, 一大堆 XML, 或任何真實的)，
 這個模型包含組態資料，方便的方法，以及其他。所以您實際上會有兩個模型 - 對 Catalyst 及您的網頁應用程式有所了解的包裹模型，
-以及完全獨立於程式需要的通用模型
+以及完全獨立於程式需要的通用模型。
 
 Technically, within Catalyst a model is a B<component> - an instance of
 the model's class belonging to the application. It is important to
@@ -760,6 +762,8 @@ A typical C<ACCEPT_CONTEXT> method will either clone the model and return one
 with the context object set, or it will return a thin wrapper that contains
 C<$c> and delegates to the per-application model object.
 
+典型的 C<ACCEPT_CONTEXT> 方法除了複製模型並且回傳物件語境，
+也回傳包含 C<$c> 的包裹器代表這個應用程式模型物件。
 
 Generally it's a bad idea to expose the context object (C<$c>) in your
 model or view code.  Instead you use the C<ACCEPT_CONTEXT> subroutine
@@ -769,6 +773,12 @@ scope where it is needed which reduces maintenance and debugging
 headaches.  So, if for example you needed two
 L<Catalyst::Model::DBIC::Schema> models in the same Catalyst model
 code, you might do something like this:
+
+一般來說暴露您的語境物件 (C<$c>) 在模型或視圖的原始檔中不是個好辦法。
+除非您使用 C<ACCEPT_CONTEXT> 副程式抓取語境物件需要的部份，為您的模型提供存取。
+這樣確保 C<$c> 只會在您需要的命名空間中出現，並且減少維護及除錯的煩惱。
+所以，舉例您需要 2 個模型 L<Catalyst::Model::DBIC::Schema> 在同個模型原始碼中，
+您大概會這樣做：
 
  __PACKAGE__->mk_accessors(qw(model1_schema model2_schema));
  sub ACCEPT_CONTEXT {
@@ -785,7 +795,13 @@ parameter.  C<@extra_arguments> comes from any trailing arguments to
 C<< $c->component( $bah, @extra_arguments ) >> (or C<< $c->model(...)
 >>, C<< $c->view(...) >> etc).
 
+這樣有效的處理 $self 為 B<原型物件> 獲得新的形參。
+C<@extra_arguments> 接收來自
+C<< $c->component( $bah, @extra_arguments ) >> 尾端剩下的引數 (或 C<< $c->model(...)
+>>, C<< $c->view(...) >> 等等)。
+
 In a subroutine in the  model code, we can then do this:
+在模型原始碼的副程式中，我們可以這樣使用：
 
  sub whatever {
      my ($self) = @_;
@@ -800,11 +816,21 @@ application to promote reusability of code.  Here we might just want
 to grab the C<< $c->model('DB')->schema >> so as to get the connection
 information from the Catalyst application's configuration for example.
 
+提醒您我們依然想讓 Catalyst 應用程式的模型，使用薄的類別包裹器來增加原始碼的重用性。
+下面的例子是假如我們只想要抓取 C<< $c->model('DB')->schema >> 的連線資訊，
+提供給 Catalyst 應用程式設定檔。
+
 The life time of this value is B<per usage>, and not per request. To
 make this per request you can use the following technique:
 
+這個值的生命週期以每次使用為單位，而不是以請求為單位。
+要變成以每次請求為單位您可以使用下面的技巧：
+
 Add a field to C<$c>, like C<my_model_instance>. Then write your
 C<ACCEPT_CONTEXT> method to look like this:
+
+增加一個成員欄位 C<$c>，像是 C<my_model_instance>。
+然後編寫您的 C<ACCEPT_CONTEXT> 方法像是這樣：
 
     sub ACCEPT_CONTEXT {
       my ( $self, $c ) = @_;
@@ -822,11 +848,18 @@ C<ACCEPT_CONTEXT> method to look like this:
 For a similar technique to grab a new component instance on each
 request, see L<Catalyst::Component::InstancePerContext>.
 
+以每次請求為單位抓取新的元件，類似的技巧，請看 L<Catalyst::Component::InstancePerContext>。
+
+
 =head3 Application Class
+=head3 應用程式類別
 
 In addition to the Model, View, and Controller components, there's a
 single class that represents your application itself. This is where you
 configure your application, load plugins, and extend Catalyst.
+
+除了模型，視圖，控制器元件，還有一個類別代表您應用程式本身。
+這個類別是您修改設定檔的地方，載入外掛，以及擴充 Catalyst。
 
     package MyApp;
 
@@ -846,11 +879,19 @@ global actions. However, as of version 5.66, the recommended practice is
 to place such actions in a special Root controller (see L</Actions>,
 below), to avoid namespace collisions.
 
+較為舊版的 Catalyst，應用程式類別是您放置全域動作的地方。
+此外，5.66 版以後，建議措施為放置這些動作在特殊的 Root 控制器中 (請看下面 L</Actions>)，
+來避免名稱空間的衝突。
+
 =over 4
 
 =item * B<name>
 
+=item * B<name>
+
 The name of your application.
+
+您的應用程式名稱
 
 =back
 
@@ -860,13 +901,23 @@ location. You can define as many parameters as you want for plugins or
 whatever you need. You can access them anywhere in your application via
 C<< $context->config->{$param_name} >>.
 
+可選擇地，您可以為模板及靜態資料指定 B<root> 參數。如果略過，
+Catalyst 會嘗試自動偵測資料夾路徑。
+您可以定義任何數量的參數提供給外掛或任何您需要的地方。
+您可以在您的應用程式中透過 C<< $context->config->{$param_name} >> 存取。
+
 =head3 Context
+=head3 語境
 
 Catalyst automatically blesses a Context object into your application
 class and makes it available everywhere in your application. Use the
 Context to directly interact with Catalyst and glue your L</Components>
 together. For example, if you need to use the Context from within a
 Template Toolkit template, it's already there:
+
+Catalyst 自動標定 (blesses) 語境物件至您的應用程式類別，並且讓它在您的應用程式任何地方可以使用。
+使用語境讓您直接與 Catalyst 互動並且和您的 L</Components> 緊密黏合。
+例如，如果您需要使用模板工具 (Template Toolkit) TT 模板，已在這：
 
     <h1>Welcome to [% c.config.name %]!</h1>
 
@@ -875,12 +926,17 @@ always the second method parameter, behind the Component object
 reference or class name itself. Previously we called it C<$context> for
 clarity, but most Catalyst developers just call it C<$c>:
 
+如先前我們的 URL-動作分派範例程式，語境總是我們第 2 個方法參數，隱藏在元件物件參照或類別名稱自己。
+先前我們稱它為 C<$context> 明確些，大部分的 Catalyst 開發者稱它為 C<$c>。
+
     sub hello : Global {
         my ( $self, $c ) = @_;
         $c->res->body('Hello World!');
     }
 
 The Context contains several important objects:
+
+語境包含幾個重要的物件：
 
 =over 4
 
@@ -891,6 +947,8 @@ The Context contains several important objects:
 
 The request object contains all kinds of request-specific information, like
 query parameters, cookies, uploads, headers, and more.
+
+請求物件包含各種關於請求的資訊，像是查詢參數 (query parameters)，cookies，uploads, headers, 及其他。
 
     $c->req->params->{foo};
     $c->req->cookies->{sessionid};
@@ -905,6 +963,8 @@ query parameters, cookies, uploads, headers, and more.
 
 The response is like the request, but contains just response-specific
 information.
+
+回應 (response) 像是請求，但是只包含回應相關的資訊。
 
     $c->res->body('Hello World');
     $c->res->status(404);
@@ -931,10 +991,15 @@ information.
 
 and so on.
 
+以及其他。
+
 =back
 
 The last of these, the stash, is a universal hash for sharing data among
 application components. For an example, we return to our 'hello' action:
+
+最後一個，stash，是一個全域 (universal) 雜湊在應用程式元件之間分享資料。
+舉例來說，我們回傳我們的 'hello' 動作：
 
     sub hello : Global {
         my ( $self, $c ) = @_;
@@ -953,12 +1018,21 @@ to maintain persistent data, use a session. See
 L<Catalyst::Plugin::Session> for a comprehensive set of
 Catalyst-friendly session-handling tools.
 
+請注意 B<stash> 應該只用在個別請求循環時傳遞資料；新的請求時會清除。
+如果您要維持不變的資料，使用 B<session>。
+請看 L<Catalyst::Plugin::Session> 提供全面及對 Catalyst 友好的 B<session> 處理工具。
+
 =head3 Actions
+=head3 動作
 
 You've already seen some examples of actions in this document:
 subroutines with C<:Path> and C<:Local> attributes attached.
 Here, we explain what actions are and how these attributes affect
 what's happening.
+
+您已經看過本文許多有關動作 (actions) 的例子：
+副程式隨附 C<:Path> 及 C<:Local> 屬性。
+這裡，我們來解釋什麼是動作，以及這些屬性如何影響及發生反應。
 
 When Catalyst processes a webpage request, it looks for actions to
 take that will deal with the incoming request and produce a response
@@ -967,10 +1041,17 @@ writing subroutines within your controller and marking them with
 special attributes.  The attributes, the namespace, and the function
 name determine when Catalyst will call the subroutine.
 
+當 Catalyst 處理網頁請求程序時，會查找動作來處理這個外來的請求，並且產生一個回應如網頁。
+您為應用程式編寫副程式及控制器和設定特別的參數，來建立您的動作。
+參數，名稱空間，及函式名稱指的是 Catalyst 呼叫的副程式。
+
 These action subroutines call certain functions to say what response
 the webserver will give to the web request.  They can also tell
 Catalyst to run other actions on the request (one example of this is
 called forwarding the request; this is discussed later).
+
+這些動作副程式呼叫一些函式，產生提供給伺服器網頁請求的回應。
+它們也可以告訴 Catalyst 對這個請求運行其他的動作 (其中一個例子是稱為轉發 forwarding 這個請求；稍後討論)。
 
 Action subroutines must have a special attribute on to show that they
 are actions - as well as marking when to call them, this shows that
@@ -980,15 +1061,26 @@ registers them and creates L<Catalyst::Action> objects describing
 them.  When requests come in, Catalyst chooses which actions should be
 called to handle the request.
 
+動作元件副程式必須有一個特別的參數來表示他是一個動作 - 只要設何時呼叫它的參數，
+這代表它們需要一個特定的參數來表現特定的行為。
+啟動時，Catalyst 搜尋控制器所有的動作元件，註冊它們並且建立 L<Catalyst::Action> 物件來敘述它。
+當請求來時，Catalyst 選擇呼叫要處理這個請求的動作。
+
 (Occasionally, you might use the action objects directly, but in
 general, when we talk about actions, we're talking about the
 subroutines in your application that do things to process a request.)
+
+(經常地，您也可以直接使用動作物件，但通常，我們談的動作，
+指的是您的應用程式處理請求時所使用的副程式。)
 
 You can choose one of several attributes for action subroutines; these
 specify which requests are processed by that subroutine.  Catalyst
 will look at the URL it is processing, and the actions that it has
 found, and automatically call the actions it finds that match the
 circumstances of the request.
+
+您可以選擇動作副程式的其中一種屬性；這樣指定處理副程式的那一種情求。
+Catalyst 處理期間會監視 URL，然後發現這個動作，並且根據請求的情況自動呼叫這個動作。
 
 The URL (for example C<http://localhost:3000/foo/bar>) consists of two
 parts, the base, describing how to connect to the server
@@ -998,13 +1090,24 @@ trailing slash after the hostname[:port] always belongs to base and
 not to the path.  Catalyst uses only the path part when trying to find
 actions to process.
 
+URL (像是 C<http://localhost:3000/foo/bar>) 包含 2 個部份，基礎 (base)，
+描述如何連線到伺服器 (C<http://localhost:3000/> 本範例) 以及路徑 (path)，
+代表伺服器要回應什麼 (C<foo/bar>)。
+請注意I<網址:阜>後面的斜線總是歸於B<網址>而不是屬於路徑 (path)。
+Catalyst 只會使用路徑的部份來尋找處理的動作。
+
 Depending on the type of action used, the URLs may match a combination
 of the controller namespace, the arguments passed to the action
 attribute, and the name of the subroutine.
 
+根據被使用的動作種類，URL 也許會結合使用比對控制器名稱空間，傳遞給動作參數的引數，以及副程式的名稱。
+
+
 =over 4
 
 =item * B<Controller namespaces>
+
+=item * B<控制器名稱空間>
 
 The namespace is a modified form of the component's class (package)
 name. This modified class name excludes the parts that have a
@@ -1013,25 +1116,42 @@ example), replaces "::" with "/", and converts the name to lower case.
 See L</Components> for a full explanation of the pre-defined meaning
 of Catalyst component class names.
 
+控制器的名稱空間根據元件類別名稱 (套件) 被修改。
+被修改的類別名稱不能使用 Catalyst 預先定義或有特殊意義的名稱 (如前述的範例 "MyApp::Controller")，
+取代 "::" 為 "/"，轉換為小寫。
+請看 L</Components> 查閱詳細的解釋預先定義的 Catalyst 元件類別名稱。
+
 =item * B<Overriding the namespace>
+
+=item * B<複寫名稱空間>
 
 Note that C<< __PACKAGE__->config->(namespace => ... ) >> can be used to override the
 current namespace when matching.  So:
+
+請注意  C<< __PACKAGE__->config->(namespace => ... ) >> 比對成功時可以覆寫目前的名稱空間。 所以：
 
     package MyApp::Controller::Example;
 
 would normally use 'example' as its namespace for matching, but if
 this is specially overridden with
 
+正常地將 'example' 作為名稱空間，但是可以特別覆寫成
+
     __PACKAGE__->config( namespace => 'thing' );
 
 it matches using the namespace 'thing' instead.
 
+使用 'thing' 作為比對。
+
 =item * B<Application-Wide Actions>
+
+=item * B<應用程式範圍的動作元件>
 
 MyApp::Controller::Root, as created by the catalyst.pl script, will
 typically contain actions which are called for the top level of the
 application (e.g. C<http://localhost:3000/>):
+
+MyApp::Controller::Root，由 C<catalyst.pl> 腳本建置的，通常會包含頂層應用程式呼叫的動作 (例如 C<http://localhost:3000/>)：
 
     package MyApp::Controller::Root;
     use base 'Catalyst::Controller';
@@ -1052,6 +1172,8 @@ application (e.g. C<http://localhost:3000/>):
 
 The code
 
+這一段程式
+
     __PACKAGE__->config( namespace => '' );
 
 makes the controller act as if its namespace is empty.  As you'll see
@@ -1059,9 +1181,15 @@ below, an empty namespace makes many of the URL-matching attributes, such
 as :Path and :Local match at the start of the URL path (i.e. the
 application root).
 
+這段程式說明如果名稱空間為空的運行下面這些控制器動作。
+如您看到後續的程式，這個空的名稱空間設置許多 URL 比對的參數，
+比如說 B<:Path> 及 B<:Local> 比對 URL 路徑的起點 (換句話說就是應用程式的根目錄)
+
 =back
 
 =head4 Action types
+
+=head4 動作元件類型
 
 Catalyst supports several types of actions.  These mainly correspond
 to ways of matching a URL to an action subroutine.  Internally, these
@@ -1069,12 +1197,22 @@ matching types are implemented by L<Catalyst::DispatchType>-derived
 classes; the documentation there can be helpful in seeing how they
 work.
 
+Catalyst 支援幾種類型的動作。
+主要為比對 URL 到相應的動作副程式之方式。
+內部來說，這些比對類型是由 L<Catalyst::DispatchType>-衍生的類別來實做；
+這個說明文件對於了解運作的方式很有幫助。
+
 They will all attempt to match the start of the path.  The remainder
 of the path is passed as arguments.
+
+它們一開始都會嘗試比對路徑的開頭。
+剩下的路徑用引數傳遞。
 
 =over 4
 
 =item * Namespace-prefixed (C<:Local>)
+
+=item * 名稱空間-前輟 (C<:Local>)
 
     package MyApp::Controller::My::Controller;
     sub foo : Local { }
@@ -1082,7 +1220,12 @@ of the path is passed as arguments.
 Matches any URL beginning with> C<http://localhost:3000/my/controller/foo>. The namespace and
 subroutine name together determine the path.
 
-=item * Root-level (C<:Global>)
+會比對以 C<http://localhost:3000/my/controller/foo> 開頭的 URL。
+名稱空間和副程式名稱合在一起成為B<網址> (path)。
+
+=item * Root-level (c<:global>)
+
+=item * 根目錄-層級 (c<:global>)
 
     package MyApp::Controller::Foo;
 
@@ -1098,10 +1241,16 @@ subroutine name together determine the path.
 Matches C<http://localhost:3000/bar> - that is, the action is mapped
 directly to the method name, ignoring the controller namespace.
 
+會比對 C<http://localhost:3000/bar> URL - 總而言之，動作直接映射到方法名稱，
+忽落控制器模組類別名稱空間
+
 C<:Global> always matches from the application root: it is simply
 shorthand for C<:Path('/methodname')>.  C<:Local> is shorthand for
 C<:Path('methodname')>, which takes the controller namespace as described
 above.
+
+C<:Global> 總是比對到應用程式的根目錄：簡單的速記為 C<:Path('/methodname')>， 
+C<:Local> 速記為 C<:Path('methodname')>，這讓控制器名稱空間 (方法) 與上述的方法副程式相同。
 
 Usage of the C<Global> handler is rare in all but very old Catalyst
 applications (e.g. before Catalyst 5.7).  The use cases where C<Global>
@@ -1110,42 +1259,71 @@ type, or by empty C<Path> declarations on an controller action.  C<Global>
 is still included in Catalyst for backwards compatibility, although
 legitimate use-cases for it may still exist.
 
+C<Global> 操作的使用除了舊版本的 Catalyst 其他很少使用 (例如 Catalyst 5.7 版以前)。
+C<Global> 的以前有意義的用例，現在已經大幅度的被 C<Chained> 分派類型給取代，
+或是被動作控制器空白的 C<Path> 宣告給取代。
+C<Global> 依然包含在 Catalyst 中為了向下相容，雖然舊版合理的用例依然存在。
+
 =item * Changing handler behaviour: eating arguments (C<:Args>)
+
+=item * 變更操作行為：吃下引數 (C<Args>)
 
 C<:Args> is not an action type per se, but an action modifier - it adds a
 match restriction to any action it's provided to, additionally
 requiring as many path parts as are specified for the action to be
 matched. For example, in MyApp::Controller::Foo,
 
+C<:Args> 本身不是一個動作，而是動作的修飾器 - 它增加B<比對>的B<約束>並提供給任何動作使用，
+此外請求與指定的部份路徑批配操作一樣多。範例，於 MyApp::Controller::Foo。
+
   sub bar :Local
 
 would match any URL starting /foo/bar. To restrict this you can do
+
+會匹配開頭為 /foo/bar 的路徑。約束可以使用
 
   sub bar :Local :Args(1)
 
 to only match URLs starting /foo/bar/* - with one additional path
 element required after 'bar'.
 
+只有 /foo/bar/* 的 URL 會批配成功 - 只能在 'bar' 路徑後面增加一個路徑 
+
 NOTE that adding C<:Args(0)> and omitting C<:Args> are B<not>
 the same thing.
 
+請注意加入 C<:Args(0)>和省略參數 C<:Args> B<並不是> 指同一件事。
+
 C<:Args(0)> means that no arguments are taken.  Thus, the URL and path must
 match precisely.
+
+C<:Args(0)> 指的是沒有加入參數的情況。所以，URL 及路徑必須明確的比對才能批配。
 
 No C<:Args> at all means that B<any number> of arguments are taken.  Thus, any
 URL that B<starts with> the controller's path will match. Obviously, this means
 you cannot chain from an action that does not specify args, as the next action
 in the chain will be swallowed as an arg to the first!
 
+不使用 C<:Args> 指的是容許使用B<任何的數字>為參數。
+所以，任何 URL B<開頭>為任何控制器路徑都會匹配。明顯地，
+這意味著您不能不指定動作的參數進行鏈接，
+鍵接的下個動作會被當成第一個引數吞入！
 
 =item * Literal match (C<:Path>)
+
+=item * 字面匹配 (C<:Path>)
 
 C<Path> actions match things starting with a precise specified path,
 and nothing else.
 
+C<Path> 動作匹配明確精準的指定路徑，而沒其他多餘的。
+
 C<Path> actions without a leading forward slash match a specified path
 relative to their current namespace. This example matches URLs
 starting with C<http://localhost:3000/my/controller/foo/bar>:
+
+C<Path> 動作沒有包含開頭的斜線代表指定的路徑在目前名稱空間之下。
+範例批配 URL 開頭為 C<http://localhost:3000/my/controller/foo/bar>：
 
     package MyApp::Controller::My::Controller;
     sub bar : Path('foo/bar') { }
@@ -1153,33 +1331,51 @@ starting with C<http://localhost:3000/my/controller/foo/bar>:
 C<Path> actions B<with> a leading slash ignore their namespace, and
 match from the start of the URL path. Example:
 
+C<Path> 動作開頭B<包含>斜線忽略掉名稱空間，匹配網址之後開頭的路徑。範例：
+
     package MyApp::Controller::My::Controller;
     sub bar : Path('/foo/bar') { }
 
 This matches URLs beginning with C<http://localhost:3000/foo/bar>.
 
+這代表匹配 URL 開頭為 C<http://localhost:3000/foo/bar>。
+
 Empty C<Path> definitions match on the namespace only, exactly like
 C<:Global>.
+
+空的 C<Path> 定義只匹配名稱空間而已，跟 C<:Global> 一模一樣。
 
     package MyApp::Controller::My::Controller;
     sub bar : Path { }
 
 The above code matches C<http://localhost:3000/my/controller>.
 
+上面這個程式匹配 C<http://localhost:3000/my/controller>。
+
+
 Actions with the C<:Local> attribute are similarly equivalent to
 C<:Path('action_name')>:
+
+C<:Local> 的動作參數跟 C<:Path('action_name')> 同等類似。
 
     sub foo : Local { }
 
 is equivalent to
 
+與下方範例同等
+
     sub foo : Path('foo') { }
 
 =item * Pattern match (C<:Regex> and C<:LocalRegex>)
 
+=item * 正規表達式樣本匹配 (C<:Regex> 和 C<:LocalRegex>)
+
 B<Status: deprecated.> Use Chained methods or other techniques.
 If you really depend on this, install the standalone
 L<Catalyst::DispatchType::Regex> distribution.
+
+B<狀態：棄用。> 請使用其他鏈接方法或其他技巧。
+如果您真的依賴這個，請獨立安裝 L<Catalyst::DispatchType::Regex> 發行版。 
 
     package MyApp::Controller::My::Controller;
     sub bar : Regex('^item(\d+)/order(\d+)$') { }
@@ -1187,6 +1383,9 @@ L<Catalyst::DispatchType::Regex> distribution.
 This matches any URL that matches the pattern in the action key, e.g.
 C<http://localhost:3000/item23/order42>. The '' around the regexp is
 optional, but perltidy likes it. :)
+
+會匹配任何以正規表達式成功匹配樣本的 URL，例如 C<http://localhost:3000/item23/order42>。
+'' 單引號是可選的，但是 perltidy 套件特別愛這個。 :)
 
 C<:Regex> matches act globally, i.e. without reference to the namespace
 from which they are called.  So the above will B<not> match
