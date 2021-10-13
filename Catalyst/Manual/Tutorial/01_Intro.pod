@@ -2,10 +2,13 @@
 
 Catalyst::Manual::Tutorial::01_Intro - Catalyst Tutorial - Chapter 1: Introduction
 
+Catalyst::Manual::Tutorial::01_Intro - Catalyst 教學手冊 - Chapter 1: 簡介
 
 =head1 OVERVIEW
 
 This is B<Chapter 1 of 10> for the Catalyst tutorial.
+
+這是教學手冊 B<Chapter 1 of 10>。
 
 L<Tutorial Overview|Catalyst::Manual::Tutorial>
 
@@ -61,33 +64,53 @@ Framework. It seeks to provide a rapid overview of many of its most
 commonly used features. The focus is on the real-world best practices
 required in the construction of nearly all Catalyst applications.
 
+本教學手冊提供幾個章節介紹 Catalyst 網頁框架。
+讓您快速導覽最常使用的幾個功能。
+在幾乎所有 Catalyst 應用程序的構建中。
+以及專注在世界真實被實踐及被需求的 Catalyst 應用程式。
+
 Although the primary target of the tutorial is users new to the Catalyst
 framework, experienced users may wish to review specific sections (for
 example, how to use DBIC for their model classes, how to add
 authentication and authorization to an existing application, and/or
 form management).
 
+雖然教學手冊主要的客群為 Catalyst 新手，有經驗的使用者可以瀏覽特定章節 
+(例如，如何在他們的模型類別中使用 DBIC，或如何在既有的應用程式增加認證及授權，並且管理)。
+
 The most recent code for the tutorial is included on the Tutorial Virtual
 Machine you can download from:
+
+教學手冊最新的原始檔放在虛擬電腦的映像檔中，您可以在這裡下載：
 
 L<http://cattut.shadowcat.co.uk/>
 
 See L</STARTING WITH THE TUTORIAL VIRTUAL MACHINE> below for
 instructions getting and using the VM.
 
+請看下面 L</從教學映像檔起步> 如何使用虛擬電腦映像檔。 
+
 Should you wish to download the code directly, you get pull it via the
 following command (note: will probably be switching to git soon):
+
+您應該會想要直接下載原始檔，用下面的指令抓取 (請注意未來可能會使用 GIT)：
 
     svn co http://dev.catalyst.perl.org/repos/Catalyst/trunk/examples/Tutorial/ CatalystTutorial
 
 This will download the most recent code for each chapter of the
 tutorial into the CatalystTutorial directory on your machine.
 
+這樣會下載教學手冊各章節最新的原始檔，放進 CatalystTutorial 這個資料夾在您的機器。
+
 These reference implementations are provided so that when you follow
 the tutorial, you can use the code to ensure that your system is set up
 correctly (which shouldn't be an issue if you use the Tutorial Virtual
 Machine), :-) and that you have not inadvertently made any typographic
 errors, or accidentally skipped part of the tutorial.
+
+這本教學手冊參考的實做機器會提供給您，可以執行程式碼來確定作業系統配置正確
+(如果您使用虛擬電腦映像檔應該不會有這種問題，:-) ) 
+或者是不經意的打錯字，或意外跳過部份章節。
 
 B<NOTE: You can use any Perl-supported OS and environment to run
 Catalyst.> It should make little or no difference to Catalyst's
@@ -100,10 +123,18 @@ have tested the Tutorial Virtual Machine to make sure all of the
 examples work correctly, but it is hard to guarantee this on other
 platforms and versions.
 
+B<請注意：您要使用支援 Perl 的作業系統及環境運行 Catalyst。>
+Catalyst 操作上應該沒有什麼或只有一點點不同，B<但是本教學手冊是在虛擬電腦 Debian 為基礎的作業系統執行>
+，您可以下載來一步步配合教學手冊進行。
+B<我們強烈建議您使用虛擬電腦映像檔進行教學>來避免因為設定檔的不同打斷您的學習。
+我們已經確認過教學映像檔中的範例正確執行，並很難保證您在其他作業系統可以。
+
 If you would prefer to install directly from CPAN and not use the
 Tutorial Virtual machine, you can download the example program and all
 the necessary dependencies to your local machine by installing the
 L<Task::Catalyst::Tutorial> distribution:
+
+如果您偏好直接從 CPAN 安裝這個教學手冊而不安裝教學映像檔，您可以下載範例程式 L<Task::Catalyst::Tutorial> 及所有依賴的發行模組：
 
      cpan Task::Catalyst::Tutorial
 
@@ -111,7 +142,12 @@ This will also test to make sure the dependencies are working.  If you
 have trouble installing these, please ask for help on the #catalyst
 IRC channel, or the Catalyst mailing list.
 
+這指令順便測試您的模組依賴可以正確安裝。
+如果您在安裝時出現問題，請在 IRC 頻道 B<#catalyst> 尋求協助，或是 Catalyst 新聞群組。
+
 Subjects covered by the tutorial include:
+
+包含的教學章節如下：
 
 =over 4
 
@@ -119,38 +155,55 @@ Subjects covered by the tutorial include:
 
 A simple application that lists and adds books.
 
+簡單的應用程式可以列表及新增書籍資料。
+
 =item *
 
 The use of L<DBIx::Class> (DBIC) for the model (including
 some of the more advanced techniques you will probably want to use in
 your applications).
 
+模型元件中使用 L<DBIx::Class> (DBIC)
+(包括一些進階的技巧可以用在您的應用程式)。
+
 =item *
 
 How to write CRUD (Create, Read, Update, and Delete) operations in
 Catalyst.
 
+如何編寫 Catalyst 的 CURD (新增，讀取，更新，及刪除) 操作
+
 =item *
 
 Authentication ("auth").
 
+認證 ("auth")
+
 =item *
 
 Role-based authorization ("authz").
+
+角色為基礎的 (Role-based) 認證 ("authz")
 
 =item *
 
 Attempts to provide an example showing current (5.9) Catalyst
 practices.
 
+給您展示 Catalyst (5.9) 版本的練習範例。
+
 =item *
 
 The use of Template Toolkit (TT).
+
+使用模板工具 (TT)。
 
 =item *
 
 Useful techniques for troubleshooting and debugging Catalyst
 applications.
+
+Catalyst 應用程式故障排除及除錯有用的技巧
 
 =item *
 
@@ -160,10 +213,16 @@ Relational Mapping [ORM] layer, out our application will be database
 agnostic and can easily be used by any of the databases supported by
 DBIx::Class.)
 
+使用 SQLite 資料庫 (程式也可提供 MySQL 和 PostgreSQL 使用)。
+(請注意：因為我們使用 DBIx::Class 物件關聯映射 [ORM] 層，
+在我們應用程式之外會變成資料庫不明確 (database agnostic) 及很容易被 C<DBIx::Class> 支援的資料庫使用。)
+
 =item *
 
 The use of L<HTML::FormFu> or L<HTML::FormHandler>
 for automated form processing and validation.
+
+使用 L<HTML::FormFu> 或 L<HTML::FormHandler> 自動標單處理及驗證。
 
 =back
 

@@ -1307,7 +1307,7 @@ in the chain will be swallowed as an arg to the first!
 不使用 C<:Args> 指的是容許使用B<任何的數字>為參數。
 所以，任何 URL B<開頭>為任何控制器路徑都會匹配。明顯地，
 這意味著您不能不指定動作的參數進行鏈接，
-鍵接的下個動作會被當成第一個引數吞入！
+鏈接的下個動作會被當成第一個引數吞入！
 
 =item * Literal match (C<:Path>)
 
@@ -1392,6 +1392,10 @@ from which they are called.  So the above will B<not> match
 C<http://localhost:3000/my/controller/item23/order42> - use a
 C<:LocalRegex> action instead.
 
+C<:Regex> 批配全域的動作，例如不包含參照到它們呼叫的名稱空間。
+所以前面的例子B<不會>批配成功 C<http://localhost:3000/my/controller/item23/order42> 這個 URL -
+除非請使用 C<:LocalRegex> 動作。
+
     package MyApp::Controller::My::Controller;
     sub bar : LocalRegex('^widget(\d+)$') { }
 
@@ -1399,8 +1403,14 @@ C<:LocalRegex> actions act locally, i.e. the namespace is matched
 first. The above example would match urls like
 C<http://localhost:3000/my/controller/widget23>.
 
+C<:LocalRegex> 動作運用在區域範圍，舉例來說會先批配名稱空間路徑。
+上面的範例會匹配 URL 像是 
+C<http://localhost:3000/my/controller/widget23>.
+
 If you omit the "C<^>" from either sort of regex, then it will match any depth
 from the base path:
+
+如果您省略了 "C<^>"，會匹配所有深度的路徑名稱：
 
     package MyApp::Controller::Catalog;
     sub bar : LocalRegex('widget(\d+)$') { }
@@ -1408,6 +1418,9 @@ from the base path:
 This differs from the previous example in that it will match
 C<http://localhost:3000/my/controller/foo/widget23> - and a number of
 other paths.
+
+跟之前範例不同的是會匹配成功 C<http://localhost:3000/my/controller/foo/widget23> 
+- 也可能會比對到其他的路徑。
 
 For both C<:LocalRegex> and C<:Regex> actions, if you use capturing
 parentheses to extract values within the matching URL, those values
@@ -1417,10 +1430,20 @@ C<< $c->req->captures->[0] >> would be "23". If you want to
 pass arguments at the end of your URL, you must use regex action
 keys. See L</URL Path Handling> below.
 
+對於 C<:LocalRegex> 及 C<:Regex> 這兩個動作，如果您使用正規表達式小括號來分離比對的 URL 樣本，
+這些變數會放在 C<< $c->req->captures >> 陣列。
+上面的範例會把 "widget23" 分離擷取成 "23"，並且 C<< $c->req->captures->[0] >> 的值為 "23"。
+如果您想要傳遞參數比對 URL 的末端，您必須使用正規表達式的樣本鍵達成。
+請看下面章節 L</URL Path Handling>。
+
 =item * Chained handlers (C<:Chained>)
+
+=item * 鏈接操作 (C<:Chained>)
 
 Catalyst also provides a method to build and dispatch chains of actions,
 like
+
+Catalyst 提供分派動作鏈接的方式
 
     sub catalog : Chained : CaptureArgs(1) {
         my ( $self, $c, $arg ) = @_;
@@ -1438,7 +1461,14 @@ element, then C<item()> gets called with another one.  For further
 information about this dispatch type, please see
 L<Catalyst::DispatchType::Chained>.
 
+會比對 C</catalog/*/item/*> 路徑。
+匹配成功後會由上而下呼叫其他路徑的動作 - C<catalog()> 被呼叫時處理它的元件，
+然後 C<item()> 被呼叫時也處理它元件。
+更多有關分派類型，請看 L<Catalyst::DispatchType::Chained>。
+
 =item * B<Private>
+
+=item * B<私有> (Provate)
 
     sub foo : Private { }
 
@@ -1446,13 +1476,21 @@ This will never match a URL - it provides a private action which can
 be called programmatically from within Catalyst, but is never called
 automatically due to the URL being requested.
 
+私有不會匹配任何 URL - 只提供給 Catalyst 程式上私有的動作呼叫，
+URL 發出請求時也不會自動被呼叫。
+
 Catalyst's C<:Private> attribute is exclusive and doesn't work with other
 attributes (so will not work combined with C<:Path> or C<:Chained>
 attributes, for instance).
 
+Catalyst C<:Private> 修飾器與其他修飾器區分並不能一起運作 (例如不能把這個修飾器與 C<:Path> 和 C<:Chained> 結合使用)。
+
 Private actions can only be executed explicitly from inside a Catalyst
 application.  You might do this in your controllers by calling
 catalyst methods such as C<forward> or C<detach> to fire them:
+
+Private 動作只能夠明確地在 Catalyst 應用程式內部使用。
+您可能會在控制器內呼叫 Catalyst 方法透過 C<forward> 或 C<detach> 啟動它。
 
     $c->forward('foo');
     # or
@@ -1466,6 +1504,11 @@ C<MyApp::Controller::Catalog::Order::Process> controller must, if
 called from elsewhere, be reached with
 C<< $c->forward('/catalog/order/process/bar') >>.
 
+請看 L</Flow Control> 查閱完整有關傳遞請求到其他動作。要注意的是，
+當您轉發其他元件的副程式時，您必須要使用完整路徑到這些方法，所以 C<MyApp::Controller::Catalog::Order::Process> 的私有方法 C<bar>，
+在其他地方呼叫時要用 << $c->forward('/catalog/order/process/bar') >> 才能到達。
+
+
 =back
 
 B<Note:> After seeing these examples, you probably wonder what the
@@ -1474,16 +1517,29 @@ actions. However, every public action is also a private one with a
 path corresponding to its namespace and subroutine name, so you have
 one unified way of addressing components in your C<forward>s.
 
+B<附記：>看過這些範例後，您大概會已經知道定義副程式名稱及路徑動作的重點了。
+然而，每一個公開 (public) 的方法也包含私有的，並使用名稱空間及副程式名稱來回應B<路徑>，
+所以統一的作法是使用 C<forward> 方法來定位這些動作。
+
 =head4 Built-in special actions
+
+=head4 內建特殊動作
 
 If present, the special actions C< index >, C< auto >, C<begin>,
 C<end> and C< default > are called at certain points in the request
 cycle.
 
+如果存在，特殊動作 C< index >, C< auto >, C<begin>, C<end> 及 C< default > 
+會在請求期間於特定的位置被呼叫。
+
 In response to specific application states, Catalyst will automatically
 call these built-in actions in your application class:
 
+為了回應特定的應用程式狀態 (states)，Catalyst 會自動呼叫這些應用程式類別中的內建動作：
+
 =over 4
+
+=item * B<default : Path>
 
 =item * B<default : Path>
 
@@ -1492,6 +1548,10 @@ example, for displaying a generic frontpage for the main app, or an
 error page for individual controllers. B<Note>: in older Catalyst
 applications you will see C<default : Private> which is roughly
 speaking equivalent.
+
+如果沒有其他動作匹配時會被呼叫。
+可以應用在舉例來說，顯示主要應用程式的首頁，或是每一個控制器的錯誤頁。
+B<請注意>：Catalyst 為了看待 C<default : Private> 粗略來說是同等的。
 
 
 =item * B<index : Path : Args (0) >
@@ -1505,6 +1565,14 @@ what determines the behaviour of the action.  B<Note>: in older
 Catalyst applications, you will see C<index : Private> used, which is
 roughly speaking equivalent.
 
+C<index> 跟 C<default> 非常相似除了不使用引數外，匹配的比重也稍微高了一點。
+對於靜態的控制器入口很有用，例如靜態的歡迎畫面。
+請注意它也比 C<Path> 比重高出一些。
+實際上 C<index> 副程式可以呼較任何您想要的。
+B<請注意>：為了 Catalyst 應用程式，您會看到 C<index : Private> 被使用，粗略來說同等。
+
+=item * B<begin : Private>
+
 =item * B<begin : Private>
 
 Called at the beginning of a request, once the controller that will
@@ -1512,11 +1580,21 @@ run has been identified, but before any URL-matching actions are
 called.  Catalyst will call the C<begin> function in the controller
 which contains the action matching the URL.
 
+請求的一開始呼叫，控制器將要運行時被識別，但是在 URL 匹配動作呼叫之前。
+Catalyst 會呼叫控制器中的 C<begin> 函式，控制器內也是 URL 比對動作放置的地方。
+
+=item * B<end : Private>
+
 =item * B<end : Private>
 
 Called at the end of a request, after all URL-matching actions are called.
 Catalyst will call the C<end> function in the controller
 which contains the action matching the URL.
+
+請求結束時被呼叫，在所有的 URL 比對動作呼叫之後。
+Catalyst 會呼叫控制器中的 C<end> 函式，其中包含各種 URL 比對動作。
+
+=item * B<auto : Private>
 
 =item * B<auto : Private>
 
@@ -1527,9 +1605,16 @@ built-ins, multiple C<auto> actions can be called; they will be
 called in turn, starting with the application class and going through
 to the most specific class.
 
+除了一般的內建動作，你也可以有特殊的動作提供給鏈接，C<auto>。
+C<auto> 動作會在 C<begin> 之後，在您的 URL 比對動作之前運行。
+不像其他的內建動作，可以呼叫B<多重的> C<auto> 動作；
+並且會依序被呼叫，隨著應用程式及透過指定的類別啟用。
+
 =back
 
 =head4 Built-in actions in controllers/autochaining
+
+=head4 內建動作 controllers/autochaining
 
     package MyApp::Controller::Foo;
     sub begin : Private { }
@@ -1544,24 +1629,39 @@ of C<MyApp::begin> if you're in the C<catalog> namespace, and
 C<MyApp::Controller::Catalog::Order::begin> would override this in
 turn.
 
+您可以在您的控制器定義內建動作就像是在應用程式類別中一樣。
+換句話說，前面三個內建動作，只有一個會在請求循環時被運行。
+所以如果 C<MyApp::Controller::Catalog::begin> 存在，名稱空間在 C<catalog> 中，會取代 C<MyApp::begin> 動作。
+以此類推 C<MyApp::Controller::Catalog::Order::begin> 也會覆寫前面的動作。
+
     sub auto : Private { }
 
 C<auto>, however, doesn't override like this: providing they exist,
 C<MyApp::Controller::Root::auto>, C<MyApp::Controller::Catalog::auto> and
 C<MyApp::Catalog::Order::auto> would be called in turn.
 
+但是 C<auto> 不會像這樣取代，假設下面這些存在，
+C<MyApp::Controller::Root::auto>, C<MyApp::Controller::Catalog::auto> 及
+C<MyApp::Catalog::Order::auto> 它們會依序執行。
+
 Here are some examples of the order in which the various built-ins
 would be called:
+
+這裡有一些例子，各種內建動作會依序被呼叫：
 
 =over 4
 
 =item for a request for C</foo/foo>
+
+=item C</foo/foo> 請求
 
   MyApp::Controller::Foo::auto
   MyApp::Controller::Foo::default # in the absence of MyApp::Controller::Foo::Foo
   MyApp::Controller::Foo::end
 
 =item for a request for C</foo/bar/foo>
+
+=item C</foo/bar/foo> 請求
 
   MyApp::Controller::Foo::Bar::begin
   MyApp::Controller::Foo::auto
@@ -1577,10 +1677,17 @@ out of the processing chain by returning 0. If an C<auto> action returns
 request above, if the first auto returns false, the chain would look
 like this:
 
+C<auto> 動作事實上是被您破壞了程序鏈接變回 0 而有所不同。
+如果 C<auto> 動作傳回傳 0，任何剩下的動作會被跳過，C<end> 例外。
+所以，如前面的請求順序的例子，如果第一的 B<auto> 動作回傳 B<false>，
+鏈接的結果會像這樣子：
+
 =over 4
 
 =item for a request for C</foo/bar/foo> where first C<auto> returns
 false
+
+=item 對於請求 C</foo/bar/foo> 第一個 C<auto> 回傳 false 的情況 
 
   MyApp::Controller::Foo::Bar::begin
   MyApp::Controller::Foo::auto # returns false, skips some calls:
@@ -1593,6 +1700,9 @@ go straight to the finalize stage, without processing further
 actions. So in the above example, C<MyApp::Controller::Foo::Bar::end>
 is skipped as well.
 
+您也可以在 C<auto> 動作內使用 C<dir> 函式；這種情況，情求就會直接今入最後階段，而不執行進一步的動作。
+所以之前的例子，C<MyApp::Controller::Foo::Bar::end> 也會被跳過。
+
 =back
 
 An example of why one might use C<auto> is an authentication action:
@@ -1601,24 +1711,40 @@ application class (which will always be called first), and if
 authentication fails, returning 0 would skip any remaining methods for
 that URL.
 
+為什麼要使用 C<auto> 這個例子為有關認證的動作：
+您可以設置 C<auto> 動作處理您應用程式類別的認證工作 (總是會最先運行)，
+如果這個 URL 出現的認證失敗，回傳 0 之後就跳過剩下的動作。
+
 B<Note:> Looking at it another way, C<auto> actions have to return a
 true value to continue processing!
 
+B<請注意：> 如果用其他路徑訪問，C<auto> 動作可能會回傳 true 而繼續運行！
+
 =head4 URL Path Handling
+
+=head4 URL 路定操作
 
 You can pass arguments as part of the URL path, separated with forward
 slashes (/). If the action is a Regex or LocalRegex, the '$' anchor
 must be used. For example, suppose you want to handle
 C</foo/$bar/$baz>, where C<$bar> and C<$baz> may vary:
 
+您可以用 URL 以斜線 (/) 區分作為引數傳遞給應用程式。
+如果動作是以正規表達式 Regex 或 LocalRegex 傳遞，'$' 錨點 (anchor) 必須使用。
+例如假設您要處理 C</foo/$bar/$baz>，C<$bar> 和 C<$baz> 
+
     sub foo : Regex('^foo$') { my ($self, $context, $bar, $baz) = @_; }
 
 But what if you also defined actions for C</foo/boo> and C</foo/boo/hoo>?
+
+但是假如您同時定義給 C</foo/boo> 和 C</foo/boo/hoo> 動作時？
 
     sub boo : Path('foo/boo') { .. }
     sub hoo : Path('foo/boo/hoo') { .. }
 
 Catalyst matches actions in most specific to least specific order - that is, whatever matches the most pieces of the path wins:
+
+Catalyst 會以最具體到最不具體的順序批配 - 也就是說，匹配路徑最多的部份獲勝：
 
     /foo/boo/hoo
     /foo/boo
@@ -1627,15 +1753,24 @@ Catalyst matches actions in most specific to least specific order - that is, wha
 So Catalyst would never mistakenly dispatch the first two URLs to the
 '^foo$' action.
 
+所以 Catalyst 不會錯誤地分派前兩個 URL 給 '^foo$' 動作。
+
 If a Regex or LocalRegex action doesn't use the '$' anchor, the action will
 still match a URL containing arguments; however the arguments won't be
 available via C<@_>, because the Regex will 'eat' them.
+
+如果 Regex 或 LocalRegex 動作沒使用 '$' 錨點，動作依然會匹配 URL 包含的引數；
+但是這些引數就無法透過 C<@_> 使用，因為 Regex 會吃掉它們。
 
 Beware!  If you write two matchers, that match the same path, with the
 same specificity (that is, they match the same quantity of the path),
 there's no guarantee which will actually get called.  Non-regex
 matchers get tried first, followed by regex ones, but if you have, for
 instance:
+
+請小心！ 如果您編寫兩種比對，匹配相同的路徑，相同的特徵 (同樣也比對相同的路徑長度)，
+就不保證會呼叫到那一個。
+最好編寫成沒有正規表達式的先嘗試，之後才比對正規表達式，但是如果您堅持使用請照下面例子：
 
    package MyApp::Controller::Root;
 
@@ -1648,12 +1783,19 @@ instance:
 then Catalyst will call the one it finds first.  In summary, Don't Do
 This.
 
+Catalyst 會先比對前面找到的。 總而言之，不要這樣做。
+
 =head4 Query Parameter Processing
+
+=head4 情求參數傳遞
 
 Parameters passed in the URL query string are handled with methods in
 the L<Catalyst::Request> class. The C<param> method is functionally
 equivalent to the C<param> method of L<CGI.pm|CGI> and can be used in
 modules that require this.
+
+以 URL I<(GET)> 請求做為參數的傳遞是由 L<Catalyst::Request> 類別在處理的。
+C<param> 方法等同於 L<CGI.pm|CGI> 的方法，您可以在模型中使用它。
 
     # http://localhost:3000/catalog/view/?category=hardware&page=3
     my $category = $c->req->param('category');
@@ -1666,6 +1808,7 @@ modules that require this.
     my $results = Data::FormValidator->check($c->req->params, \%dfv_profile);
 
 =head3 Flow Control
+=head4 流程控制
 
 You control the application flow with the C<forward> method, which
 accepts the key of an action to execute. This can be an action in the
@@ -1673,11 +1816,19 @@ same or another Catalyst controller, or a Class name, optionally
 followed by a method name. After a C<forward>, the control flow will
 return to the method from which the C<forward> was issued.
 
+您可以使用 C<forward> 控制應用程式，可以執行要動作的鍵。
+可以是同一個控制器或其他控制器中的動作，或類別名稱並使用可選的類別方法。
+C<forward> 之後，控制流程會回傳 C<forward> 發出的方法。
+
 A C<forward> is similar to a method call. The main differences are that
 it wraps the call in an C<eval> to allow exception handling; it
 automatically passes along the context object (C<$c> or C<$context>);
 and it allows profiling of each call (displayed in the log with
 debugging enabled).
+
+C<forward> 和方法呼叫類似。主要的不同之處在於 C<forward> 使用包裹 (wraps) 以利處理例外；
+它會自動傳遞語境物件 (C<$c> 或 C<$context>)；
+並且允許剖析每一個呼叫 (如開啟除錯模式時會顯示日誌)。
 
     sub hello : Global {
         my ( $self, $c ) = @_;
@@ -1700,11 +1851,17 @@ A C<forward> does not create a new request, so your request object
 (C<< $c->req >>) will remain unchanged. This is a key difference between
 using C<forward> and issuing a redirect.
 
+C<Forward> 不會新增一個請求，所以您的請求物件 (C<< $c->req >>) 保持不變。
+這是使用 C<forward> 和發起轉址關鍵不同之處。
+
 You can pass new arguments to a C<forward> by adding them
 in an anonymous array. In this case C<< $c->req->args >>
 will be changed for the duration of the C<forward> only; upon
 return, the original value of C<< $c->req->args >> will
 be reset.
+
+您可以在 C<forward> 時傳遞新的匿名陣列引數。
+
 
     sub hello : Global {
         my ( $self, $c ) = @_;
@@ -1724,10 +1881,15 @@ long as you are referring to methods in the same controller. If you want
 to forward to a method in another controller, or the main application,
 you will have to refer to the method by absolute path.
 
+您看到了這個範例，相同的控制器裡您可以直接使用方法名稱，指向控制器內定義好的動作方法。
+如果您要轉發 (forward) 自其他的控制器，或主要應用程式，您必須指向完整的路徑名稱。
+
   $c->forward('/my/controller/action');
   $c->forward('/default'); # calls default in main application
 
 You can also forward to classes and methods.
+
+您也可以轉發 (forward) 到類別方法。
 
     sub hello : Global {
         my ( $self, $c ) = @_;
@@ -1754,13 +1916,20 @@ You can also forward to classes and methods.
 This mechanism is used by L<Catalyst::Action::RenderView> to forward
 to the C<process> method in a view class.
 
+這個機制 L<Catalyst::Action::RenderView> 在視圖類別轉發C<處理的>方法。
+
 It should be noted that whilst forward is useful, it is not the only way
 of calling other code in Catalyst. Forward just gives you stats in the debug
 screen, wraps the code you're calling in an exception handler and localises
 C<< $c->request->args >>.
 
+您應該注意雖然 B<forward> 很有用，但是不是只有這個方法呼叫 Catalyst 其他的程式。
+轉發只是給您的螢幕除錯資訊，包裝您呼叫的程式在本地異常處理中。
+
 If you don't want or need these features then it's perfectly acceptable
 (and faster) to do something like this:
+
+如果您不需要使用這個功能，完美的方法 (也比較快) 可以是用像：
 
     sub hello : Global {
         my ( $self, $c ) = @_;
@@ -1780,19 +1949,34 @@ the C<detach>ed action and not return to the calling sub. In both cases,
 Catalyst will automatically try to call process() if you omit the
 method.
 
+請注意轉發 C<forward> 呼叫動作完成後會繼續運行。如果您要讓呼叫動作停止後續的程序，
+使用 C<detach> 代替，C<detach> 後的動作執行完之後不會回傳給呼叫方。
+這兩種情況，Catalyst 會自動呼叫 process() 如果您忽略這個方式。
+
 =head3 Testing
+
+=head4 測試
 
 Catalyst has a built-in http server for testing or local
 deployment. (Later, you can easily use a more powerful server, for
 example Apache/mod_perl or FastCGI, in a production environment.)
 
+Catalyst 內建網頁伺服器可以測試本地部屬。
+(之後，我們會使用更強大的伺服器，使用 Apache/mod_perl 或 FastCGI 作為範例，作為生產階段環境。)
+
 Start your application on the command line...
+
+啟動您的應用程式指令為...
 
     script/myapp_server.pl
 
 ...then visit http://localhost:3000/ in a browser to view the output.
 
+...然後用瀏覽器造訪 http://localhost:3000/ 來觀看輸出。
+
 You can also do it all from the command line:
+
+您也可以在終端機使用以下指令：
 
     script/myapp_test.pl http://localhost/
 
@@ -1802,9 +1986,17 @@ that can be extended as you develop your project. To write your own
 comprehensive test scripts, L<Test::WWW::Mechanize::Catalyst> is an
 invaluable tool.
 
+Catalyst 有很多應用程式回歸測試的工具。
+B<幫助腳本>自動產生簡單的測試，之後可以根據您的專案擴充這個腳本。
+編寫您自己全面的測試腳本，請看 L<Test::WWW::Mechanize::Catalyst> 這個獨立的工具。
+
 For more testing ideas, see L<Catalyst::Manual::Tutorial::08_Testing>.
 
+更多測試的概念，請看 L<Catalyst::Manual::Tutorial::08_Testing>。
+
 Have fun!
+
+玩的開心點！
 
 =head1 SEE ALSO
 
