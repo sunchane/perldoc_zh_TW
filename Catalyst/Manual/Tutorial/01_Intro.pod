@@ -222,7 +222,7 @@ DBIx::Class.)
 The use of L<HTML::FormFu> or L<HTML::FormHandler>
 for automated form processing and validation.
 
-使用 L<HTML::FormFu> 或 L<HTML::FormHandler> 自動標單處理及驗證。
+使用 L<HTML::FormFu> 或 L<HTML::FormHandler> 自動表單處理及驗證。
 
 =back
 
@@ -235,6 +235,10 @@ demonstrate multiple approaches to various features (in general, you
 should try to be as consistent as possible with your own production
 code).
 
+本教學手冊以教學流程為要務。例如，程式碼中的註釋等級對於 "普通的專案" 數量及比重或許太多。
+因為上下文語境，教學手冊比較偏好程式碼內的註釋而不是分段的文字討論。
+也會刻意展示各種功能的多種作法 (通常，您應該盡量堅持編寫自己產品的程式碼)。
+
 Furthermore, this tutorial tries to minimize the number of controllers,
 models, TT templates, and database tables.  Although this does result in
 things being a bit contrived at times, the concepts should be applicable
@@ -243,6 +247,13 @@ applications can be found at
 L<http://wiki.catalystframework.org/wiki/resources/catalystexamples> and
 in the C<examples> area of the Catalyst Subversion repository at
 L<http://dev.catalyst.perl.org/repos/Catalyst/trunk/examples/>.
+
+此外，本教學手冊嘗試最少量化控制器，模型，TT 模板，資料庫及資料表。
+雖然結果有時會顯得不太自然，但是這些觀念對複雜的環境依然可行。
+更完整及複雜的範例可以在下面找到 L<http://wiki.catalystframework.org/wiki/resources/catalystexamples> 和 
+Catalyst 版本管理資源庫 
+L<http://dev.catalyst.perl.org/repos/Catalyst/trunk/examples/>。
+
 
 
 =head1 STARTING WITH THE TUTORIAL VIRTUAL MACHINE

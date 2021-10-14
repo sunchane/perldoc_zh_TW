@@ -32,13 +32,21 @@ C</usr/bin/site_perl>，C</usr/bin/vendor_perl>。
 
 近期翻譯為有關 Catalyst 為主，為了能夠跟 Docker 容器配合，實驗並且部屬。
 
-Catalyst::Manual::Intro (.pod)    maintenance
+Catalyst::Manual::Intro (.pod)    B<maintenance>
 
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Intro.pod>
 
-Catalyst::Manual::Tutorial::01_Intro (.pod)    34%
+Catalyst::Manual::Tutorial::01_Intro (.pod)    B<38%>
 
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/01_Intro.pod>
+
+Catalyst::Manual::Tutorial::02_CatalystBasics (.pod)    B<maintenance>
+
+L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/02_CatalystBasics.pod>
+
+Catalyst::Manual::Tutorial::03_MoreCatalystBasics (.pod)    B<13%>
+
+L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/03_MoreCatalystBasics.pod>
 
 =head2 翻譯及語言資源
 

@@ -2,12 +2,19 @@
 
 Catalyst::Manual::Components - Reuseable components for Catalyst applications
 
+Catalyst::Manual::Components - Catalyst 應用程式可重用的元件
+
 =head1 DESCRIPTION
 
 This section lists the some of the components (and plugins) that are
 available to extend the runtime functionality of Catalyst. Most components
 are not distributed with Catalyst but should be available from CPAN.
 They typically require additional modules from CPAN.
+
+本章節列出一些可以讓 Catalyst 執行期間延長功能性的元件 (或是外掛)。
+大部分的元件沒有包含在 Catalyst 發行版內但是可以在 CPAN 下載。
+同時也會需要安裝 CPAN 額外的依賴模組。
+
 
 This list may well be outdated by the time you read this, and some
 plugins may be deprecated, or, conversely, may now part of core
@@ -16,15 +23,25 @@ for additional components, and consult the mailing list (
 L<http://wiki.catalystframework.org/wiki/Support> ) for advice on the current
 status or preferred use of your chosen plugin/framework.
 
+這些列表會隨時間的關係過時，有些外掛甚至會棄用，或相反地，也有可以以後會收錄在 L<Catalyst> 核心模組。
+請確認您的 Catalyst:: 及 CatalystX:: 模組名稱空間查看額外的模元件，
+並且到新聞群組請求協助與建議 ( L<http://wiki.catalystframework.org/wiki/Support> ) 
+套件的開發狀態還是您的外掛/框架如何選用。
+
 =head1 PLUGINS
 
 Take care with plugins!  In general with a plugin ask "should this be
 acting globally on my application?".  If not it should be a
 Controller Role (e.g. see L<Catalyst::TraitFor::Controller::reCAPTCHA>.
 
+請謹慎使用您的外掛！通常您要問 "這個外掛應該放在我的應用程式全域範圍嗎？"。
+如果不是那它應該成為控制器角色 (Controller Role) (範例請看 L<Catalyst::TraitFor::Controller::reCAPTCHA>。
+
 =head2 L<Catalyst::Plugin::Account::AutoDiscovery>
 
 Provides Account Auto-Discovery for Catalyst.
+
+提供 Catalyst 自動偵測帳號
 
 =head2 L<Catalyst::Plugin::Acme::Scramble>
 

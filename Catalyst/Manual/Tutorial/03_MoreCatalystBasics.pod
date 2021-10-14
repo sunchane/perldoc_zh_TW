@@ -1,11 +1,13 @@
 =head1 NAME
 
 Catalyst::Manual::Tutorial::03_MoreCatalystBasics - Catalyst Tutorial - Chapter 3: More Catalyst Application Development Basics
-
+Catalyst::Manual::Tutorial::03_MoreCatalystBasics - Catalyst 教學手冊 - Chapter 3: 更多 Catalyst 應用程式開發基礎
 
 =head1 OVERVIEW
 
 This is B<Chapter 3 of 10> for the Catalyst tutorial.
+
+這是 B<Chapter 3 of 10> Catalyst 教學手冊。
 
 L<Tutorial Overview|Catalyst::Manual::Tutorial>
 
@@ -64,10 +66,17 @@ will be too limited to be of use to anyone, it should provide a basic
 environment where we can explore a variety of features used in virtually
 all web applications.
 
+教學手冊的本章節建立在先前完成的工作上，章節 2 時導覽一些典型 "真實世界" 的網頁應用程式。
+教學手冊從本章開始之後，我們建置一個簡單的圖書資料庫應用程式。
+雖然這個應用程式的使用對各位限制太多，它依然提供一些簡單的環境可以讓我們導覽假想的網頁應用程式各種該有的功能。
+
 Source code for the tutorial in included in the F</home/catalyst/Final>
 directory of the Tutorial Virtual machine (one subdirectory per
 chapter).  There are also instructions for downloading the code in
 L<Catalyst::Manual::Tutorial::01_Intro>.
+
+教學手冊的原始碼包含在虛擬電腦映像檔的 F</home/catalyst/Final> 資料夾內 (字目錄分別為各章節)。
+這裡也有說明如何下載範例映像檔 L<Catalyst::Manual::Tutorial::01_Intro>。
 
 Please take a look at
 L<Catalyst::Manual::Tutorial::01_Intro/STARTING WITH THE TUTORIAL VIRTUAL MACHINE>
@@ -78,14 +87,24 @@ machine that is available for download.  The entire tutorial has been
 tested to be sure it runs correctly in this environment, so it is
 the most trouble-free way to get started with Catalyst.
 
+請稍微在繼續接下來的教學前看一下 L<Catalyst::Manual::Tutorial::01_Intro/STARTING WITH THE TUTORIAL VIRTUAL MACHINE>。
+雖然這個教學手冊的範例應該可以在您作業系統上最新的 Perl 版本正確運作，
+這份教學手冊也提供了虛擬電腦映像檔提供下載。
+所有的教學範例都已經在這個虛擬環境下測試並正確運行，所以 Catalyst 教學範例用虛擬環境啟動會比較少問題。
 
 =head1 CREATE A NEW APPLICATION
+
+=head1 建置一個新應用程式
 
 The remainder of the tutorial will build an application called C<MyApp>.
 First use the Catalyst F<catalyst.pl> script to initialize the framework
 for the C<MyApp> application (make sure you aren't still inside the
 directory of the C<Hello> application from the previous chapter of the
 tutorial or in a directory that already has a "MyApp" subdirectory):
+
+接下來的教學會建立一個應用程式命名為 C<MyApp>。
+一開始請用 Catalyst F<catalyst.pl> 協助腳本來初始化 C<MyApp> 應用程式框架 
+(請注意，請確認您的工作目錄不要還停留在前面章節的 C<Hello> 應用程式目錄，或是工作目錄下已經存在 "MyApp" 資料夾)：
 
     $ catalyst.pl MyApp
     created "MyApp"
@@ -98,6 +117,8 @@ tutorial or in a directory that already has a "MyApp" subdirectory):
 
 And change the "MyApp" directory the helper created:
 
+然後進到協助腳本建立的 "MyApp" 資料夾：
+
     $ cd MyApp
 
 This creates a similar skeletal structure to what we saw in Chapter 2 of
@@ -105,8 +126,13 @@ the tutorial, except with C<MyApp> and C<myapp> substituted for C<Hello>
 and C<hello>.  (As noted in Chapter 2, omit the ".pl" from the command
 if you are using Strawberry Perl.)
 
+這樣就建置了和章節 2 教學手冊類似的骨架結構，除了 C<MyApp> 和 C<myapp> 取代了 C<Hello> 和 C<hello>。
+(和章節 2 提到的一樣，如果您使用的是 Strawberry Perl 命令列請省略 ".pl"。)
+
 
 =head1 EDIT THE LIST OF CATALYST PLUGINS
+
+=head1 編輯 CATALYST 外掛列表
 
 One of the greatest benefits of Catalyst is that it has such a large
 library of base classes and plugins available that you can use to easily
@@ -116,8 +142,16 @@ general, they do this by adding additional methods to the C<context>
 object (generally written as C<$c>) that Catalyst passes to every
 component throughout the framework.
 
+Catalyst 最大的好處是擁有大量的基礎類別函式庫及外掛，任您很容易為您的應用程式增加功能。
+外掛 (Plugin) 能夠和現有的 Perl 模組無縫整合進全面的 Catalyst 框架。
+通常，增加額外的方法到 C<語境 (context)> 物件達到這個目的 (通常用 C<$c> 代表語境物件) 
+Catalyst 並透過框架傳遞到每個元件。
+
 Take a look at the file F<lib/MyApp.pm> that the helper created above.
 By default, Catalyst enables three plugins/flags:
+
+大概看一下前面協助腳本產生的 F<lib/MyApp.pm>。
+預設，Catalyst 啟用 3 個外掛/旗標：
 
 =over 4
 
@@ -125,9 +159,14 @@ By default, Catalyst enables three plugins/flags:
 
 C<-Debug> Flag
 
+C<-Debug> 旗標
+
 Enables the Catalyst debug output you saw when we started the
 F<script/myapp_server.pl> development server earlier.  You can remove
 this item when you place your application into production.
+
+啟用 Catalyst 除錯輸出，先前我們運行 F<script/myapp_server.pl> 開發伺服器的時候。
+產品發佈階段您可以把這個項目刪掉。
 
 To be technically correct, it turns out that C<-Debug> is not a plugin,
 but a I<flag>.  Although most of the items specified on the C<use
@@ -137,7 +176,13 @@ most common).  See the documentation for
 L<Catalyst.pm|Catalyst> to get details on
 other flags (currently C<-Engine>, C<-Home>, C<-Log>, and C<-Stats>).
 
+技術上來說，使用 C<-Debug> 實際上不是外掛而是 I<旗標 (falg)>。
+雖然您的應用程式大多數 C<use Catalyst> 行上指定的項目為外掛，Catalyst 支援限制旗標選項的數量 (其中，C<-Debug> 最常見)。
+請看說明文件 L<Catalyst.pm|Catalyst> 內詳細介紹旗標，其他的旗標詳細 (目前支援 C<-Engine>, C<-Home>, C<-Log>, 以及 C<-Stats>)。
+
 If you prefer, there are several other ways to enable debug output:
+
+根據您的喜好，有及種其他方式啟用除錯輸出：
 
 =over 4
 
@@ -145,14 +190,20 @@ If you prefer, there are several other ways to enable debug output:
 
 the C<< $c->debug >> method on the C<$c> Catalyst context object
 
+C<< $c->debug >> 方法在 C<$c> Catalyst 語境物件 (context object)
+
 =item *
 
 the C<-d> option on the F<script/myapp_server.pl> script
+
+F<script/myapp_server.pl> 協助腳本的命令列 C<-d> 選項
 
 =item *
 
 the C<CATALYST_DEBUG=1> environment variable (or C<CATALYST_DEBUG=0>
 to temporarily disable debug output)
+
+終端環境變數設為 C<CATALYST_DEBUG=1> (或 C<CATALYST_DEBUG=0> 暫時關閉除錯輸出)
 
 =back
 
@@ -161,6 +212,9 @@ C<-Debug> from C<lib/MyApp.pm> and then use the C<-d> option to
 F<script/myapp_server.pl> to re-enable it when needed.  We will not be
 using that approach in the tutorial, but feel free to make use of it in
 your own projects.
+
+B<提示>： 根據您的需要，從 C<lib/MyApp.pm> 永久刪除 C<-Debug> 很有幫助，之後根據需要啟動 F<script/myapp_server.pl> 時再使用 C<-d> 選項啟用。
+我們不會在教學手冊用這種引導方式，但是請放心自由的在您的專案裡使用。
 
 =item *
 
@@ -174,6 +228,11 @@ similar to Apache configuration files.  We will see how to use this
 feature of Catalyst during the authentication and authorization sections
 (L<Chapter 5|Catalyst::Manual::Tutorial::05_Authentication> and
 L<Chapter 6|Catalyst::Manual::Tutorial::06_Authorization>).
+
+C<ConfigLoader> 提供自動的方式從中央 (central) L<Config::General> 檔案載入設定參數 (相比在 Perl 模組裡硬編寫值)。
+L<Config::General> 使用的語法和 Apache 設定檔非常相似。
+我們會介紹如何使用這個 Catalyst 功能在認證和授權的章節。
+(L<Chapter 5|Catalyst::Manual::Tutorial::05_Authentication> 及 L<Chapter 6|Catalyst::Manual::Tutorial::06_Authorization>)。
 
 B<IMPORTANT NOTE:> If you are using a version of
 L<Catalyst::Devel> prior to version 1.06, be aware that

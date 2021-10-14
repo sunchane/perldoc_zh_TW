@@ -2,10 +2,13 @@
 
 Catalyst::Manual::Tutorial::02_CatalystBasics - Catalyst Tutorial - Chapter 2: Catalyst Application Development Basics
 
+Catalyst::Manual::Tutorial::02_CatalystBasics - Catalyst 教學手冊 - Chapter 2: Catalyst 應用程式開發基礎
 
 =head1 OVERVIEW
 
 This is B<Chapter 2 of 10> for the Catalyst tutorial.
+
+這是 Catalyst B<Chapter 2 of 10> 部份。
 
 L<Tutorial Overview|Catalyst::Manual::Tutorial>
 
@@ -60,12 +63,19 @@ In this chapter of the tutorial, we will create a very basic Catalyst
 web application, demonstrating a number of powerful capabilities, such
 as:
 
+本教學手冊章節，我們建置一個簡單的 Catalyst 網頁應用程式，
+展示數個強大的能力，例如：
+
 =over 4
 
 =item * Helper Scripts
 
+=item * 協助腳本
+
 Catalyst helper scripts that can be used to rapidly bootstrap the
 skeletal structure of an application.
+
+Catalyst 協助腳本幫助您快速導引您建置應用程式的骨架。
 
 =item * MVC
 
@@ -76,15 +86,26 @@ detail, MVC will not be discussed in depth here (for an excellent
 introduction to MVC and general Catalyst concepts, please see
 L<Catalyst::Manual::About>). In short:
 
+模型/視圖/控制器 (MVC) 為您的應用程式各個部份 "區分控制" 提供清楚的架構基礎。
+鑑於其他說明文件談過這方面的細節，MVC 不會在這討論太深 (一篇優秀的 MVC 簡介和一般 Catalyst 的概念文件，請看 L<Catalyst::Manual::About>)。
+簡單來說：
+
 =over 4
 
 =item * Model
+
+=item * 模型
 
 The model usually represents a data store. In most applications, the
 model equates to the objects that are created from and saved to your SQL
 database.
 
+模型通常代表資聊的貯存。大部分的應用程式，
+模型等同於一個進行增修及貯存 SQL 資料庫的物件。
+
 =item * View
+
+=item * 視圖
 
 The view takes model objects and renders them into something for the end
 user to look at. Normally this involves a template-generation tool that
@@ -92,10 +113,18 @@ creates HTML for the user's web browser, but it could easily be code
 that generates other forms such as PDF documents, e-mails, spreadsheets,
 or even "behind the scenes" formats such as XML and JSON.
 
+視圖將模型物件中的內容呈現 (B<render>) 給終端使用者觀看。
+通常涉及模板的生成工具來產生使用者 HTML 瀏覽器的成果，但是也可以很容易的編寫其他的格式輸出例如 PDF 文件，
+E-mail，試算表，甚至是 "幕後使用" 的格式例如 XML 和 JSON。
+
 =item * Controller
+
+=item * 控制器
 
 As suggested by its name, the controller takes user requests and routes
 them to the necessary model and view.
+
+人如其名，控制器處理使用者的請求及轉發路由至需要的模型和視圖。
 
 =back
 
@@ -106,14 +135,20 @@ access. Specifically, ORM provides an automated and standardized means
 to persist and restore objects to/from a relational database and will
 automatically create our Catalyst model for use with a database.
 
+物件關聯映射 (Object-Relational Mapping ORM) 使用在資料庫存取。
+尤其是， ORM 提供自動化及標準化關聯資料庫的持久性及物件恢復，並且自動建置 Catalyst 模型來使用資料庫。
+
 =back
 
 You can checkout the source code for this example from the catalyst
 subversion repository as per the instructions in
 L<Catalyst::Manual::Tutorial::01_Intro>.
 
+您可以在版本控制資源庫 L<Catalyst::Manual::Tutorial::01_Intro> 查閱範例原始碼。
 
 =head1 CREATE A CATALYST PROJECT
+
+=head1 建置一個 Catalyst 專案
 
 Catalyst provides a number of helper scripts that can be used to quickly
 flesh out the basic structure of your application. All Catalyst projects
@@ -123,8 +158,15 @@ Also note that as of Catalyst 5.7000, you will not have the helper
 scripts unless you install both L<Catalyst::Runtime>
 and L<Catalyst::Devel>.
 
+Catalyst 提供許多的協助腳本，能夠讓您快速地給您的應用程式骨架賦予血肉。
+所有的 Catalyst 專案由 F<catalyst.pl> 協助腳本開始 (請看 L<Catalyst::Helper> 更多有關協助腳本的內容)。
+也請注意 Catalyst 5.7000 之後，發行版內不含協助腳本除非您要同時安裝 L<Catalyst::Runtime> 和 L<Catalyst::Devel>。
+
+
 In this first chapter of the tutorial, use the Catalyst F<catalyst.pl>
 script to initialize the framework for an application called C<Hello>:
+
+教學手冊章節的開頭，請使用 Catalyst F<catalyst.pl> 協助腳本初始化您的框架並且應用程式命名為 C<Hello>：
 
     $ catalyst.pl Hello
     created "Hello"
@@ -140,8 +182,12 @@ Note: If you are using Strawberry Perl on Win32, drop the ".pl"
 from the end of the "catalyst.pl" command and simply use
 "catalyst Hello".
 
+請注意： 如果您是在 Win32 使用 Strawberry Perl，"catalyst.pl" 指令尾端去掉 ".pl" 簡單地使用 "catalyst Hello"。
+
 The F<catalyst.pl> helper script will display the names of the
 directories and files it creates:
+
+F<catalyst.pl> 協助腳本會顯示新增的資料夾及檔案名稱：
 
     Changes               # Record of application changes
     lib                   # Lib directory for your app's Perl modules
@@ -177,15 +223,28 @@ directory. The scripts in the script directory will always start with
 the lowercased version of your application name. If your app is MaiTai,
 then the create script would be "maitai_create.pl".
 
+Catalyst 會 "自動發現" 在控制器，模型，和視圖資料夾的模組。
+當您執行 F<hello_create.pl> 腳本會新增 Perl 模組到各自元件架構的資料夾，
+並且加入測試元件到 "t" 資料夾。
+預設的模板資料夾位置在 "root" 中。
+腳本放在 "script" 資料夾中並且檔案名稱開頭為應用程式名稱的小寫。
+如果您的應用程式叫做 MaiTai，您的腳本資料夾會有 "maitai_crate.pl"。
+
 Though it's too early for any significant celebration, we already have a
 functioning application. We can use the Catalyst supplied script to
 start up a development server and view the default Catalyst page in your
 browser. All scripts in the script directory should be run from the base
 directory of your application, so change to the Hello directory.
 
+雖然現在來個重大慶祝早了點，我們已經有了多功能的應用程式。
+我們可以開始使用 Catalyst 提供的腳本開發伺服器及瀏覽預設的 Catalyst 網頁。
+所有在 script 資料夾的腳本命令列的工作目錄，應該在應用程式的根目錄執行，所以請切換到 Hello 資料夾。
+
 Run the following command to start up the built-in development web
 server (make sure you didn't forget the "C<cd Hello>" from the previous
 step):
+
+請執行下列命令來運行內建的網頁伺服器 (請確保工作目錄 "C<cd Hello>" 如上述)：
 
 B<Note>: The "-r" argument enables reloading on code changes so you
 don't have to stop and start the server when you update code. See
@@ -194,6 +253,11 @@ for additional options you might find helpful. Most of the rest of the
 tutorial will assume that you are using "-r" when you start the
 development server, but feel free to manually start and stop it (use
 C<Ctrl-C> to breakout of the dev server) if you prefer.
+
+B<請注意>：命令列 "-r" 引數可以在更動程式後重新載入程式碼，所以如有更新您不必關閉再重開伺服器。
+請看 C<perldoc script/hello_server.pl> 或 C<script/hello_server.pl --help> 提供額外的引數有用的資訊。
+剩下大部分的教學手冊會假設您開發期間使用 "-r" 引數選項，但是根據個人喜好您也可以手動關閉重開伺服器 (使用 C<Ctrl-C> 來中斷伺服器程序)。
+
 
     $ script/hello_server.pl -r
     [debug] Debug messages enabled
@@ -241,6 +305,10 @@ screen or an "Index" screen, you probably forgot to specify port 3000 in
 your URL).  Information similar to the following should be appended to
 the logging output of the development server:
 
+網頁瀏覽器指向 L<http://localhost:3000> (根據您的環境適當更改 hostname 或 IP) 然後您應該會打開 Catalyst 歡迎畫面 
+(如果您看到其他歡迎畫面或 "首頁" 畫面，您大概忘了在 URL 後面加B<阜號> 3000)。
+畫面後續應該會加入開發的伺服器的登入資訊。
+
     [info] Hello powered by Catalyst 5.90002
     HTTP::Server::PSGI: Accepting connections at http://0:3000/
     [info] *** Request 1 (0.067/s) [19026] [Tue Aug 30 17:24:32 2011] ***
@@ -258,16 +326,24 @@ the logging output of the development server:
 B<Note>: Press C<Ctrl-C> to break out of the development server if
 necessary.
 
+B<請注意>：鍵盤 C<Ctrl-C> 會讓命令列執行的伺服器馬上中斷。
+
 
 =head1 HELLO WORLD
 
 =head2 The Simplest Way
+
+=head2 相似的方式
 
 The Root.pm controller is a place to put global actions that usually
 execute on the root URL. Open the F<lib/Hello/Controller/Root.pm> file
 in your editor. You will see the "index" subroutine, which is
 responsible for displaying the welcome screen that you just saw in your
 browser.
+
+C<Root.pm> 控制器是放置全域動作的地方適合 root URL 呼叫執行。
+用編輯器打開 F<lib/Hello/Controller/Root.pm> 檔案。
+您會看到 "index" 副程式，它負責顯示您剛剛看到的歡迎畫面。
 
     sub index :Path :Args(0) {
         my ( $self, $c ) = @_;
@@ -279,16 +355,25 @@ browser.
 Later on you'll want to change that to something more reasonable, such
 as a "404" message or a redirect, but for now just leave it alone.
 
+稍後您會想把內容改的合理些，比如說 "404" 錯誤頁訊息或重新導向，但是先把它放一邊。
+
 The "C<$c>" here refers to the Catalyst context, which is used to access
 the Catalyst application. In addition to many other things, the Catalyst
 context provides access to "response" and "request" objects. (See
 L<Catalyst::Runtime>, L<Catalyst::Response>, and
 L<Catalyst::Request>)
 
+這裡的 "C<$c>" 指的是 Catalyst 語境物件，使用在 Catalyst 應用程式。
+有關更多這方面的事，Catalyst 語境提供存取 "回應 (response)" 和 "請求 (request)" 物件。
+(請看 L<Catalyst::Runtime>, L<Catalyst::Response>, 以及 L<Catalyst::Request>)
+
 C<< $c->response->body >> sets the HTTP response (see
 L<Catalyst::Response>), while
 C<< $c->welcome_message >> is a special method that returns the welcome
 message that you saw in your browser.
+
+C<< $c->response->body >> 設定 HTTP 回應 (請看 L<Catalyst::Response>), 而
+C<< $c->welcome_message >> 是一個特殊方法回傳歡迎訊息您看到的。
 
 The "C<:Path :Args(0)>" after the method name are attributes which
 determine which URLs will be dispatched to this method. (You might see
@@ -296,12 +381,20 @@ determine which URLs will be dispatched to this method. (You might see
 with "default" or "index" is currently deprecated.  If so, you should
 also probably upgrade before continuing the tutorial.)
 
+"C<:Path :Args(0)>" 類似這種放在方法名稱之後的B<屬性>，代表哪個 URL 會被採用並且分派到這個方法。
+(您也看過 ":Private" 如果您用比較舊版的 Catalyst，但是使用 "default" 或 "index" 目前已被棄用。如果您真的還在舊版，在您繼續這本手冊前應該更新 Catalyst。)
+
 Some MVC frameworks handle dispatching in a central place. Catalyst, by
 policy, prefers to handle URL dispatching with attributes on controller
 methods. There is a lot of flexibility in specifying which URLs to
 match.  This particular method will match all URLs, because it doesn't
 specify the path (nothing comes after "Path"), but will only accept a
 URL without any args because of the "C<:Args(0)>".
+
+有些 MVC 框架集中地點處理分派。 Catalyst，策略上，偏好使用控制器方法中的屬性來處理 URL 的分派。
+這樣就會有很大的彈性來指定哪個 URL 被匹配。
+":Path" 控制器方法會匹配所有的 URL，因為沒有指定路徑 ("Path" 後面為空)，加上
+"C<:Args(0)>" 屬性只會匹配 URL 沒有任何引數傳遞 (URL，路徑)。
 
 The default is to map URLs to controller names, and because of the way
 that Perl handles namespaces through package names, it is simple to
@@ -311,10 +404,17 @@ way. For example, the URL C<http://hello.com/admin/articles/create> maps
 to the package C<Hello::Controller::Admin::Articles>, and the C<create>
 method.
 
+預設 URL 的映射比對 (map) 為控制器的名稱，以及 Perl 處理名稱空間的套件名稱，這讓 Catalyst 可以很容易的建置階層化結構。
+意思是您可以建置任何深度的控制器資料夾，構成巢狀的動作元件，清晰而邏輯。舉例來說，
+URL C<http://hello.com/admin/articles/create> 映射到模組 C<Hello::Controller::Admin::Articles> 中的 C<create> 方法副程式。
+
 While you leave the C<script/hello_server.pl -r> command running the
 development server in one window (don't forget the "-r" at the end!),
 open another window and add the following subroutine to your
 F<lib/Hello/Controller/Root.pm> file:
+
+您執行 C<script/hello_server.pl -r> 指令運行開發伺服器之後 (不要忘記加 "-r" 腳本命令選項！)
+，開另一個視窗新增並打開編輯 F<lib/Hello/Controller/Root.pm> 檔案：
 
     sub hello :Global {
         my ( $self, $c ) = @_;
@@ -325,8 +425,12 @@ F<lib/Hello/Controller/Root.pm> file:
 B<TIP>: See Appendix 1 for tips on removing the leading spaces when
 cutting and pasting example code from POD-based documents.
 
+B<提示>：附錄 1 有介紹移除 POD 範例程式前面多餘縮排的方法。
+
 Notice in the window running the Development Server that you should
 get output similar to the following:
+
+請注意運行開發伺服器後畫面應該會如下顯示：
 
     Saw changes to the following files:
      - /home/catalyst/Hello/lib/Hello/Controller/Root.pm (modify)
@@ -347,12 +451,18 @@ get output similar to the following:
 The development server noticed the change in C<Hello::Controller::Root>
 and automatically restarted itself.
 
+開發伺服器偵測到您增修了一個  C<Hello::Controller::Root> 模組，並且自動重啟。
+
 Go to L<http://localhost:3000/hello> to see "Hello, World!".   Also
 notice that the newly defined 'hello' action is listed under "Loaded
 Private actions" in the development server debug output.
 
+前往 L<http://localhost:3000/hello> 會看到 "Hell, World!"。
+您也會注意到 "Loaded Private actions" 伺服器訊息增加了一列 'hello'。
 
 =head2 Hello, World! Using a View and a Template
+
+=head2 使用視圖元件及模板產生 Hello, World!
 
 In the Catalyst world a "View" itself is not a page of XHTML or a
 template designed to present a page to a browser. Rather, it is the
@@ -361,18 +471,29 @@ the thing that generates the I<content> of that view (such as a
 Template Toolkit template file), the actual templates go under the
 "root" directory.
 
+在 Catalyst 的世界觀 "視圖" 不是代表 XHTML 靜態頁或設計給瀏覽器的網頁模板。
+而是，一個確認B<視圖>I<類型 (type)>的模組 -- HTML，PDF，XML，其他。
+視圖元件中I<生成>I<內容>的部份 (例如模板工具 (Template Toolkit 或 TT) 生成的模板檔)，
+實際的模板檔案放在 "root" 資料夾下。
+
 To create a TT view, run:
+
+新增一個 TT 視圖元件，執行：
 
     $ script/hello_create.pl view HTML TT
 
 This creates the F<lib/Hello/View/HTML.pm> module, which is a subclass
 of L<Catalyst::View::TT>.
 
+會新增 F<lib/Hello/View/HTML.pm> 模組，它本身是 L<Catalyst::View::TT> 的子類別。
+
 =over 4
 
 =item *
 
 The "view" keyword tells the create script that you are creating a view.
+
+關鍵字 "view" 告訴腳本您要建置一個視圖元件。
 
 =item *
 
@@ -382,19 +503,30 @@ such as "MyView.pm". If you have more than one view, be sure to set the
 default_view in Hello.pm (See L<Catalyst::View::TT> for more
 details on setting this).
 
+第一個引數 "HTML" 告訴腳本視圖模組名稱為 "HTML.pm"，在 TT 視圖中很常使用。
+您也可以取其他名稱，像是 "MyView.pm"。
+如果您有更多其他的視圖，請確保有個預設的視圖為 Hello.pm (請看 L<Catalyst::View::TT> 獲得更多設定上的資訊)。
+
 =item *
 
 The final "TT" tells Catalyst the I<type> of the view, with "TT"
 indicating that you want to use a Template Toolkit view.
+
+最後一個命列列引數 "TT" 告訴 Catalyst 視圖的I<類型>，
+"TT" 代表您想使用模板工具視圖。
 
 =back
 
 If you look at F<lib/Hello/View/HTML.pm> you will find that it only
 contains a config statement to set the TT extension to ".tt".
 
+當您打開 F<lib/Hello/View/HTML.pm> 您會看到只有 config 述句，用來設置 TT 的擴充套件為 ".tt"。
+
 Now that the HTML.pm "View" exists, Catalyst will autodiscover it and be
 able to use it to display the view templates using the "process" method
 that it inherits from the L<Catalyst::View::TT> class.
+
+現在 HTML.pm "視圖元件" 存在，Catalyst 會自動偵測發現，並可使用 "process" 方法來顯示視圖模板，它們繼承自 L<Catalyst::View::TT> 類別。
 
 Template Toolkit is a very full-featured template facility, with
 excellent documentation at L<http://template-toolkit.org/>, but since
@@ -402,9 +534,15 @@ this is not a TT tutorial, we'll stick to only basic TT usage here (and
 explore some of the more common TT features in later chapters of the
 tutorial).
 
+模板工具是一個全功能的模板開發工具，優秀的說明文件放在 L<http://template-toolkit.org/>。
+因為這裡不是 TT 的說明文件，我們只會簡單介紹 TT 的基本用法 (後面章節也會導覽一些常見的 TT 功能)。
+
 Create a F<root/hello.tt> template file (put it in the C<root> under the
 C<Hello> directory that is the base of your application). Here is a
 simple sample:
+
+新增 F<root/hello.tt> 模板檔案 (把它放在您 C<Hello> 應用程式目錄中的 C<root> 資料夾)
+。下面為簡單的例子：
 
     <p>
         This is a TT view template, called '[% template.name %]'.
@@ -415,8 +553,15 @@ access Perl variables and classes, and use TT directives. In this case,
 we're using a special TT variable that defines the name of the template
 file (F<hello.tt>).  The rest of the template is normal HTML.
 
+C<[%> 和 C<%]> 為 TT 模板標籤的部份。
+標籤裡面您可以存取 Perl 變數或類別，也可以使用 TT 指令。
+本例中，我們使用了特殊的 TT 變數來顯示模板B<檔案>的名稱 (F<hello.tt>)。
+模板內其他的部份為一般的 HTML。
+
 Change the hello method in F<lib/Hello/Controller/Root.pm> to the
 following:
+
+接著修改 F<lib/Hello/Controller/Root.pm> 控制器元件中的 hello 副程式，如下：
 
     sub hello :Global {
         my ( $self, $c ) = @_;
@@ -434,19 +579,32 @@ view to be rendered (unless there's a C<< $c->response->body() >>
 statement). So your template will be magically displayed at the end of
 your method.
 
+這次，不使用 C<< $c->response->body() >>，您設定 "模板名稱" 的雜湊值於 Catalyst 應用程式的 "stash" 中，
+裡面是存放您要分享的應用程式其他資訊，變數的鍵 "template" 指定您要顯示的模板，執行於請求循環的末端。
+Catalyst 有一個預設的控制器動作副程式 "end" 在所有動作副程式之前會被呈現 (rendered) (除非您有 C<< $c->response->body() >> 述句)。
+所以您的模板會在這個動作副程式尾端神奇地顯示。
+
 After saving the file, the development server should automatically
 restart (again, the tutorial is written to assume that you are using the
 "-r" option -- manually restart it if you aren't), and look at
 L<http://localhost:3000/hello> in your web browser again. You should see
 the template that you just created.
 
+存檔後，開發伺服器應該會自動重新啟動 (重申，本教學手冊假設您有用 "-r" 指令選項)，
+瀏覽器再次造訪 L<http://localhost:3000/hello> 您會看到模板新增了。
+
 B<TIP:> If you keep the server running with "-r" in a "background
 window," don't let that window get totally hidden... if you have a
 syntax error in your code, the debug server output will contain the
 error information.
 
+B<提示：>如果您運行伺服器開啟 "-r" 命令列選項並且隱藏視窗，請不要完全隱藏視窗....
+因為如果您有語法上的錯誤，伺服器會輸出除錯資訊。
+
 B<Note:> You will probably run into a variation of the "stash"
 statement above that looks like:
+
+B<請注意：>您可能遇到各種如上面範例，使用 "stash" 的述句如下：
 
     $c->stash->{template} = 'hello.tt';
 
@@ -454,10 +612,15 @@ Although this style is still relatively common, the approach we
 used previous is becoming more common because it allows you to
 set multiple stash variables in one line.  For example:
 
+雖然上面這種編寫風格依然相對常見，但是我們先前編寫的導引途徑，會變得更加常見，
+因為可以在一行中設定多個 stash 變數，例如：
+
     $c->stash(template => 'hello.tt', foo => 'bar',
               another_thing => 1);
 
 You can also set multiple stash values with a hashref:
+
+您也可以設定多個 stash 變數使用雜湊參照：
 
     $c->stash({template => 'hello.tt', foo => 'bar',
               another_thing => 1});
@@ -466,10 +629,16 @@ Any of these formats work, but the C<< $c->stash(name => value); >>
 style is growing in popularity -- you may wish to use it all the time
 (even when you are only setting a single value).
 
+這些格式都可以運作，但是 C<< $c->stash(name => value); >> 的風格以後會更受歡迎 -- 
+您以後只會想用這種 (就算您只有設定一個 stash 變數)。
 
 =head1 CREATE A SIMPLE CONTROLLER AND AN ACTION
 
+=head1 建立一個簡單的控制器元件及動作副程式
+
 Create a controller named "Site" by executing the create script:
+
+建立一個控制器命名為 "Site" 執行下面的協助腳本：
 
     $ script/hello_create.pl controller Site
 
@@ -477,7 +646,12 @@ This will create a F<lib/Hello/Controller/Site.pm> file (and a test
 file). If you bring Site.pm up in your editor, you can see that
 there's not much there to see.
 
+會建立一個 F<lib/Hello/Controller/Site.pm> 檔案 (以及測試元件檔案)。
+用文字編輯器打開，您會看到沒幾行程式。
+
 In F<lib/Hello/Controller/Site.pm>, add the following method:
+
+而 F<lib/Hello/Controller/Site.pm>，編寫下面的動作方法：
 
     sub test :Local {
         my ( $self, $c ) = @_;
@@ -494,6 +668,11 @@ additional information on controller actions throughout the rest of the
 tutorial, but if you are curious take a look at
 L<Catalyst::Manual::Intro/Actions>.
 
+要注意的是，C<test> 方法的 "Local" 屬性。
+會讓 C<test> 動作方法於 URL 路徑為 "controller/method" 時被呼叫執行 (現在我們已經給這個方法一個 "動作類型" 並代表 Catalyst 的 "控制器動作")，
+或者，這個例子 URL 路徑為 "site/test"。
+後續的教學手冊我們會看到更多控制器動作的資訊，但是如果您好奇請看 L<Catalyst::Manual::Intro/Actions>。
+
 It's not actually necessary to set the template value as we do here.  By
 default TT will attempt to render a template that follows the naming
 pattern "controller/method.tt", and we're following that pattern here.
@@ -501,15 +680,24 @@ However, in other situations you will need to specify the template (such
 as if you've "forwarded" to the method, or if it doesn't follow the
 default naming convention).
 
+您通常不必和我們這邊設定相同的 template 變數，預設 TT 會嘗試呈現 (render) 名稱為 "controller/method.tt" 的模板。
+但是我們還是會遵循這種模式。然而，不同的情況您可以會另外指定 template (例如如果您要 "forwarded" 動作方法，或是如果您不想遵循這個慣例)。
+
 We've also put the variable "username" into the stash, for use in the
 template.
 
+我們也加入了 "username" stash 變數，在模板內可以使用。
+
 Make a subdirectory "site" in the "root" directory.
+
+在您的 "root" 資料夾中加入 "site" 子目錄。
 
     $ mkdir root/site
 
 Create a new template file in that directory named F<root/site/test.tt>
 and include a line like:
+
+在資料夾內新增一個模板檔案命名為  F<root/site/test.tt> 編寫下面幾行：
 
     <p>Hello, [% username %]!</p>
 
@@ -519,8 +707,15 @@ L<http://localhost:3000/site/test> in your browser and you should see
 your test.tt file displayed, including the name "John" that you set in
 the controller.
 
+每當伺服器自動重啟，注意伺服器輸出 C</site/test> 會列在 I<Loaded Path actions> 中。
+瀏覽器訪問 L<http://localhost:3000/site/test> 您應該會看到 text.tt 的內容顯示，
+包含 "John" 這個您先前在控制器中設定的名字。
+
 
 You can jump to the next chapter of the tutorial here:
+L<More Catalyst Basics|Catalyst::Manual::Tutorial::03_MoreCatalystBasics>
+
+您可以跳到下一個章節了：
 L<More Catalyst Basics|Catalyst::Manual::Tutorial::03_MoreCatalystBasics>
 
 =head1 AUTHORS
