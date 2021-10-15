@@ -248,10 +248,19 @@ simply creating the F<myapp.conf> file manually and deleting
 F<myapp.yml>.  The default contents of the F<myapp.conf> you create
 should only consist of one line:
 
+B<重要附註：> 如果您使用 L<Catalyst::Devel> 1.06 之前的版本，
+請小心 Catalyst 已經把預設的 YAML 檔案格式改變成更直接的 L<Config::General> 風格。
+本教學手冊使用新版更直接的 L<Config::General> 風格。
+但是 Catalyst 支援這兩種格式並且自動讀取 F<myapp.conf> 或 F<myapp.yml> (或其他 L<Catalyst::Plugin::ConfigLoader> 和 L<Config::Any> 支援的類型)。
+如果您使用 L<Catalyst::Devel> 1.06 之前的版本，您可以簡單地新增 F<myapp.conf> 檔案並且手動刪掉 F<myapp.yml>。
+您新增的 F<myapp.conf> 檔案內容預設只有下面這一行：
+
     name MyApp
 
 B<TIP>: This script can be useful for converting between configuration
 formats:
+
+B<TIP>: 下面這個命令列指令對轉換設定檔很有幫助：
 
     perl -Ilib -e 'use MyApp; use Config::General;
         Config::General->new->save_file("myapp.conf", MyApp->config);'
@@ -263,11 +272,16 @@ L<Catalyst::Plugin::Static::Simple>
 C<Static::Simple> provides an easy way to serve static content, such as
 images and CSS files, from the development server.
 
+C<Static::Simple> 提供簡單的方法在開發伺服器發佈靜態內容，例如圖檔及 CSS 檔案。
+
 =back
 
 For our application, we want to add one new plugin to the mix.  To do
 this, edit F<lib/MyApp.pm> (this file is generally referred to as your
 I<application class>) and delete the lines with:
+
+回到我們的教學應用程式，接著我們新增一組外掛。
+要這麼做，編輯 F<lib/MyApp.pm> 增刪這一行：
 
     use Catalyst qw/
         -Debug
@@ -276,6 +290,8 @@ I<application class>) and delete the lines with:
     /;
 
 Then replace it with:
+
+修改成：
 
     # Load plugins
     use Catalyst qw/
@@ -290,10 +306,15 @@ B<Note:> Recent versions of L<Catalyst::Devel> have used a variety of
 techniques to load these plugins/flags.  For example, you might see the
 following:
 
+B<請注意：> 最新版本的 L<Catalyst::Devel> 提供各式各樣的技巧載入這些外掛/旗標 (flags)。
+舉例，您可能看過這一行：
+
     __PACKAGE__->setup(qw/-Debug ConfigLoader Static::Simple/);
 
 Don't let these variations confuse you -- they all accomplish the same
 result.
+
+不要因這些變化感到困惑 -- 它們都是在完成同一件事。
 
 This tells Catalyst to start using one additional plugin,
 L<Catalyst::Plugin::StackTrace>, to add a stack trace near the top of
@@ -303,14 +324,23 @@ L<StackTrace|Catalyst::Plugin::StackTrace> output appears in your
 browser, not in the console window from which you're running your
 application, which is where logging output usually goes.
 
+這告訴 Catalyst 啟動時載入額外的外掛，L<Catalyst::Plugin::StackTrace>，
+增加堆疊跟蹤 (stack trace) 在 Catalyst 標準 "除錯畫面" 
+(當錯誤發生時 Catalyst 傳送到您的瀏覽器畫面，而不是您執行應用程式終端機的畫面，也是登入訊息輸出的地方)。
+
 Make sure when adding new plugins you also include them as a new
 dependency within the Makefile.PL file. For example, after adding the
 StackTrace plugin the Makefile.PL should include the following line:
+
+請確認當您新增外掛，您也必須包含它們進 Makefile.PL 檔案。
+舉例來說，新增 StackTrace 外掛後 Makefile.PL 應該要包含下面一行：
 
     requires 'Catalyst::Plugin::StackTrace';
 
 
 B<Notes:>
+
+B<附註：>
 
 =over 4
 
@@ -320,17 +350,26 @@ C<__PACKAGE__> is just a shorthand way of referencing the name of the
 package where it is used.  Therefore, in F<MyApp.pm>, C<__PACKAGE__> is
 equivalent to C<MyApp>.
 
+C<__PACKAGE__> 只是參照到要使用套件的簡寫。
+因此，在 F<MyApp.pm>，C<__PACKAGE__> 和 C<MyApp> 相同。
+
 =item *
 
 You will want to disable L<StackTrace|Catalyst::Plugin::StackTrace>
 before you put your application into production, but it can be helpful
 during development.
 
+您應該要把 L<StackTrace|Catalyst::Plugin::StackTrace> 外掛關掉，在您將應用程式放在產品線上時，
+但是開發期間很有幫助。
+
 =item *
 
 When specifying plugins, you can omit C<Catalyst::Plugin::> from the
 name.  Additionally, you can spread the plugin names across multiple
 lines as shown here or place them all on one line.
+
+指定外掛時，您可以省略外掛名稱的 C<Catalyst::Plugin::>。
+您可以分散多行外掛的名稱如下，也可以全部放在一行。
 
 =item *
 
@@ -345,17 +384,31 @@ we will learn about soon), and the applications configuration.
 B<Just don't forget to remove the die before you continue the tutorial!>
 :-)
 
+如果您想看看 StackTrace 錯誤訊息在螢幕上長什麼樣子，編輯 F<lib/MyApp/Controller/Root.pm> 
+在 C<sub index :Path :Args(0)> 方法中加入 C<die "Oops";> 指令。
+啟動開發伺服器並使用瀏覽器訪問 C<http://localhost:3000/>。
+您會在螢幕上開頭看到 "Caught exception in MyApp::Controller::Root->index" 堆疊資訊部份，
+以及請求及回應物件的資訊，以及應用程式設定檔。
+B<繼續本教學之前別忘了把剛剛的 die 刪了！>:-)
+
 =back
 
 
 =head1 CREATE A CATALYST CONTROLLER
 
+=head1 新增 Catalyst 控制器
+
 As discussed earlier, controllers are where you write methods that
 interact with user input.  Typically, controller methods respond to
 C<GET> and C<POST> requests from the user's web browser.
 
+先前討論過，控制器為瀏覽器使用者輸入與您編寫的方法之間的互動。
+通常，控制器方法回應來自使用者瀏覽器 C<GET> 和 C<POST> 請求。
+
 Use the Catalyst C<create> script to add a controller for book-related
 actions:
+
+使用 Catalyst C<create> 協助腳本新增一個控制器，有關書籍 C<Books> 的動作：
 
     $ script/myapp_create.pl controller Books
      exists "/home/catalyst/MyApp/script/../lib/MyApp/Controller"
@@ -368,6 +421,9 @@ L<Chapter 2|Catalyst::Manual::Tutorial::02_CatalystBasics> of
 the Tutorial, Catalyst has a separate directory under F<lib/MyApp> for
 each of the three parts of MVC: C<Model>, C<View> and C<Controller>)
 and add the following method to the controller:
+
+接著編輯 F<lib/MyApp/Controller/Books.pm> 並且加入下面的控制器方法 (教學手冊 L<Chapter 2|Catalyst::Manual::Tutorial::02_CatalystBasics> 討論過，
+Catalyst 根據 MVC: C<模型>，C<視圖>和 C<控制器>，區分 F<lib/MyApp> 的子目錄)。
 
     =head2 list
 
@@ -397,6 +453,9 @@ B<TIP>: See L<Appendix 1|Catalyst::Manual::Tutorial::10_Appendices/APPENDIX 1: C
 for tips on removing the leading spaces when cutting and pasting example
 code from POD-based documents.
 
+B<提示>：請看 L<Appendix 1|Catalyst::Manual::Tutorial::10_Appendices/APPENDIX 1: CUT AND PASTE FOR POD-BASED EXAMPLES>
+如何移除 POD 文件中的範例程式開頭的縮排。
+
 Programmers experienced with object-oriented Perl should recognize
 C<$self> as a reference to the object where this method was called.  On
 the other hand, C<$c> will be new to many Perl programmers who have not
@@ -405,6 +464,11 @@ automatically passed as the second argument to all Catalyst action
 methods.  It is used to pass information between components and provide
 access to Catalyst and plugin functionality.
 
+熟悉 Perl 物件導向的程式設計師應該理解 C<$self> 為呼叫這個方法的物件參照。
+換句話說，而 C<$c> 對沒使用過 Catalyst 的人是陌生的。
+這是 "Catalyst 語境物件 (Context Objext)"，它會自動作為第 2 個引數傳遞給任何 Catalyst 動作方法。
+這個作用是傳遞元件資訊及提供存取 Catalyst 及外掛的能力。
+
 Catalyst Controller actions are regular Perl methods, but they make use
 of attributes (the "C<:Local>" next to the "C<sub list>" in the code
 above) to provide additional information to the Catalyst dispatcher
@@ -412,9 +476,14 @@ logic (note that there can be an optional space between the colon and
 the attribute name; you will see attributes written both ways).  Most
 Catalyst Controllers use one of five action types:
 
+Catalyst 控制器動作為常見的 Perl 方法，但是它們能利用B<屬性>提供額外的 Catalyst B<分派>邏輯
+(例如上面例子 "C<sub list>" 接續的 "C<:Local>")。
+(請注意冒號和屬性名稱旁邊的空白是可選的，您之後會看到這兩種方式)。
+大部分的 Catalyst 控制器屬性使用 5 種動作類型：
+
 =over 4
 
-=item *
+=item *"C<:Local>"
 
 B<:Private> -- Use C<:Private> for methods that you want to make into an
 action, but you do not want Catalyst to directly expose the method to
@@ -429,8 +498,19 @@ C<$c> if you want access to the context object in the method vs. having
 Catalyst automatically include C<$c> in the argument list for you
 if it's a full-fledged action.)
 
+B<:Private> -- 當您想要建立一個動作方法，但是又不想直接暴露到您的使用者，請使用 C<:Private>。
+Catalyst 不會讓 C<:Private> 方法映射到 URL。
+("特殊" 方法時或 C<forward> 及 C<detach> 呼叫時才使用它們 (C<begin>, C<auto> 下面會討論)。
+(如果方法是 "簡明老式方法" 您不想要它成為動作，只要定義時不包含任何參數 -- 
+您可以在自己的程式中呼叫但是 Catalyst 分派功能會忽略它。同時您也必須手動包含進 C<$c> 如果您的方法須要使用語境物件。
+自動把 C<$c> 包含進您動作方法的引數，它就是一個完整的動作。)
+
+
 There are five types of "special" built-in C<:Private> actions:
 C<begin>, C<end>, C<default>, C<index>, and C<auto>.
+
+C<:Private> 修飾詞內部有 5 個內建 "特殊" 動作方法：
+C<begin>, C<end>, C<default>, C<index>, 以及 C<auto>。
 
 =over 4
 
@@ -442,12 +522,19 @@ define a C<begin> action in your controller it will I<override> a
 C<begin> action in your application/root controller -- I<only> the
 action in your controller will be called.
 
+使用 C<begin>, C<end>, C<default>, C<index> 私有方法，
+代表各自只有特殊的情況會被呼叫。例如，C<begin> 動作在您的控制器中定義後會I<覆寫>應用程式/控制器中的 C<begin> 動作 --
+I<只有>定義在此的控制器中可以呼叫。
+
 =item *
 
 Unlike the other actions where only a single method is called for each
 request, I<every> auto action along the chain of namespaces will be
 called.  Each C<auto> action will be called I<from the application/root
 controller down through the most specific class>.
+
+不像其他動作一次請求只會呼叫一次動作方法，C<auto> 動作會在I<每一個>會在每一個名稱空間鏈接時呼叫。
+從I<應用程式/root 控制器向下到最下層的類別>中的每一個 C<auto> 都會被呼叫。
 
 =back
 
@@ -462,6 +549,12 @@ can use C<:Args()> to specify how many arguments an action should
 accept.  See L<Catalyst::Manual::Intro/Action-types> for more
 information and examples.
 
+B<:Path> -- C<:Path> 動作映射到明確的 URL 路徑。
+例如， "C<:Path('list')>" 時在 F<lib/MyApp/Controller/Books.pm> 中代表 URL 會匹配 C<http://localhost:3000/books/list>，
+但是 "C<:Path('/list')>" 會匹配 C<http://localhost:3000/list> (被開頭的斜線影響)。
+您可以使用 C<:Args()> 來指定路徑引數的數量多寡。
+請看 L<Catalyst::Manual::Intro/Action-types> 來獲得更多資訊。
+
 =item *
 
 B<:Local> -- C<:Local> is merely a shorthand for
@@ -469,12 +562,20 @@ B<:Local> -- C<:Local> is merely a shorthand for
 "C<sub create_book :Local {...}>" and
 "C<sub create_book :Path('create_book') {...}>".
 
+B<:Local> -- C<:Local> 僅僅是 "C<:Path('_name_of_method_')>" 的簡寫。
+舉例來說，這兩個同等：
+"C<sub create_book :Local {...}>" 相同於 "C<sub create_book :Path('create_book') {...}>"。
+
 =item *
 
 B<:Global> -- C<:Global> is merely a shorthand for
 "C<:Path('/_name_of_method_')>".  For example, these are equivalent:
 "C<sub create_book :Global {...}>" and "C<sub create_book
 :Path('/create_book') {...}>".
+
+B<:Global> -- C<:Global> 僅僅等同於 "C<:Path('/_name_of_method_')>"。
+舉例來說這兩個同等：
+"C<sub create_book :Global {...}>" 和 "C<sub create_book :Path('/create_book') {...}>"。
 
 =item *
 
@@ -486,11 +587,17 @@ L<Catalyst::Manual::Tutorial::04_BasicCRUD> and
 L<Catalyst::DispatchType::Chained> for more information on chained
 actions.
 
+B<:Chained> -- 較新的 Catalyst 偏好使用鏈式分派的動作類型，因為其強大的彈性。
+單個使用者請求時，它允許自動分派一系列的控制器方法。請看 L<Catalyst::Manual::Tutorial::04_BasicCRUD> 及 L<Catalyst::DispatchType::Chained> 獲得更多有關鏈接的資訊。
+
 =back
 
 You should refer to L<Catalyst::Manual::Intro/Action-types> for
 additional information and for coverage of some lesser-used action types
 not discussed here (C<Regex> and C<LocalRegex>).
+
+您應該參考 L<Catalyst::Manual::Intro/Action-types> 獲得進一步資訊，
+這邊沒討論到較少用到的功能 (C<Regex> 及 C<LocalRegex>)。
 
 
 =head1 CATALYST VIEWS
@@ -508,15 +615,29 @@ L<http://www.template-toolkit.org>). Other somewhat popular view
 technologies include Mason (L<http://www.masonhq.com> and
 L<https://masonbook.houseabsolute.com/book/>) and L<HTML::Template>.
 
+先前教學手冊提到 L<Chapter 2|Catalyst::Manual::Tutorial::02_CatalystBasics>，
+視圖為您呈現 (render) 的輸出，通常是使用者的網頁瀏覽器 (但是也可以輸出為其他類型如 PDF 或 JSON)。
+F<lib/MyApp/View> 內的程式選擇要使用的視圖I<類型>，真正要被呈現的模板則放在 C<root> 資料夾。
+和所有 Catalyst 各方面相同，要在您應用程式採用哪些視圖的技術，都提供了各種選項。
+但是，大部分的 Catalyst 應用程式使用了模板工具 (Template Toolkit)，就是 TT (有關 TT 的資訊請看 L<http://www.template-toolkit.org>)。
+其他熱門的技術包括 Mason (L<http://www.masonhq.com> 及 L<https://masonbook.houseabsolute.com/book/>) 及 L<HTML::Template>.
+
 
 =head2 Create a Catalyst View
+
+=head2 新增 Catalyst 視圖
 
 When using TT for the Catalyst view, the main helper script is
 L<Catalyst::Helper::View::TT>.  You may also come across references to
 L<Catalyst::Helper::View::TTSite>, but its use is now deprecated.
 
+當您要使用 TT 作為 Catalyst 視圖工具時，主要的協助腳本為 L<Catalyst::Helper::View::TT>。
+您也會遇到 L<Catalyst::Helper::View::TTSite>，但是已經棄用。
+
 For our book application, enter the following command to enable the
 C<TT> style of view rendering:
+
+對於我們的書籍應用程式，下面的指令可以建置一個 C<TT> 風格的視圖呈現元件：
 
     $ script/myapp_create.pl view HTML TT
      exists "/home/catalyst/MyApp/script/../lib/MyApp/View"
@@ -528,6 +649,8 @@ This creates a view called C<HTML> (the first argument) in a file called
 C<HTML.pm> that uses L<Catalyst::View::TT> (the second argument) as the
 "rendering engine".
 
+上例我們建置了名稱為 C<HTML> 的視圖元件 (指令地一個引數) 並使用 L<Catalyst::View::TT> 做為 "呈現引擎"。
+
 It is now up to you to decide how you want to structure your view
 layout.  For the tutorial, we will start with a very simple TT template
 to initially demonstrate the concepts, but quickly migrate to a more
@@ -535,8 +658,14 @@ typical "wrapper page" type of configuration (where the "wrapper"
 controls the overall "look and feel" of your site from a single file or
 set of files).
 
+現在要如何架構您的視圖則根據您的決定了。
+本教學手冊，我們會從一個非常簡單的 TT 模板開始來展示初步的概念，
+但是也會快速的整合更多典型的 "包裹網頁" 設定類型 ("包裹" 包含您網站的單個或數個檔案，控制全面的 "外觀和感覺")。
+
 Edit F<lib/MyApp/View/HTML.pm> and you should see something similar to
 the following:
+
+編輯 F<lib/MyApp/View/HTML.pm> 您應該會看到類似如下：
 
     __PACKAGE__->config(
         TEMPLATE_EXTENSION => '.tt',
@@ -544,6 +673,8 @@ the following:
     );
 
 And update it to match:
+
+然後更新成匹配：
 
     __PACKAGE__->config(
         # Change default TT extension
@@ -554,10 +685,16 @@ And update it to match:
 This changes the default extension for Template Toolkit from '.tt' to
 '.tt2'.
 
+改變成預設的模板工具檔案從 '.tt' 為 '.tt2'。
+
 You can also configure components in your application class. For
 example, Edit F<lib/MyApp.pm> and you should see the default
 configuration above the call to C<< _PACKAGE__->setup >> (your defaults
 could be different depending on the version of Catalyst you are using):
+
+您也可以在您的應用程式類別中設定使用的模組。
+例如，編輯 F<lib/MyApp.pm> 然後您應該會看到如上預設的 C<< _PACKAGE__->setup >> 設定 
+(您的預設設定可能會因為 Catalyst 版本不同而有差異)：
 
     __PACKAGE__->config(
         name => 'MyApp',
@@ -568,6 +705,8 @@ could be different depending on the version of Catalyst you are using):
 
 Change this to match the following (insert a new
 C<< __PACKAGE__->config >> below the existing statement):
+
+改變這些來匹配 (原有的述句下方插入新的 C<< __PACKAGE__->config >>)：
 
     __PACKAGE__->config(
         name => 'MyApp',

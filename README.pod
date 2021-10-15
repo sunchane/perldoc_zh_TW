@@ -44,7 +44,7 @@ Catalyst::Manual::Tutorial::02_CatalystBasics (.pod)    B<maintenance>
 
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/02_CatalystBasics.pod>
 
-Catalyst::Manual::Tutorial::03_MoreCatalystBasics (.pod)    B<13%>
+Catalyst::Manual::Tutorial::03_MoreCatalystBasics (.pod)    B<38%>
 
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/03_MoreCatalystBasics.pod>
 
