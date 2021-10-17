@@ -726,9 +726,14 @@ C<< __PACKAGE__->config >> below the existing statement):
 This changes the base directory for your template files from C<root> to
 F<root/src>.
 
+這樣將您的模板檔案從 C<root> 改成 F<root/src>。
+
 Please stick with the settings above for the duration of the tutorial,
 but feel free to use whatever options you desire in your applications
 (as with most things in Perl, there's more than one way to do it...).
+
+請持續使用上面的設定 (path_to) 於後續的教學期間，但是您還是可以自由的更改您應用程式的選項
+(Perl 最重要的價值，一件事可以用各種方法完成它...)。
 
 B<Note:> We will use F<root/src> as the base directory for our template
 files, with a full naming convention of
@@ -736,14 +741,23 @@ F<root/src/_controller_name_/_action_name_.tt2>.  Another popular option
 is to use F<root/> as the base (with a full filename pattern of
 F<root/_controller_name_/_action_name_.tt2>).
 
+B<請注意：>我們使用 F<root/src> 作為模板檔案的基礎資料夾位置，模板檔案的完整路定有個慣例 
+F<root/src/_controller_name_/_action_name_.tt2>。
+另外一個常用的選項 F<root/> 作為基礎資料夾路徑 (完整路徑樣式則為 F<root/_controller_name_/_action_name_.tt2>)。
 
 =head2 Create a TT Template Page
 
+=head2 建立一個 TT 模板網頁
+
 First create a directory for book-related TT templates:
+
+首先新增一個書籍網頁用的 TT 模板資料夾：
 
     $ mkdir -p root/src/books
 
 Then create F<root/src/books/list.tt2> in your editor and enter:
+
+然後新建一個檔案 F<root/src/books/list.tt2> 並且用編輯器輸入：
 
     [% # This is a TT comment. -%]
 
@@ -773,6 +787,10 @@ create later (and essentially does nothing at the moment). Meanwhile,
 the C<FOREACH> loop iterates through each C<book> model object and
 prints the C<title> and C<rating> fields.
 
+上面內聯 (inline) 的註解中表明，C<META title> 內聯行使用 TT 的 META 功能提供 "包裹" 
+接下來會建立的變數 (實際上這個時間點沒做什麼) 同時，
+C<FOREACH> 迴圈迭代 C<book> 模型 (model) 物件並且印出 C<title> 及 C<rating> 欄位。
+
 The C<[%> and C<%]> tags are used to delimit Template Toolkit code.  TT
 supports a wide variety of directives for "calling" other files,
 looping, conditional logic, etc.  In general, TT simplifies the usual
@@ -782,6 +800,12 @@ index values (see L<Template::Manual::Variables> for details and
 examples).  In addition to the usual L<Template::Toolkit> module Pod
 documentation, you can access the TT manual at
 L<Template::Manual>.
+
+C<[%> 和 C<%]> 標籤被用在區分模板工具程式碼。
+TT 支援非常廣泛的指令，如 "呼叫" 其他檔案，迴圈，條件邏輯，其他。
+一般來說，TT 簡化了 Perl 運算符的範圍到只用點號 "." 運算符。
+這種運算符變化依然和函式呼叫，雜湊查詢，以及列表定位 (請看 L<Template::Manual::Variables> 獲得詳細範例)。
+更多常用的 L<Template::Toolkit> POD 說明文件，您可以直接查閱 TT 說明文件 L<Template::Manual>。
 
 B<TIP:> While you can build all sorts of complex logic into your TT
 templates, you should in general keep the "code" part of your templates
@@ -795,10 +819,20 @@ will explore some extremely helpful and powerful features of
 L<DBIx::Class> that allow you to pull code out of your views and
 controllers and place it where it rightfully belongs in a model class.
 
+B<提示：>當您建立稍微複雜的 TT 模板邏輯時，您通常應該把 "原始碼" 盡可能的跟模板檔案區分來簡化複雜性。
+如果您需要比較複雜的邏輯，新增您的協助B<模板>元件抽象化您的程式碼，讓您的 TT 模板能夠以單一呼叫使用。
+(請注意，和您的控制器邏輯一樣，控制器元件程式碼複雜的部份您應該放在外部，放在您的模型物件中。)
+教學手冊 L<Chapter 4|Catalyst::Manual::Tutorial::04_BasicCRUD> 會導覽一些強大有幫助的 L<DBIx::Class> 功能，
+讓您把部份程式碼放在視圖及控制器元件之外，並且根據模型類別適當存取。
+
 
 =head2 Test Run The Application
 
+=head2 測試運行應用程式
+
 To test your work so far, first start the development server:
+
+測試到目前為止的工作，啟動您的開發伺服器：
 
     $ script/myapp_server.pl -r
 
@@ -809,19 +843,31 @@ far, you should see a web page that displays nothing other than our
 column headers for "Title", "Rating", and "Author(s)" -- we will not see
 any books until we get the database and model working below.
 
+回到您的網頁瀏覽器 L<http://localhost:3000> 而您還是會看到 Catalyst 歡迎畫面。
+改變您的 URL 到 L<http://localhost:3000/books/list>。
+如果先前的設定順利，您應該會看到畫面什麼沒有就只有我們欄位的標頭 "Title"，"Rating"，以及 "Author(s)" -- 
+直到訪問資料庫且模型元件運作前我們看不到書籍資料。
+
 If you run into problems getting your application to run correctly, it
 might be helpful to refer to some of the debugging techniques covered in
 the L<Debugging|Catalyst::Manual::Tutorial::07_Debugging> chapter of the
 tutorial.
 
+如果您在運行應用程式時遇到問題，一些除錯的技巧對您會有幫助，請參考教學手冊章節 L<Debugging|Catalyst::Manual::Tutorial::07_Debugging>。
 
 =head1 CREATE A SQLITE DATABASE
+
+=head1 新增 SQLITE 資料庫
 
 In this step, we make a text file with the required SQL commands to
 create a database table and load some sample data.  We will use SQLite
 (L<https://www.sqlite.org>), a popular database that is lightweight and
 easy to use. Be sure to get at least version 3. Open F<myapp01.sql> in
 your editor and enter:
+
+這一步，我們建立 SQL 請求的文字檔來建立資料庫及資料表，並且載入一些範例資料。
+我們使用 SQLite (L<https://www.sqlite.org>)，輕巧熱門有容易使用的資料庫系統。
+請注意下載版本 3。編輯器打開 F<myapp01.sql> 輸入：
 
     --
     -- Create a very simple database to hold book and author information
@@ -870,15 +916,22 @@ your editor and enter:
 
 Then use the following command to build a F<myapp.db> SQLite database:
 
+命令列使用下面指令建置 F<myapp.db> SQLite 資料庫：
+
     $ sqlite3 myapp.db < myapp01.sql
 
 If you need to create the database more than once, you probably want to
 issue the C<rm myapp.db> command to delete the database before you use
 the C<< sqlite3 myapp.db < myapp01.sql >> command.
 
+如果您多次建立資料庫時，您應該要 C<rm myapp.db> 刪除先前建立過的 SQLite 資料庫檔案。
+才使用 C<< sqlite3 myapp.db < myapp01.sql >> 指令。
+
 Once the F<myapp.db> database file has been created and initialized, you
 can use the SQLite command line environment to do a quick dump of the
 database contents:
+
+自從您建立並初始化 F<myapp.db> 資料庫後，您可以使用 SQLite 指令環境快速傾印資料庫內容：
 
     $ sqlite3 myapp.db
     SQLite version 3.7.3
@@ -895,6 +948,8 @@ database contents:
 
 Or:
 
+或：
+
     $ sqlite3 myapp.db "select * from book"
     1|CCSP SNRS Exam Certification Guide|5
     2|TCP/IP Illustrated, Volume 1|5
@@ -908,6 +963,10 @@ required if you do a single SQL statement on the command line).  Use
 ".q" to exit from SQLite from the SQLite interactive mode and return to
 your OS command prompt.
 
+像是大部分的 SQL 工具，如果您使用全 "互動" 環境您在指令尾端應加上中止符分號 ";" 
+(如果是命令列單行 SQL 述句 則可以不需要)。
+互動環境模式中使用 ".q" 離開並返回您作業系統的命令列。
+
 Please note that here we have chosen to use 'singular' table names. This
 is because the default inflection code for older versions of
 L<DBIx::Class::Schema::Loader> does NOT handle plurals. There has been
@@ -917,11 +976,19 @@ and remains consistent with it. If you prefer plural table names (e.g.
 you think that they are easier to read) then see the documentation in
 L<DBIx::Class::Schema::Loader::Base/naming> (version 0.05 or greater).
 
+請注意我們採用 '單數' 資料表名稱。因為舊版本的 L<DBIx::Class::Schema::Loader> 不能處理複數名稱。
+網路上有很多討論命名單數或複數的哲學，沒有正確的答案，只有您選擇堅持哪個，如果您偏好複數名稱 
+(例如您覺得比較容易閱讀) 請看說明文件 L<DBIx::Class::Schema::Loader::Base/naming> (版本 0.05 或之後)。
+
 For using other databases, such as PostgreSQL or MySQL, see
 L<Appendix 2|Catalyst::Manual::Tutorial::10_Appendices/APPENDIX 2: USING POSTGRESQL AND MYSQL>.
 
+關於使用其他資料庫，如 PostgreSQL 或 MySQL，請看 L<Appendix 2|Catalyst::Manual::Tutorial::10_Appendices/APPENDIX 2: USING POSTGRESQL AND MYSQL>。
+
 
 =head1 DATABASE ACCESS WITH DBIx::Class
+
+=head1 使用 DBIx::Class 存取資料庫
 
 Catalyst can be used with virtually any form of datastore available via
 Perl.  For example, L<Catalyst::Model::DBI> can be used to access
@@ -932,6 +999,11 @@ technology to create objects associated with tables in a relational
 database, and Matt Trout's L<DBIx::Class> (abbreviated as "DBIC") is the
 usual choice (this tutorial will use L<DBIx::Class>).
 
+Catalyst 幾乎可以使用所有 Perl 可用的 Database 類別。
+例如，L<Catalyst::Model::DBI> 可以透過傳統的 Perl L<DBI> 界面存取，或者您可以使用模型元件存取各種類型的檔案系統。
+然而，大部分的 Catalyst 應用程式使用關聯式資料庫，建立物件關聯映射 (object-relational mapping ORM) 技術與資料表建立關聯，
+而通常會採用 Matt Trout 的 L<DBIx::Class> (縮寫 "DBIC") (本教學手冊使用 L<DBIx::Class>)。
+
 Although DBIx::Class has included support for a C<create=dynamic> mode
 to automatically read the database structure every time the application
 starts, its use is no longer recommended.  While it can make for
@@ -941,14 +1013,24 @@ ability to add your own methods to the overall DBIC framework, a
 technique that we see in
 L<Chapter 4|Catalyst::Manual::Tutorial::04_BasicCRUD>).
 
+雖然 DBIx::Class 內建支援設定 C<create=dynamic> 模式在應用程式運行時讀取資料庫，
+但是不再建議您使用這種作法。
+而您 "初步的" DEMO 裡，下面例子 C<create=static> 的設定可以實現速度及許多好處 
+(例如可以在 DBIC 框架之下使用您自己的方法，這個技巧請看 L<Chapter 4|Catalyst::Manual::Tutorial::04_BasicCRUD>)。
 
 =head2 Create Static DBIx::Class Schema Files
+
+=head2 建立靜態的 DBIx::Class Schema 檔案
 
 B<Note:> If you are not following along in the Tutorial Virtual Machine,
 please be sure that you have version 1.27 or higher of L<DBD::SQLite> and
 version 0.39 or higher of L<Catalyst::Model::DBIC::Schema>.  (The Tutorial
 VM already has versions that are known to work.)  You can get your
 currently installed version numbers with the following commands.
+
+B<請注意：>如果您不是使用教學虛擬電腦映像檔，請確認您的 L<DBD::SQLite> 版本在 1.27 或更新並且 L<Catalyst::Model::DBIC::Schema> 版本 0.39 或更新。
+(教學映像檔的版本正確並且已知能順利運作。)
+您可以查看您的套件版本使用命令列指令如下。
 
     $ perl -MCatalyst::Model::DBIC::Schema\ 999
     $ perl -MDBD::SQLite\ 999
@@ -958,6 +1040,9 @@ application's topmost directory. Now use the model helper with the
 C<create=static> option to read the database with
 L<DBIx::Class::Schema::Loader> and
 automatically build the required files for us:
+
+繼續以前，確認您的 F<myapp.db> 資料庫檔案置於應用程式的頂層目錄。
+現在使用協助腳本設定套件 L<DBIx::Class::Schema::Loader> 讀取選項 C<create=static> 並且自動建置我們需要的檔案：
 
     $ script/myapp_create.pl model DB DBIC::Schema MyApp::Schema \
         create=static dbi:SQLite:myapp.db \
@@ -973,7 +1058,11 @@ Please note the '\' above.  Depending on your environment, you might be
 able to cut and paste the text as shown or need to remove the '\'
 character to that the command is all on a single line.
 
+請注意 "\" 反斜線 (換行)，取決於您的命令列環境，您也可以把 '\' 刪掉才複製貼上，這樣命令列就是整整一行。
+
 The F<script/myapp_create.pl> command breaks down like this:
+
+F<script/myapp_create.pl> 指令分解說明如下：
 
 =over 4
 
@@ -982,16 +1071,23 @@ The F<script/myapp_create.pl> command breaks down like this:
 C<DB> is the name of the model class to be created by the helper in
 the F<lib/MyApp/Model> directory.
 
+C<DB> 為模型元件的類別名稱，建立於 F<lib/MyApp/Model> 目錄。
+
 =item *
 
 C<DBIC::Schema> is the type of the model to create.  This equates to
 L<Catalyst::Model::DBIC::Schema>, the standard way to use a DBIC-based
 model inside of Catalyst.
 
+C<DBIC::Schema> 為建立模型元件的類型，同等於 L<Catalyst::Model::DBIC::Schema>，
+在 Catalyst 中使用 DBIC-基礎的標準方法。
+
 =item *
 
 C<MyApp::Schema> is the name of the DBIC schema file written to
 F<lib/MyApp/Schema.pm>.
+
+C<MyApp::Schema> 為 DBIC 設計 (schema) 檔案，寫進 F<lib/MyApp/Schema.pm>。
 
 =item *
 
@@ -1000,10 +1096,15 @@ schema as it runs and then write that information out into
 F<lib/MyApp/Schema.pm> and files under the F<lib/MyApp/Schema>
 directory.
 
+C<create=static> 選項告訴 L<DBIx::Class::Schema::Loader> 運行時載入設計綱要，
+並且將資訊寫入 F<lib/MyApp/Schema.pm> 以及 F<lib/MyApp/Schema> 目錄下的檔案。
+
 =item *
 
 C<dbi:SQLite:myapp.db> is the standard DBI connect string for use with
 SQLite.
+
+C<dbi:SQLite:myapp.db> 為 SQLite 標準的 DBI 連線。
 
 =item *
 
@@ -1014,6 +1115,11 @@ as PostgreSQL and MySQL, but is required for SQLite). If you take a look
 at F<lib/MyApp/Model/DB.pm>, you will see that the SQLite pragma is
 propagated to the Model, so that SQLite's recent (and optional) foreign
 key enforcement is enabled at the start of every database connection.
+
+最後，C<on_connect_do> 請求 L<DBIx::Class::Schema::Loader> 替我們新增外來鍵 (foreign key) 關聯
+(對有些資料庫如 PostgreSQL 和 MySQL 來說不需要，但是對 SQLite 需要)。
+如果您查看 F<lib/MyApp/Model/DB.pm>，您會看到 SQLite 指示詞 (pragma) 已經傳遞至模型元件，
+所以 SQLite 最近 (可選的) 的外來鍵在每次資料庫連線時強制啟用。
 
 =back
 
@@ -1031,12 +1137,24 @@ our database, the classes correspond to the I<row-level data> that is
 returned by DBIC (more on this later, especially in
 L<Catalyst::Manual::Tutorial::04_BasicCRUD/EXPLORING THE POWER OF DBIC>).
 
+如果您查看 F<lib/MyApp/Schema.pm> 檔案，您會發現只有一個稱為 C<load_namespaces> 的方法。
+您也會發現 F<lib/MyApp> 包含 C<Schema> 子目錄，子目錄下包含 "Result" 目錄。
+"Result" 子目錄根據我們的資料表每個欄位各有一個檔案 (F<Author.pm>, F<BookAuthor.pm>, 及 F<Book.pm>)。
+這些檔案在 DBIx::Class 有個術語稱為 "結果類別 (Result Classes)" (或"L<ResultSource Classes|DBIx::Class::ResultSource>")。
+雖然結果類別檔案根據我們的資料表命名，這些類別反映到I<列階層資料 (row-level data)>並由 DBIC 返回
+(之後會有更多這方面的資訊特別是在 L<Catalyst::Manual::Tutorial::04_BasicCRUD/EXPLORING THE POWER OF DBIC>) 。
+
 The idea with the Result Source files created under
 F<lib/MyApp/Schema/Result> by the C<create=static> option is to only
 edit the files below the C<# DO NOT MODIFY THIS OR ANYTHING ABOVE!>
 warning. If you place all of your changes below that point in the file,
 you can regenerate the automatically created information at the top of
 each file should your database structure get updated.
+
+設定 C<create=static> 這個把B<結果檔案>新增在 F<lib/MyApp/Schema/Result> 的概念，
+您只能編輯這個檔案 C<# DO NOT MODIFY THIS OR ANYTHING ABOVE!> 警告文之後的內容。
+如果您在警告文後放置您所有的修改內容，會自動生成新建的資訊在每一個檔案的開頭，您的資料庫應該也會更新。
+
 
 Also note the "flow" of the model information across the various files
 and directories.  Catalyst will initially load the model from
@@ -1048,6 +1166,13 @@ final outcome is that Catalyst will dynamically create three
 table-specific Catalyst models every time the application starts (you
 can see these three model files listed in the debug output generated
 when you launch the application).
+
+也請注意資訊由每個目錄及檔案傳遞至模型元件的 "流程 (flow)"。
+Catalyst 初始會載入 F<lib/MyApp/Model/DB.pm>。
+這個檔案包含指向 F<lib/MyApp/Schema.pm> 的參照，所以接著載入這個。
+最後，呼叫 C<Schema.pm> 中的 C<load_namespaces> 方法會讀進每個在 F<lib/MyApp/Schema/Result> 子目錄下的每個 "結果類別 (Result Class)" 檔案。
+最後的輸出為，每次應用程式啟動時 Catalyst 動態的新增 3 個 Catalyst 資料表相關的模型
+(啟動應用程式時您會看到這 3 個模型檔案列在命令列除錯輸出裡)。
 
 Additionally, the F<lib/MyApp/Schema.pm> model can easily be loaded
 outside of Catalyst, for example, in command-line utilities and/or cron
