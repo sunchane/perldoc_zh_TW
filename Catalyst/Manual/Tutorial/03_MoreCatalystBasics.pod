@@ -1182,6 +1182,12 @@ add some powerful features to our DBIC model in
 L<Chapter 4|Catalyst::Manual::Tutorial::04_BasicCRUD>, the elegance
 of this approach will start to become more obvious.
 
+此外， F<lib/MyApp/Schema.pm> 模型可以很容易的載入外部 Catalyst，舉例來說，
+在命令列工具中 and/or 排程工作 (cron jobs)。
+F<lib/MyApp/Model/DB.pm> 提供 Catalyst 和外部資料庫模型輕薄的 "橋接 (bridge)"。
+只要您看過我們 DBIC 模型 L<Chapter 4|Catalyst::Manual::Tutorial::04_BasicCRUD> 強大的功能後，
+優雅的引導開始會更明顯。
+
 B<NOTE:> Older versions of
 L<Catalyst::Model::DBIC::Schema> use the
 deprecated DBIx::Class C<load_classes> technique instead of the newer
@@ -1193,6 +1199,11 @@ use this process to automate the migration, but first make sure you have
 version C<0.39> of L<Catalyst::Model::DBIC::Schema> and
 L<DBIx::Class::Schema::Loader> version C<0.05000> or later.
 
+B<請注意：> 舊版本的 L<Catalyst::Model::DBIC::Schema> 使用棄用的 DBIx::Class C<load_classes> 技術而不是較新的 C<load_namespaces>。
+對於新的應用程式，請使用 C<load_namespaces> 因為更加容易支援好用的 DBIC 技術 - 稱為 "結果類別 (ResultSet Classes)。"
+如果您想要將現有使用 "load_classes" 的應用程式改成 "load_namespaces," 您可以使用下面的指令自動轉移，
+但是前提示您要確認使用  L<Catalyst::Model::DBIC::Schema> C<0.39> 版本，以及 L<DBIx::Class::Schema::Loader> 版本 C<0.05000> 或更新。
+
     $ # Re-run the helper to upgrade for you
     $ script/myapp_create.pl model DB DBIC::Schema MyApp::Schema \
         create=static naming=current use_namespaces=1 \
@@ -1202,10 +1213,15 @@ L<DBIx::Class::Schema::Loader> version C<0.05000> or later.
 
 =head1 ENABLE THE MODEL IN THE CONTROLLER
 
+=head1 在控制器中啟用模型
+
 Open F<lib/MyApp/Controller/Books.pm> and un-comment the model code we
 left disabled earlier so that your version matches the following
 (un-comment the line containing C<< [$c->model('DB::Book')->all] >>
 and delete the next 2 lines):
+
+打開 F<lib/MyApp/Controller/Books.pm> 並且去掉我們之前程式碼的註解，所以您現在程式的版本如下 
+(去掉包含 C<< [$c->model('DB::Book')->all] >> 的註解及刪掉接下來 2 行)：
 
     =head2 list
 
@@ -1236,10 +1252,17 @@ L<DBIx::Class::ResultSet> which handles queries
 against the database and iterating over the set of results that is
 returned.
 
+B<提示>：您可能會看到 C<< $c->model('DB::Book') >> 要去掉的註解寫成 C<< $c->model('DB')->resultset('Book') >>。
+這兩個是相同的。都是從 C<< $c->model >> 回傳 L<DBIx::Class::ResultSet> 來處理資料庫及將一整組回傳結果迭代完成。
+
 We are using the C<< ->all >> to fetch all of the books.  DBIC supports
 a wide variety of more advanced operations to easily do things like
 filtering and sorting the results.  For example, the following could be
 used to sort the results by descending title:
+
+我們使用 C<< ->all >> 來獲取全部 books。
+DBIC 支援廣泛進階的操作像是能夠容易地過濾 (filtering) 及排序 (sorting) 結果。
+例如，下面範例降冪排序 title 結果：
 
     $c->model('DB::Book')->search({}, {order_by => 'title DESC'});
 
@@ -1249,13 +1272,25 @@ information found at L<DBIx::Class::ResultSet/search>,
 L<DBIx::Class::Manual::FAQ/Searching>, L<DBIx::Class::Manual::Intro> and
 L<Catalyst::Model::DBIC::Schema>.
 
+其他的例子提供於 L<DBIx::Class::Manual::Cookbook/Complex WHERE clauses>, 更多資訊在 L<DBIx::Class::ResultSet/search>,
+L<DBIx::Class::Manual::FAQ/Searching>, L<DBIx::Class::Manual::Intro> 及
+L<Catalyst::Model::DBIC::Schema>。
+
+
 
 =head2 Test Run The Application
+
+=head2 測試運行應用程式
 
 First, let's enable an environment variable that causes L<DBIx::Class>
 to dump the SQL statements used to access the database.  This is a
 helpful trick when you are trying to debug your database-oriented code.
 Press C<Ctrl-C> to break out of the development server and enter:
+
+首先，我們啟用一個環境變數讓 L<DBIx::Class> 傾印 SQL 資料庫存取狀態。
+對於資料庫相關的程式除錯是個不錯的技巧。
+輸入 C<Ctrl-C> 斷開開發伺服器並且輸入：
+
 
     $ export DBIC_TRACE=1
     $ script/myapp_server.pl -r
@@ -1264,14 +1299,22 @@ This assumes you are using bash as your shell -- adjust accordingly if
 you are using a different shell (for example, under tcsh, use
 C<setenv DBIC_TRACE 1>).
 
+假設您是使用 bash 作為您的命令列終端 -- 根據您不同的終端稍作調整 (例如，tcsh 使用 C<setenv DBIC_TRACE 1>)。
+
 B<NOTE:> You can also set this in your code using
 C<< $class->storage->debug(1); >>.  See
 L<DBIx::Class::Manual::Troubleshooting> for details (including options
 to log to a file instead of displaying to the Catalyst development
 server log).
 
+B<請注意：> 您也可以在您的程式碼中使用 C<< $class->storage->debug(1); >>。
+請看 L<DBIx::Class::Manual::Troubleshooting> 詳細介紹 
+(包含日誌檔選項，而不是 Catalyst 開發伺服器日誌視窗顯示)。
+
 Then launch the Catalyst development server.  The log output should
 display something like:
+
+接著運行 Catalyst 開發伺服其。日誌檔的輸出選項會如下顯示：
 
     $ script/myapp_server.pl -r
     [debug] Debug messages enabled
@@ -1329,7 +1372,14 @@ itself or it will not be able to locate the F<myapp.db> database file.
 You can use a fully qualified or a relative path to locate the database
 file, but we did not specify that when we ran the model helper earlier.
 
+B<請注意：>請確認運行協助腳本 F<script/myapp_server.pl> 在應用程式的基本目錄，
+而不是在 F<script> 目錄中，這樣不能夠定位到 F<myapp.db> 資料庫檔案。
+您可以指定完整路徑名稱也可以使用相對路徑指定資料庫檔案，
+但是因為我們之前使用協助腳本產生的程式碼並沒有這樣指定。
+
 Some things you should note in the output above:
+
+先前的輸出有些值得您注意的是：
 
 =over 4
 
@@ -1340,15 +1390,22 @@ classes, one to represent each of the three tables in our database
 (C<MyApp::Model::DB::Author>, C<MyApp::Model::DB::BookAuthor>, and
 C<MyApp::Model::DB::Book>).
 
+L<Catalyst::Model::DBIC::Schema> 動態的產生 3 個模型檔案，每一個檔案分代表資料庫裡 3 個資料表欄位。
+(C<MyApp::Model::DB::Author>, C<MyApp::Model::DB::BookAuthor>, 及 C<MyApp::Model::DB::Book>)。
+
 =item *
 
 The "list" action in our Books controller showed up with a path of
 C</books/list>.
 
+Books 控制器內的 "list" 動作顯示 C</books/list> 的路徑。
+
 =back
 
 Point your browser to L<http://localhost:3000> and you should still get
 the Catalyst welcome page.
+
+瀏覽器造訪 L<http://localhost:3000> 您應該還是會看到歡迎畫面。
 
 Next, to view the book list, change the URL in your browser to
 L<http://localhost:3000/books/list>. You should get a list of the five
@@ -1356,19 +1413,33 @@ books loaded by the F<myapp01.sql> script above without any formatting.
 The rating for each book should appear on each row, but the "Author(s)"
 column will still be blank (we will fill that in later).
 
+接著，要查看書籍列表，瀏覽器改變 URL 為 L<http://localhost:3000/books/list>。
+您應該會看到 5 個書籍載入，由 F<myapp01.sql> 腳本產生沒有格式化的結果。
+每一個書籍的 rating 也會每列顯示，但是 "Author(s)" 欄位仍然是空白 (之後我們會填上)。
+
 Also notice in the output of the F<script/myapp_server.pl> that
 L<DBIx::Class> used the following SQL to retrieve the data:
+
+請留意 F<script/myapp_server.pl> 使用 L<DBIx::Class> 的輸出，是使用下面的 SQL 獲取資料：
 
     SELECT me.id, me.title, me.rating FROM book me
 
 because we enabled DBIC_TRACE.
 
+因為我們啟用 DBIC_TRACE。
+
+
 You now have the beginnings of a simple but workable web application.
 Continue on to future sections and we will develop the application more
 fully.
 
+現在您得到了一個簡單初步的應用程式可以運行。
+後續的章節我們讓應用程式更加完整。
+
 
 =head1 CREATE A WRAPPER FOR THE VIEW
+
+=head1 建立視圖包裹 (WRAPPER)
 
 When using TT, you can (and should) create a wrapper that will literally
 wrap content around each of your templates.  This is certainly useful as
@@ -1376,14 +1447,22 @@ you have one main source for changing things that will appear across
 your entire site/application instead of having to edit many individual
 files.
 
+使用 TT，您可以 (應該) 建立一個包裹逐字地包裹住每個模板的內容。
+必然有用的是，當您主要的原始碼有更動時可以遍及全站/應用程式而不是編輯各個獨立的檔案。
 
 =head2 Configure HTML.pm For The Wrapper
+
+=head2 設置 HTML.pm 包裹
 
 In order to create a wrapper, you must first edit your TT view and tell
 it where to find your wrapper file.
 
+為了要建立包裹，首先您要編輯 TT 視圖並且告訴它何處搜尋您的包裹檔案。
+
 Edit your TT view in F<lib/MyApp/View/HTML.pm> and change it to match
 the following:
+
+編輯 F<lib/MyApp/View/HTML.pm> 檔的 TT 視圖，改變如下：
 
     __PACKAGE__->config(
         # Change default TT extension
@@ -1401,9 +1480,15 @@ the following:
 
 =head2 Create the Wrapper Template File and Stylesheet
 
+=head2 建立模板檔案及樣規表包裹
+
 Next you need to set up your wrapper template.  Basically, you'll want
 to take the overall layout of your site and put it into this file.  For
 the tutorial, open F<root/src/wrapper.tt2> and input the following:
+
+接著您需要設定您的模板包裹。
+簡單地，根據您期望的網頁整體版面放置需要的模板。
+而本教學手冊，打開 F<root/src/wrapper.tt2> 輸入以下內容。
 
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" [%#
@@ -1450,6 +1535,8 @@ the tutorial, open F<root/src/wrapper.tt2> and input the following:
 
 Notice the status and error message sections in the code above:
 
+注意上面程式碼有關這 2 行錯誤訊息的部份：
+
     <span class="status">[% status_msg %]</span>
     <span class="error">[% error_msg %]</span>
 
@@ -1459,7 +1546,13 @@ be displayed whenever any view used by that request is rendered.  The
 C<message> and C<error> CSS styles can be customized to suit your needs
 in the F<root/static/css/main.css> file we create below.
 
+如果我們設定錯誤訊息到 Catalyst stash 變數中 (例如 C<< $c->stash->{status_msg} = 'Request was successful!' >>) 
+每次處理請求任何B<視圖呈現>後都會顯示這個訊息。
+C<message> 和 C<error> 的 CSS 風格可以根據您的喜好在 F<root/static/css/main.css> 檔案中修改，如下。
+
 B<Notes:>
+
+B<附註：>
 
 =over 4
 
@@ -1470,25 +1563,37 @@ retain information across requests you can use
 L<Catalyst::Plugin::Session> (we will use Catalyst sessions in the
 Authentication chapter of the tutorial).
 
+Catalyst stash 變數只會在單次請求中存在。如果您需要保持請求資訊您可以使用 L<Catalyst::Plugin::Session> 
+(我們會在教學手冊認證章節中討論 Catalyst session)。
+
 =item *
 
 Although it is beyond the scope of this tutorial, you may wish to use a
 JavaScript or AJAX tool such as jQuery (L<https://www.jquery.com>) or
 Dojo (L<https://dojotoolkit.org/>).
 
+雖然有些超出教學手冊的範圍，您可能會希望使用 JavaScript 或 AJAX 工具例如 JQuery (L<https://www.jquery.com>) 或 Dojo (L<https://dojotoolkit.org/>)。
+
 =back
 
 
 =head3 Create A Basic Stylesheet
 
+=head4 建立簡單的樣規表
+
 First create a central location for stylesheets under the static
 directory:
+
+首先建立一個靜態資料夾，集中管理樣規表檔案。
 
     $ mkdir root/static/css
 
 Then open the file F<root/static/css/main.css> (the file referenced in
 the stylesheet href link of our wrapper above) and add the following
 content:
+
+接著打開 F<root/static/css/main.css> 檔案 
+(我們先前設定包裹時有設定樣規表的超連結參照) 然後加入下面內容。
 
     #header {
         text-align: center;
@@ -1531,8 +1636,12 @@ You may wish to check out a "CSS Framework" like Emastic
 (L<http://code.google.com/p/emastic/>) as a way to quickly provide lots
 of high-quality CSS functionality.
 
+您可能會希望使用 "CSS 框架" 像是 Emastic (L<http://code.google.com/p/emastic/>) 
+可以快速配置高品質的 CSS 功能。
 
 =head2 Test Run The Application
+
+=head2 測試運行應用程式
 
 Hit "Reload" in your web browser and you should now see a formatted
 version of our basic book list. (Again, the development server should
@@ -1543,20 +1652,35 @@ development server does I<NOT> need to restart for changes to the TT and
 static files we created and edited in the C<root> directory -- those
 updates are handled on a per-request basis.)
 
+在您的瀏覽器中點擊 "重新載入" 您應該會看到美化後版本的簡單書籍列表。
+(再次說明，開發伺服器應該會在您修改過 F<lib/MyApp/View/HTML.pm> 後自動重新啟動，
+如果您啟動引數使用 "-r" 選項，您必須 C<Ctrl-C> 手動重新啟動。
+也請注意開發伺服器I<沒有>必要因為修改過 C<root> 資料夾的 TT 及靜態檔案後重新啟動 -- 
+會根據每次請求時更新。)
+
 Although our wrapper and stylesheet are obviously very simple, you
 should see how it allows us to control the overall look of an entire
 website from two central files. To add new pages to the site, just
 provide a template that fills in the C<content> section of our wrapper
 template -- the wrapper will provide the overall feel of the page.
 
+雖然我們的包裹及樣規表很明顯太陽春，您應該了解我們是使用哪 2 個中心檔案來控制網站的全面外觀。
+要在網站新增頁面，只要在模板包裹內的 "content" HTML 標籤中提供您的模板檔案 -- 
+包裹會呈現網頁全面的觀感。
 
 =head2 Updating the Generated DBIx::Class Result Class Files
+
+=head2 更新 Generated DBIx::Class 結果類別 (Result Class) 檔案
 
 If you take a look at the Schema files automatically generated by
 L<DBIx::Class::Schema::Loader>, you will see that it has already defined
 C<has_many> and C<belongs_to> relationships on each side of our foreign
 keys. For example, take a look at F<lib/MyApp/Schema/Result/Book.pm> and
 notice the following code:
+
+如果您查看 L<DBIx::Class::Schema::Loader> 自動產生的資料表設計綱要檔案，
+您會看到 C<has_many> 及 C<belongs_to> 已經定義了各方面的外來鍵關聯。
+例如，請查看 F<lib/MyApp/Schema/Result/Book.pm> 觀察下面程式碼：
 
     =head1 RELATIONS
 
@@ -1579,6 +1703,9 @@ Each C<Book> "has_many" C<book_authors>, where C<BookAuthor> is the
 many-to-many table that allows each Book to have multiple Authors, and
 each Author to have multiple books.  The arguments to C<has_many> are:
 
+每個 C<Book> 本身 "has_many" C<book_authors>, C<BookAuthor> 是多對多的表格，讓每本書可以有多個作者，
+每個作者可以有多本書。 C<has_many> 的引數為：
+
 =over 4
 
 =item *
@@ -1586,26 +1713,37 @@ each Author to have multiple books.  The arguments to C<has_many> are:
 C<book_authors> - The name for this relationship.  DBIC will create an
 accessor on the C<Books> DBIC Row object with this name.
 
+C<book_authors> - 建立關聯的名稱。 DBIC 會使用這個名稱建立 C<Books> DBIC 列物件的存取器。
+
 =item *
 
 C<MyApp::Schema::Result::BookAuthor> - The name of the DBIC model class
 referenced by this C<has_many> relationship.
+
+C<MyApp::Schema::Result::BookAuthor> - C<has_many> 關聯參照到 DBIC 模型類別的名稱。
 
 =item *
 
 C<foreign.book_id> - C<book_id> is the name of the foreign key column in
 the I<foreign> table that points back to this table.
 
+C<foreign.book_id> - C<book_id> 是指向內部鍵的外部鍵欄位的名稱。
+
 =item *
 
 C<self.id> - C<id> is the name of the column in I<this> table that is
 referenced by the foreign key.
+
+C<self.id> - C<id> 為指向外部鍵的 I<this> 資料表欄位名稱。
 
 =back
 
 See L<DBIx::Class::Relationship/has_many> for additional information.
 Note that you might see a "hand coded" version of the C<has_many>
 relationship above expressed as:
+
+請看 L<DBIx::Class::Relationship/has_many> 獲得更多資訊。
+請注意您可能會看到有些版本 C<has_many> 的 "寫法"，如同上例子的關聯性：
 
     __PACKAGE__->has_many(
       "book_authors",
@@ -1618,14 +1756,23 @@ table.  However, the hashref syntax used by
 L<DBIx::Class::Schema::Loader> is more flexible (for example, it can
 handle "multi-column foreign keys").
 
+第 3 個引數為外部鍵欄位的簡單寫法。
+然而，雜湊參照語法在 L<DBIx::Class::Schema::Loader> 中更為彈性 (舉例來說，可以處理 "多欄外部鍵")。
+
 B<Note:> If you are using older versions of SQLite and related DBIC
 tools, you will need to manually define your C<has_many> and
 C<belongs_to> relationships. We recommend upgrading to the versions
 specified above. :-)
 
+B<請注意：>如果您使用舊版本的 SQLite 及相應的 DBIC 工具，您必須手動定義您的 C<has_many> 及
+C<belongs_to> 關聯。建議您更新到我們先前提到的版本。 :-)
+
 Have a look at F<lib/MyApp/Schema/Result/BookAuthor.pm> and notice that
 there is a C<belongs_to> relationship defined that acts as the "mirror
 image" to the C<has_many> relationship we just looked at above:
+
+查看 F<lib/MyApp/Schema/Result/BookAuthor.pm> 您會注意到 C<belongs_to> 
+會 "鏡射" 關聯定義到先前定義的 C<has_many> 關聯，看起來如下：
 
     =head1 RELATIONS
 
@@ -1647,6 +1794,8 @@ image" to the C<has_many> relationship we just looked at above:
 The arguments are similar, but see
 L<DBIx::Class::Relationship/belongs_to> for the details.
 
+引數大致相同，但是請看 L<DBIx::Class::Relationship/belongs_to> 獲得更多資訊。
+
 Although recent versions of SQLite and L<DBIx::Class::Schema::Loader>
 automatically handle the C<has_many> and C<belongs_to> relationships,
 C<many_to_many> relationship bridges (not technically a relationship)
@@ -1654,6 +1803,11 @@ currently need to be manually inserted.  To add a C<many_to_many>
 relationship bridge, first edit F<lib/MyApp/Schema/Result/Book.pm> and
 add the following text below the C<# You can replace this text...>
 comment:
+
+雖然近期版本的 SQLite 及 L<DBIx::Class::Schema::Loader> 自動處理 C<has_many> 及 C<belongs_to> 關聯，
+C<多對多 (many_to_many)> 的關聯橋接目前還需要手動加入 (技術上不是關聯)。
+要新增 C<many_to_many> 關聯橋接，首先編輯 F<lib/MyApp/Schema/Result/Book.pm> 及加入 C<# You can replace this text...> 註解之後的程式碼：
+
 
     # many_to_many():
     #   args:
@@ -1668,6 +1822,9 @@ the file.  As with any Perl package, we need to end the last line with a
 statement that evaluates to C<true>.  This is customarily done with
 C<1;> on a line by itself.
 
+B<請注意：> I<上面>的程式請好好加入 C<1;> 在檔案末端，按照所有 Perl 套件，我們在最後一行回傳相等於  C<true> 的述句。
+而 C<1;> 也是在單行結束的編寫慣例。
+
 The C<many_to_many> relationship bridge is optional, but it makes it
 easier to map a book to its collection of authors.  Without it, we would
 have to "walk" through the C<book_author> table as in
@@ -1680,10 +1837,19 @@ C<< $book->author->first->last_name >>. Note that you cannot
 define a C<many_to_many> relationship bridge without also having the
 C<has_many> relationship in place.
 
+C<many_to_many> 關聯橋接為可選的，但是可以讓每個 book 對映到一組 authors 更加方便。
+如果沒有，我們必須 "遍歷" C<book_author> 所有的 C<< $book->book_author->first->author->last_name >> 
+(之後會有例子，如何使用 DBIx::Class 物件，但是請記住因為 C<< $book->book_author >> 回傳多個作者，我們必須擷取C<開頭>的結果，來顯示唯一的作者)。
+C<many_to_many> 可以較短地使用 C<< $book->author->first->last_name >>。
+請注意您不能在沒有 C<has_many> 的情況使用 C<many_to_many> 關聯橋接。
+
 Then edit F<lib/MyApp/Schema/Result/Author.pm> and add the reverse
 C<many_to_many> relationship bridge for C<Author> as follows (again, be
 careful to put in above the C<1;> but below the C<# DO NOT MODIFY THIS
 OR ANYTHING ABOVE!> comment):
+
+然後編輯 F<lib/MyApp/Schema/Result/Author.pm> 新增一個反向 C<many_to_many> 的 C<Author> 關聯橋接如下：
+(再次提醒，請小心放置您的 C<1;> 在 C<# DO NOT MODIFY THIS OR ANYTHING ABOVE!> 註解之後)：
 
     # many_to_many():
     #   args:
@@ -1696,9 +1862,14 @@ OR ANYTHING ABOVE!> comment):
 
 =head2 Run The Application
 
+=head2 運行您應用程式
+
 Run the Catalyst development server script with the C<DBIC_TRACE> option
 (it might still be enabled from earlier in the tutorial, but here is an
 alternate way to specify the trace option just in case):
+
+運行 Catalyst 開發伺服器，並且使用 C<DBIC_TRACE> 選項 
+(先前的教學可能有啟用了，但是這裡有個替代方式指定跟蹤選項例子)：
 
     $ DBIC_TRACE=1 script/myapp_server.pl -r
 
@@ -1706,20 +1877,32 @@ Make sure that the application loads correctly and that you see the
 three dynamically created model classes (one for each of the Result
 Classes we created).
 
+確保您的應用程式運行正確，且您會看到 3 個動態增加的模型類別 (每個我們增加過的結果類別 Result Classes)。
+
 Then hit the URL L<http://localhost:3000/books/list> with your browser
 and be sure that the book list still displays correctly.
+
+用您的瀏覽器造訪 URL L<http://localhost:3000/books/list> 確認您的書籍依然顯示正確。
 
 B<Note:> You will not see the authors yet because the view isn't taking
 advantage of these relationships. Read on to the next section where we
 update the template to do that.
 
+B<請注意：>您還看不到作者，因為視圖元件還沒有效利用這些關聯。
+閱讀後續的章節我們更新模板來做這件事。
+
 
 =head1 UPDATING THE VIEW
+
+=head1 更新視圖
 
 Let's add a new column to our book list page that takes advantage of the
 relationship information we manually added to our schema files in the
 previous section.  Edit F<root/src/books/list.tt2> and replace the
 "empty" table cell "C<< <td></td> >>" with the following:
+
+我們根據先前章節手動增加的資料庫設計綱要檔案，利用關聯資訊的優勢新增我們的書籍列表頁。
+編輯 F<root/src/books/list.tt2> 修改 "空白" 表格元素 "C<< <td></td> >>" 如下：
 
     ...
     <td>
@@ -1750,6 +1933,11 @@ to show some extra features in TT until we get to the more advanced
 model features we will see in Chapter 4 (see
 L<Catalyst::Manual::Tutorial::04_BasicCRUD/EXPLORING THE POWER OF DBIC>).
 
+B<重要注意事項：>再次提醒，您應該讓您的B<視圖>盡可能保持 "邏輯程式碼"。
+這種邏輯根據您的模型 (控制器也是同樣的道理 -- 盡可能保持 "輕巧" 並把 "複雜程式碼" 放在模型物件之外)。
+避免像您看到的前一個例子 -- 我們使用它只是想要展示更多 TT 工具的功能，我們會展示更多的功能於第 4 章 
+(請看 L<Catalyst::Manual::Tutorial::04_BasicCRUD/EXPLORING THE POWER OF DBIC>)。
+
 Then hit "Reload" in your browser (note that you don't need to reload
 the development server or use the C<-r> option when updating TT
 templates) and you should now see the number of authors each book has
@@ -1758,10 +1946,16 @@ didn't leave the development server running from the previous step, you
 will obviously need to start it before you can refresh your browser
 window.)
 
+瀏覽器點選 "重新載入" 您應該會看到每本書有好幾個作者，以逗號分隔的作者名字 (請注意您如果使用 C<-r> 選項更新 TT 模板不需要重新載入開發伺服器)。
+(如果您先前沒有讓開發伺服器保持運行，很明顯的您需要啟動它，在您用瀏覽器造訪以前。)
+
 If you are still running the development server with C<DBIC_TRACE>
 enabled, you should also now see five more C<SELECT> statements in the
 debug output (one for each book as the authors are being retrieved by
 DBIx::Class):
+
+如果您持續運行開發伺服器並啟用 C<DBIC_TRACE>，您應該現在會看到 5 個以上 C<SELECT> 述句在您的除錯輸出 
+(每一本書的作者由 DBIx::Class 獲取)：
 
     SELECT me.id, me.title, me.rating FROM book me:
     SELECT author.id, author.first_name, author.last_name FROM book_author me
@@ -1791,8 +1985,18 @@ L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD::09_FormFu>]
 is that they automatically handle most escaping for you and therefore
 dramatically increase the security of your app.)
 
+也請注意 F<root/src/books/list.tt2> 我們使用 "| html"，TT 的一種過濾器，讓一些特殊字元例如 < 和 > 轉換成 &lt; 及 &gt; 
+可以讓您的應用程式免於各種形式的危險駭客。
+在真實的應用程式中，您應該會想要用 "| html" 在每個欄位末端控制使用者表單欄位內可以顯示哪些資訊 
+(此外也可以插入標記語言或程式碼您不無法 "中和" 的欄位字元)。
+其他有關 "| html"，模板工具 (Template Toolkit) 可以發現各式各樣有用的過濾器，在說明文件 L<Template::Filters> 中。
+(我們討論安全性及跳脫字元的不安全數值時，使用 DBIC 資料庫存取工具或 L<HTML::FormFu> 管理格式的一個優勢 [請看 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD::09_FormFu>]
+可以自動處理大部分的跳脫字元，並且戲劇性的讓您的 app 更加安全。)
+
 
 =head1 RUNNING THE APPLICATION FROM THE COMMAND LINE
+
+=head1 在命令列運行應用程式
 
 In some situations, it can be useful to run your application and display
 a page without using a browser.  Catalyst lets you do this using the
@@ -1803,12 +2007,22 @@ dispatch logic and use the appropriate view to render the output
 window).  For example, if C<Ctrl+C> out of the development server
 and then type:
 
+在一些情況，運行您的應用程式不使用瀏覽器顯示您的頁面很有用。
+Catalyst 可以使用 F<script/myapp_test.pl> 腳本達成。
+只要提供您要顯示的 URL 給腳本，就會執行請求，並透過一般控制器邏輯分派，使用適當的視圖呈現輸出
+(明顯地，複雜的頁面會在終端傾印大量的文字)。
+下面例子，如果鍵盤輸入 C<Ctrl+C> 離開開發伺服器接著輸入：
+
     $ script/myapp_test.pl "/books/list"
 
 You should get the same text as if you visited
 L<http://localhost:3000/books/list> with the normal development server
 and asked your browser to view the page source.  You can even pipe this
 HTML text output to a text-based browser using a command like:
+
+您應該會收到 L<http://localhost:3000/books/list> 相同的文字，
+如同開發伺服器運行中，讓您瀏覽器觀看頁面內容。
+您甚至可以用管道 (pipe) 輸出 HTML 內容，並且提供給終端為基礎的網頁瀏覽器使用，指令如下：
 
     $ script/myapp_test.pl "/books/list" | lynx -stdin
 
@@ -1817,15 +2031,23 @@ you are following along in Debian 6, type
 C<sudo aptitude -y install lynx> to install lynx.)  If you do start
 lynx, you can use the "Q" key to quit.
 
+而您會看到完整呈現上色的網頁文字內容。
+(如果您是在 Debian6 環境下，指令 C<sudo aptitude -y install lynx> 可以安裝 lynx。)
+打開 lynx 瀏覽器，如果要離開輸入鍵盤 "Q"。
 
 =head1 OPTIONAL INFORMATION
+
+=head1 選項資訊
 
 B<NOTE: The rest of this chapter of the tutorial is optional.  You can
 skip to Chapter 4, L<Basic CRUD|Catalyst::Manual::Tutorial::04_BasicCRUD>,
 if you wish.>
 
+B<請注意：本章剩餘部份是可選的。您可以依喜好直接跳到第 4 章，L<Basic CRUD|Catalyst::Manual::Tutorial::04_BasicCRUD> >
 
 =head2 Using 'RenderView' for the Default View
+
+=head2 使用 'RenderView' 作為預設視圖
 
 Once your controller logic has processed the request from a user, it
 forwards processing to your view in order to generate the appropriate
@@ -1835,16 +2057,24 @@ to automatically perform this operation.  If you look in
 F<lib/MyApp/Controller/Root.pm>, you should see the empty definition for
 the C<sub end> method:
 
+一旦您的控制器處理了使用者發出的請求，它會直接將程序轉發 (forwards) 到您的視圖，來產生適當的輸出。
+Catalyst 預設使用 L<Catalyst::Action::RenderView> 自動執行這些運算。
+如果您查詢 F<lib/MyApp/Controller/Root.pm> ，您會看到 C<sub end> 方法的定義是空的：
+
     sub end : ActionClass('RenderView') {}
 
 The following bullet points provide a quick overview of the
 C<RenderView> process:
+
+以下的要點提供 C<RenderView> 程序的快速導覽：
 
 =over 4
 
 =item *
 
 F<Root.pm> is designed to hold application-wide logic.
+
+F<Root.pm> 設計上為整個應用程式範圍的邏輯。
 
 =item *
 
@@ -1854,12 +2084,21 @@ request has an C<end> method defined, it will be called.  However, if
 the controller does not define a controller-specific C<end> method, the
 "global" C<end> method in F<Root.pm> will be called.
 
+使用者請求的末端，Catalyst 會適當地呼叫最特別的方法 C<end>。
+例如，如果控制器處理一個請求時 C<end> 方法有定義，它會被執行。
+然而如果控制器沒有定義控制器 (controller-specific) 自己的 C<end> 方法，
+F<Root.pm> 中 "全域 (global)" 的 C<end> 方法會被呼叫。
+
 =item *
 
 Because the definition includes an C<ActionClass> attribute, the
 L<Catalyst::Action::RenderView> logic will be executed B<after> any code
 inside the definition of C<sub end> is run.  See
 L<Catalyst::Manual::Actions> for more information on C<ActionClass>.
+
+因為這個定義包含 C<ActionClass> 屬性，L<Catalyst::Action::RenderView> 
+邏輯會在所有 C<sub end> 內定義的程式執行完時，接著執行。
+請看 L<Catalyst::Manual::Actions> 獲得更多有關 C<ActionClass> 的資訊。
 
 =item *
 
@@ -1871,10 +2110,17 @@ F<catalyst.pl> to initialize our application.  See
 L<Catalyst::Action::RenderView> for more
 detailed information on how to extend C<RenderView> in C<sub end>.
 
+因為 C<sub end> 是空的，只是會有效執行預設邏輯 C<RenderView>。
+然而，您可以簡單地擴充 C<RenderView> 邏輯，在使用 F<catalyst.pl> 初始化應用程式時，使用 Catalyst 協助腳本加入您自己的程式碼在空的方法內 (C<{}>)，
+請看 L<Catalyst::Action::RenderView> 獲得更多詳細資訊有關 C<sub end> 中的 C<RenderView>。
+
+
 =back
 
 
 =head2 RenderView's "dump_info" Feature
+
+=head2 RenderView "dump_info" 功能
 
 One of the nice features of C<RenderView> is that it automatically
 allows you to add C<dump_info=1> to the end of any URL for your
@@ -1882,9 +2128,15 @@ application and it will force the display of the "exception dump" screen
 to the client browser.  You can try this out by pointing your browser to
 this URL:
 
+C<RenderView> 其中一個不錯的功能是，自動讓您在應用程式 URL 末端加上 C<dump_info=1>，
+可以強制顯示 "額外的傾印" 畫面在瀏覽器中。
+您可以嘗試使用瀏覽器指向下面 URL：
+
     http://localhost:3000/books/list?dump_info=1
 
 You should get a page with the following message at the top:
+
+您應該會得到下面的訊息在頁面上方：
 
     Caught exception in MyApp::Controller::Root->end "Forced debug -
     Scrubbed output at /usr/share/perl5/Catalyst/Action/RenderView.pm line 46."
@@ -1896,14 +2148,22 @@ adjust the summarization logic (called "scrubbing" logic) -- see
 L<Catalyst::Action::RenderView> for
 details.
 
+連同您應用程式狀態的摘要，於請求程序的結束階段，"Stash" 部份應該會顯示 DBIC 書籍物件的摘要版本。
+如果您需要，您可以調整摘要邏輯 (summarization logic) (稱為 "scrubbing" 邏輯) -- 請看 L<Catalyst::Action::RenderView> 獲得詳細資訊。
+
 Note that you shouldn't need to worry about "normal clients" using this
 technique to "reverse engineer" your application -- C<RenderView> only
 supports the C<dump_info=1> feature when your application is running in
 C<-Debug> mode (something you won't do once you have your application
 deployed in production).
 
+請注意您應該不需要擔心 "普通使用者" 使用這個技巧來讓您的應用程式 "反向工程" -- 
+C<RenderView> 只會在您的應用程式為 C<-Debug> 模式時支援 C<dump_info=1> 功能
+(當您的應用程式推上產品線後有些事不要做)。
 
 =head2 Using The Default Template Name
+
+=head2 使用預設模板名稱
 
 By default, C<Catalyst::View::TT> will look for a template that uses the
 same name as your controller action, allowing you to save the step of
@@ -1914,6 +2174,10 @@ line of our C<list> action in the Books controller.
 Open C<lib/MyApp/Controller/Books.pm> in your editor and comment out
 this line to match the following (only the
 C<< $c->stash->{template} >> line has changed):
+
+預設，C<Catalyst::View::TT> 會用控制器動作的名稱來搜尋模板，讓您省下為每個動作手動指定模板的名稱。
+例如，我們的 Books 控制器裡的 C<list> 動作中，這一行可以刪除 C<< $c->stash->{template} = 'books/list.tt2'; >>。
+編輯器打開 C<lib/MyApp/Controller/Books.pm>，把符合 C<< $c->stash->{template} >> 的那行註解掉：
 
     =head2 list
 
@@ -1941,32 +2205,50 @@ C<< $c->stash->{template} >> line has changed):
 You should now be able to access the L<http://localhost:3000/books/list>
 URL as before.
 
+您應該可以和以前一樣存取 L<http://localhost:3000/books/list> URL。
+
 B<NOTE:> If you use the default template technique, you
 will B<not> be able to use either the C<< $c->forward >> or the
 C<< $c->detach >> mechanisms (these are discussed in Chapter 2 and
 Chapter 9 of the Tutorial).
 
+B<請注意：> 如果您使用預設模板這個技巧，您也許B<不能>使用 C<< $c->forward >> 或 C<< $c->detach >> 的機制。
+(教學手冊第 2 章及第 9 章討論過)。
+
 B<IMPORTANT:> Make sure that you do B<not> skip the following section
 before continuing to the next chapter 4 Basic CRUD.
 
+B<重要：>請確保B<不要>跳過接下來的第 4 章 CRUD。
+
 
 =head2 Return To A Manually Specified Template
+
+=head2 回到手動指定模板
 
 In order to be able to use C<< $c->forward >> and C<< $c->detach >>
 later in the tutorial, you should remove the comment from the statement
 in C<sub list> in F<lib/MyApp/Controller/Books.pm>:
 
+為了能夠使用 C<< $c->forward >> 及 C<< $c->detach >> 於接下來的教學，F<lib/MyApp/Controller/Books.pm> 中讓 C<sub list> 取消註解：
+
     $c->stash(template => 'books/list.tt2');
 
 Then delete the C<TEMPLATE_EXTENSION> line in F<lib/MyApp/View/HTML.pm>.
 
+然後刪掉 F<lib/MyApp/View/HTML.pm> 中的 C<TEMPLATE_EXTENSION> 這行。
+
 Check the L<http://localhost:3000/books/list> URL in your browser.  It
 should look the same manner as with earlier sections.
+
+瀏覽器檢查 L<http://localhost:3000/books/list> URL。
+應該會看起來和前面章節一樣。
 
 
 You can jump to the next chapter of the tutorial here:
 L<Basic CRUD|Catalyst::Manual::Tutorial::04_BasicCRUD>
 
+您可以跳到教學手冊的這個章節：
+L<Basic CRUD|Catalyst::Manual::Tutorial::04_BasicCRUD>
 
 =head1 AUTHOR
 

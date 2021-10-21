@@ -7,6 +7,8 @@ Catalyst::Manual::Tutorial::04_BasicCRUD - Catalyst Tutorial - Chapter 4: Basic 
 
 This is B<Chapter 4 of 10> for the Catalyst tutorial.
 
+這是教學手冊 B<Chapter 4 of 10>。
+
 L<Tutorial Overview|Catalyst::Manual::Tutorial>
 
 =over 4
@@ -69,19 +71,34 @@ Create and Delete aspects of CRUD.  More advanced capabilities,
 including full Update functionality, will be addressed in
 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>.
 
+本章節建立在非常基本的應用程式，根據教學手冊 L<Chapter 3|Catalyst::Manual::Tutorial::03_MoreCatalystBasics> 
+並且加入新增，讀取，更新及刪除 (CRUD) 於 C(Book) 物件。
+請注意 'list' 函式於 L<Chapter 3|Catalyst::Manual::Tutorial::03_MoreCatalystBasics> 
+已經實現了 CURD 讀取的部份 (雖然讀取通常代表閱讀單一物件；您可以使用下面的技巧來實現全功能的讀取函式)。
+本章專注在 CRUD 新增及刪除的部份。更多進階的能力，包含完整的更新功能，請查閱 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>。
+
 Although this chapter of the tutorial will show you how to build CRUD
 functionality yourself, another option is to use a "CRUD builder" type
 of tool to automate the process.  You get less control, but it can be
 quick and easy.  For example, see L<Catalyst::Plugin::AutoCRUD>,
 L<CatalystX::CRUD>, and L<CatalystX::CRUD::YUI>.
 
+雖然教學手冊本章節會向您展示如何自己手動建立 CRUD 功能，另一種選擇是使用 "CRUD builder" 這種工具來自動完成。
+這樣您會減少手動控制的機會，但是畢竟快速簡單。
+例如，請看 L<Catalyst::Plugin::AutoCRUD>，L<CatalystX::CRUD>，以及 L<CatalystX::CRUD::YUI>。
+
 Source code for the tutorial in included in the F</home/catalyst/Final>
 directory of the Tutorial Virtual machine (one subdirectory per
 chapter).  There are also instructions for downloading the code in
 L<Catalyst::Manual::Tutorial::01_Intro>.
 
+教學手冊的原始碼包含在 F</home/catalyst/Final> 虛擬電腦的資料夾中 (每章節分別一個資料夾)。
+也可以參考下載原始檔的指引 L<Catalyst::Manual::Tutorial::01_Intro>。
+
 
 =head1 FORMLESS SUBMISSION
+
+=head1 
 
 Our initial attempt at object creation will utilize the "URL arguments"
 feature of Catalyst (we will employ the more common form-based
