@@ -48,9 +48,13 @@ Catalyst::Manual::Tutorial::03_MoreCatalystBasics (.pod)    B<maintenance>
 
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/03_MoreCatalystBasics.pod>
 
-Catalyst::Manual::Tutorial::04_BasicCRUD (.pod)    B<6%>
+Catalyst::Manual::Tutorial::04_BasicCRUD (.pod)    B<maintenance>
 
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/04_BasicCRUD.pod>
+
+Catalyst::Manual::Tutorial::05_Authentication (.pod)    B<6%>
+
+L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Catalyst/Manual/Tutorial/05_Authentication.pod>
 
 =head2 翻譯及語言資源
 
@@ -61,6 +65,7 @@ Perl 的專有名詞主要還是根據，B<翻譯>多篇 B<O'Reilly> 書籍的�
 屬於口語措辭的語境，會避開專有名詞，意圖使文章通順。
 
  TODO: 提供詞彙表給未來的協助夥伴
+
 L<https://github.com/sunchane/perldoc_zh_TW/blob/main/Glossary.org>
 
 =head3 速記表

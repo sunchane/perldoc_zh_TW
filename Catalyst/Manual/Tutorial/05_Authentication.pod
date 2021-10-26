@@ -2,9 +2,11 @@
 
 Catalyst::Manual::Tutorial::05_Authentication - Catalyst Tutorial - Chapter 5: Authentication
 
+Catalyst::Manual::Tutorial::05_Authentication - Catalyst 教學手冊 - 第 5 章: 驗證
+
 =head1 OVERVIEW
 
-This is B<Chapter 5 of 10> for the Catalyst tutorial.
+這是 B<章節 5 全部 10> Catalyst 教學手冊。
 
 L<Tutorial Overview|Catalyst::Manual::Tutorial>
 
@@ -59,18 +61,31 @@ Now that we finally have a simple yet functional application, we can
 focus on providing authentication (with authorization coming next in
 L<Chapter 6|Catalyst::Manual::Tutorial::06_Authorization>).
 
+現在我們為多功能應用程式加入最後的功能，我們專注在提供驗證 (下個章節B<授權>請看 L<Chapter 6|Catalyst::Manual::Tutorial::06_Authorization>)。
+
 This chapter of the tutorial is divided into two main sections: 1)
 basic, cleartext authentication and 2) hash-based authentication.
+
+教學手冊本章節分為 2 個主要的部份：
+1) 基礎，純文字驗證及
+2) 雜湊-為基礎的驗證。
 
 Source code for the tutorial in included in the F</home/catalyst/Final> directory
 of the Tutorial Virtual machine (one subdirectory per chapter).  There
 are also instructions for downloading the code in
 L<Catalyst::Manual::Tutorial::01_Intro>.
 
+本教學手冊的原始檔包含在教學虛擬電腦中的 F</home/catalyst/Final> 資料夾中 (每章節各一資料夾)。
+這裡也有下載原始檔的指引 L<Catalyst::Manual::Tutorial::01_Intro>。
+
 =head1 BASIC AUTHENTICATION
+
+=head1 基本驗證
 
 This section explores how to add authentication logic to a Catalyst
 application.
+
+本章節導覽如何在 Catalyst 應用程式加入驗證邏輯。
 
 
 =head2 Add Users and Roles to the Database

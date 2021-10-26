@@ -72,7 +72,7 @@ including full Update functionality, will be addressed in
 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>.
 
 本章節建立在非常基本的應用程式，根據教學手冊 L<Chapter 3|Catalyst::Manual::Tutorial::03_MoreCatalystBasics> 
-並且加入新增，讀取，更新及刪除 (CRUD) 於 C(Book) 物件。
+並且加入新增，讀取，更新及刪除 (CRUD) 於 C<Book> 物件。
 請注意 'list' 函式於 L<Chapter 3|Catalyst::Manual::Tutorial::03_MoreCatalystBasics> 
 已經實現了 CURD 讀取的部份 (雖然讀取通常代表閱讀單一物件；您可以使用下面的技巧來實現全功能的讀取函式)。
 本章專注在 CRUD 新增及刪除的部份。更多進階的能力，包含完整的更新功能，請查閱 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>。
@@ -98,16 +98,23 @@ L<Catalyst::Manual::Tutorial::01_Intro>.
 
 =head1 FORMLESS SUBMISSION
 
-=head1 
+=head1 前置作業 (FORMLESS SUBMISSION)
 
 Our initial attempt at object creation will utilize the "URL arguments"
 feature of Catalyst (we will employ the more common form-based
 submission in the sections that follow).
 
+我們初步嘗試使用 Catalyst 功能中的 "URL 引數" 物件的建立 
+(接下來章節我們將會配置更多常見版面格式-為基礎的子任務)。
+
 
 =head2 Include a Create Action in the Books Controller
 
+=head2 新增動作包含於 Books 控制器
+
 Edit F<lib/MyApp/Controller/Books.pm> and enter the following method:
+
+編輯 F<lib/MyApp/Controller/Books.pm> 並且輸入下面方法：
 
     =head2 url_create
 
@@ -152,6 +159,12 @@ call to C<add_to_book_authors> to update the join table).  As do
 virtually all controller methods (at least the ones that directly handle
 user input), it then sets the template that should handle this request.
 
+請注意 Catalyst 從 URL 路徑 "額外以斜線分隔的資訊" 作為引數傳遞進 C<@_> 中 
+(只要您的引數不是 "固定的" 像是使用屬性為 C<:Args(0)>)。
+C<url_create> 動作使用一個簡單的 DBIC C<create> 方法呼叫，根據請求的資訊新增內容至資料庫 
+(用分開呼叫 C<add_to_book_authors> 來更新連接資料表)。
+當所有控制器方法差不多完成後 (至少可以直接處理使用者輸入)，接著設定模板來處理這些請求。
+
 Also note that we are explicitly setting a C<no-cache> "Cache-Control"
 header to force browsers using the page to get a fresh copy every time.
 You could even move this to a C<auto> method in
@@ -160,10 +173,17 @@ to every page in the whole application via a single line of code
 (remember from Chapter 3, that every C<auto> method gets run in the
 Controller hierarchy).
 
+也請注意我們明確設定 C<no-cache> "快取控制 Cache-Control" 標頭強制瀏覽器接收的都是每次更新的頁面。
+您甚至可以設定在 C<auto> 方法於 F<lib/MyApp/Controller/Root.pm> 中，並且自動讓應用程式的每一頁啟用，只需要一行程式
+(還記得第 3 章，每一個 C<auto> 方法在控制器的階層執行的方式)。
 
 =head2 Include a Template for the 'url_create' Action:
 
+=head2 包含模板於 'url_create' 動作：
+
 Edit F<root/src/books/create_done.tt2> and then enter:
+
+編輯 F<root/src/books/create_done.tt2> 並且輸入：
 
     [% # Use the TT Dumper plugin to Data::Dumper variables to the browser   -%]
     [% # Not a good idea for production use, though. :-)  'Indent=1' is      -%]
@@ -203,18 +223,29 @@ the base TT capabilities.  Here, the plugin allows L<Data::Dumper>
 "pretty printing" of objects and variables.  Other than that, the rest
 of the code should be familiar from the examples in Chapter 3.
 
+TT C<USE> 指令允許存取各種的外掛模組 (TT 外掛，就是說，不是 Catalyst 外掛) 
+來增加 TT 為基礎能力額外的功能。這裡得外掛允許使用 L<Data::Dumper> 物件及變數 "美觀的印出"。
+此外，剩下的範例程式和第 3 章的範例類似。
 
 =head2 Try the 'url_create' Feature
 
+=head2 嘗試 'url-create' 功能
+
 Make sure the development server is running with the "-r" restart
 option:
+
+確認開發伺服器運行中並且啟用 "-r" 重啟選項：
 
     $ DBIC_TRACE=1 script/myapp_server.pl -r
 
 Note that new path for C</books/url_create> appears in the startup debug
 output.
 
+請注意 C</books/url_create> 的新路徑會在啟動的命令列除錯視窗顯示。
+
 Next, use your browser to enter the following URL:
+
+接著，使用您的瀏覽器訪問下面的 URL：
 
     http://localhost:3000/books/url_create/TCPIP_Illustrated_Vol-2/5/4
 
@@ -224,6 +255,10 @@ object as it was returned by DBIC.  You should also see the following
 DBIC debug messages displayed in the development server log messages if
 you have DBIC_TRACE set:
 
+您的瀏覽器應該會顯示 "Added book 'TCPIP_Illustrated_Vol-2' by 'Stevens' with a rating of 5."
+連同來自 DBIC 回傳的新增書籍模型物件傾印。
+您應該也可以看到下面的 DBIC 除錯訊息顯示在開發伺服器日誌資訊，前提是您有開啟 DBIC_TRACE 選項：
+
     INSERT INTO book (rating, title) VALUES (?, ?): `5', `TCPIP_Illustrated_Vol-2'
     INSERT INTO book_author (author_id, book_id) VALUES (?, ?): `4', `6'
 
@@ -232,10 +267,16 @@ the existing record for Richard Stevens.  The C<SELECT> statement
 results from DBIC automatically fetching the book for the
 C<Dumper.dump(book)>.
 
+C<INSERT> 述句很明顯為新增書籍並且連結到 Richard Stevens 現存的紀錄。
+C<SELECT> 述句結果來自於 DBIC 自動獲取 C<Dumper.dump(book)> 的書籍資料。
+
 If you then click the "Return to list" link, you should find that there
 are now six books shown (if necessary, Shift+Reload or Ctrl+Reload your
 browser at the C</books/list> page).  You should now see the six DBIC
 debug messages similar to the following (where N=1-6):
+
+如果您點選 "Return to list" 連結，您應該會發現已經是 6 本書顯示 (正常來說，在 C</books/list> 頁面 Shift+Reload 或 Ctrl+Reload 您的瀏覽器)。
+您現在應該會看到 DBIC 除錯訊息如下 (注意 N=1-6)：
 
     SELECT author.id, author.first_name, author.last_name
         FROM book_author me  JOIN author author
@@ -244,12 +285,18 @@ debug messages similar to the following (where N=1-6):
 
 =head1 CONVERT TO A CHAINED ACTION
 
+=head1 轉換為鏈接動作
+
 Although the example above uses the same C<Local> action type for the
 method that we saw in the previous chapter of the tutorial, there is an
 alternate approach that allows us to be more specific while also paving
 the way for more advanced capabilities.  Change the method declaration
 for C<url_create> in F<lib/MyApp/Controller/Books.pm> you entered above
 to match the following:
+
+雖然上面的例子使用我們前一章教學手冊的方式 C<Local> 動作類型，這裡我們使用替代的導引，
+允許我們更明確的為進階功能鋪路。
+修改 F<lib/MyApp/Controller/Books.pm> 中的 C<url_create> 方法宣告，改成下面：
 
     sub url_create :Chained('/') :PathPart('books/url_create') :Args(3) {
         # In addition to self & context, get the title, rating, &
@@ -269,6 +316,11 @@ essentially be thought of having three parts -- a beginning, a middle,
 and an end.  The bullets below summarize the key points behind each of
 these parts of a chain:
 
+這樣把方法轉換為鏈接動作/分派類型，並可利用它的優勢。
+鏈接讓您可以用單一 URL 自動分派數個控制器方法，每一個方法可以準確的控制接收到的引數數量。
+鏈接實務上可以把它想成 3 個部份 -- 開頭，中間，結尾。
+下面總結了鏈接背後的每個部份的要點：
+
 
 =over 4
 
@@ -277,19 +329,27 @@ these parts of a chain:
 
 Beginning
 
+開頭
+
 =over 4
 
 =item *
 
 B<Use "C<:Chained('/')>" to start a chain>
 
+B<使用 "C<:Chained('/')>" 開始一個鏈接>
+
 =item *
 
 Get arguments through C<CaptureArgs()>
 
+透過 C<CaptureArgs()> 取得引數
+
 =item *
 
 Specify the path to match with C<PathPart()>
+
+使用 C<PathPart()> 指定要匹配的路徑
 
 =back
 
@@ -298,19 +358,27 @@ Specify the path to match with C<PathPart()>
 
 Middle
 
+中間
+
 =over 4
 
 =item *
 
 Link to previous part of the chain with C<:Chained('_name_')>
 
+使用 C<:Chained('_name_')> 連結到鏈接的前部份
+
 =item *
 
 Get arguments through C<CaptureArgs()>
 
+透過 C<CaptureArgs()> 取得引數
+
 =item *
 
 Specify the path to match with C<PathPart()>
+
+使用 C<PathPart()> 指定要匹配的路徑
 
 =back
 
@@ -319,19 +387,27 @@ Specify the path to match with C<PathPart()>
 
 End
 
+結尾
+
 =over 4
 
 =item *
 
 Link to previous part of the chain with C<:Chained('_name_')>
 
+使用 C<:Chained('_name_')> 連結到鏈接的前部份
+
 =item *
 
 B<< Do NOT get arguments through "C<CaptureArgs()>," use "C<Args()>" instead to end a chain >>
 
+B<< 請不要透過 "C<CaptureArgs()> 取得引數,"  鏈接結尾請另外使用 "C<Args()>" >>
+
 =item *
 
 Specify the path to match with C<PathPart()>
+
+使用 C<PathPart()> 指定要匹配的路徑
 
 =back
 
@@ -343,6 +419,11 @@ a single method: C<:Chained('/')> to start the chain,
 C<:PathPart('books/url_create')> to specify the base URL to match, and
 C<:Args(3)> to capture exactly three arguments and to end the chain.
 
+我們先前例子的 C<url_create> 方法，我們結合使用這 3 個部份進單一方法：
+C<:Chained('/')> 開始一個鏈接，
+C<:PathPart('books/url_create')> 指定匹配的基礎 URL，以及
+C<:Args(3)> 明確的比對 3 個引數並給鏈接結尾。
+
 As we will see shortly, a chain can consist of as many "links" as you
 wish, with each part capturing some arguments and doing some work along
 the way.  We will continue to use the Chained action type in this
@@ -353,13 +434,22 @@ L<Catalyst::Manual::Intro/Action types>,
 L<Catalyst::DispatchType::Chained>, and the 2006 Advent calendar entry
 on the subject: L<http://www.catalystframework.org/calendar/2006/10>.
 
+我們很快會看到，鏈接可以包含任意長度的 "連結" 只要您高興，這種方式之下路徑每個部份擷取成引數並執行相應的工作。
+我們這一章節繼續使用鏈接動作類型，來作為刪除功能的基礎方法如下。
+但是鏈接分派的能力遠不及於此。更多資訊請看 L<Catalyst::Manual::Intro/Action types>, L<Catalyst::DispatchType::Chained>，
+以及 2006 Advent 日曆記載這方面主題：L<http://www.catalystframework.org/calendar/2006/10>。  
 
 =head2 Try the Chained Action
+
+=head2 嘗試鏈接動作
 
 If you look back at the development server startup logs from your
 initial version of the C<url_create> method (the one using the C<:Local>
 attribute), you will notice that it produced output similar to the
 following:
+
+如果您回顧先前的開發伺服器啟動日誌，原先初始版本的 C<url_create> 方法 
+(使用屬性為 C<:Local>)，您會注意到產生的輸出會類似如下：
 
     [debug] Loaded Path actions:
     .-------------------------------------+--------------------------------------.
@@ -375,6 +465,8 @@ following:
 When the development server restarts after our conversion to Chained
 dispatch, the debug output should change to something along the lines of
 the following:
+
+當開發伺服器於我們轉換為鏈接分派後重新啟動，除錯輸出會改變為下面幾行的樣子：
 
     [debug] Loaded Path actions:
     .-------------------------------------+--------------------------------------.
@@ -398,8 +490,13 @@ it now shows up under the newly created "Loaded Chained actions"
 section.  And the "/*/*/*" portion clearly shows our requirement for
 three arguments.
 
+C<url_create> 從 "Loaded Path actions" 部份消失了但是下方新的部份新增 "Loaded Chained actions"。
+並且 "/*/*/*" 部份清楚地顯示我們 3 個引數的需求。
+
 As with our non-chained version of C<url_create>, use your browser to
 enter the following URL:
+
+如同我們非-鏈接版本的 C<url_create> 方法，瀏覽器造訪下面的 URL：
 
     http://localhost:3000/books/url_create/TCPIP_Illustrated_Vol-2/5/4
 
@@ -408,13 +505,22 @@ You should see the same "Added book 'TCPIP_Illustrated_Vol-2' by
 object.  Click the "Return to list" link, and you should find that there
 are now seven books shown (two copies of I<TCPIP_Illustrated_Vol-2>).
 
+您應該同樣會看到 "Added book 'TCPIP_Illustrated_Vol-2' by 'Stevens' with a rating of 5."
+接著新書籍模型物件的傾印。
+點擊 "Return to list" 連結，您應該會看到 7 本書顯示 (I<TCPIP_Illustrated_Vol-2> 有 2 個複製)。
+
 
 =head2 Refactor to Use a 'base' Method to Start the Chains
+
+=head2 使用 'base' 方法重構鏈接開頭
 
 Let's make a quick update to our initial Chained action to show a little
 more of the power of chaining.  First, open
 F<lib/MyApp/Controller/Books.pm> in your editor and add the following
 method:
+
+讓我們把先前初步的鏈接動作快速更新，來展示多點鏈接的能力。
+首先，編輯器打開 F<lib/MyApp/Controller/Books.pm> 並且加入下面的方法：
 
     =head2 base
 
@@ -443,15 +549,27 @@ that don't need to retrieve a book (such as the C<url_create> we are
 working with now), we will instead add that functionality to a common
 C<object> action shortly.
 
+這裡我們把日誌訊息和 DBIC ResultSet 貯存在 C<< $c->stash->{resultset} >>，
+這樣會讓其他鏈接 C<base> 的動作自動可以存取。
+如果您的控制器總需要書籍 ID 為第 1 個引數，您可以讓 base 方法獲取這個引數 (使用 C<:CaptureArgs(1)>)，
+用它來拉取 (pull) 書籍物件 C<< ->find($id) >> 並且保留在您的 stash 提供給鏈接後續的部份及其動作。
+因為我們的動作很少需要接收書籍資料 (例如 C<url_create> 我們現在使用的)，
+我們改成加入普通及簡短的C<物件 (object)>功能。
+
 As for C<url_create>, let's modify it to first dispatch to C<base>.
 Open up F<lib/MyApp/Controller/Books.pm> and edit the declaration for
 C<url_create> to match the following:
+
+至於 C<url_create>，我們修改成 C<base> 的第 1 個鏈接分派。
+打開 F<lib/MyApp/Controller/Books.pm> 並且編輯 C<url_create> 的宣告如下：
 
     sub url_create :Chained('base') :PathPart('url_create') :Args(3) {
 
 Once you save F<lib/MyApp/Controller/Books.pm>, notice that the
 development server will restart and our "Loaded Chained actions" section
 will changed slightly:
+
+當您給 F<lib/MyApp/Controller/Books.pm> 存檔後，請注意開發伺服器會重新啟動並且在 "Loaded Chained actions" 部份有些更動。
 
     [debug] Loaded Chained actions:
     .-------------------------------------+--------------------------------------.
@@ -469,7 +587,14 @@ specified C<:PathPart('url_create')> (note that we could have omitted
 the "PathPart" here because it matches the name of the method, but we
 will include it to make the logic as explicit as possible).
 
+"Path Spec" 資訊是相同的，但是現在私有 (Private) 映射到 2 個動作如我們所料。
+C<base> 方法由 URL 部份 C</books> 所觸發。
+然而，接下來行程由 C<url_create> 方法繼續，因為這個方法 "鏈接" 自 C<base> 並且指定 C<:PathPart('url_create')>
+(請注意我們這裡可以省略 "PathPart" ，但是因為它匹配方法名稱，我們包含它讓邏輯盡可能明確)。
+
 Once again, enter the following URL into your browser:
+
+再次，瀏覽器輸入下面的 URL：
 
     http://localhost:3000/books/url_create/TCPIP_Illustrated_Vol-2/5/4
 
@@ -485,8 +610,17 @@ books... there should be the original five books added via
 F<myapp01.sql> plus one additional book for each time you ran one of the
 url_create variations above.)
 
+同樣的顯示訊息 "Added book 'TCPIP_Illustrated_Vol-2' by 'Stevens' with a rating of 5."，
+並且傾印新書籍物件。
+並且注意額外的開發伺服器除錯資訊輸出 "INSIDE BASE METHOD" 來自 C<base> 方法。
+點擊 "Return to list" 連結，您應該會發現已經有 8 本書顯示。
+(您如果重複任何 "create" 動作的話應該會有更多數量。別擔心只要這個數字符合您增加書籍的次數...
+而一開始您透過 F<myapp01.sql> 建立的資料表應該有 5 本書，之後每次執行上面的 url_create 增加 1 本書。)
+
 
 =head1 MANUALLY BUILDING A CREATE FORM
+
+=head1 手動建置新增輸入表單
 
 Although the C<url_create> action in the previous step does begin to
 reveal the power and flexibility of both Catalyst and DBIC, it's
@@ -495,10 +629,17 @@ to enter data.  This section begins to address that concern (but just
 barely, see L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>
 for better options for handling web-based forms).
 
+雖然前一步 C<url_create> 動作開始顯露 Catalyst 和 DBIC 強大的彈性，
+很明顯地這不太符合使用者輸入資料的實際情況。
+本章節我們朝向這方面的問題解決 (但是很有限，請看 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD> 提供更好的網頁格式選項。)
 
 =head2 Add Method to Display The Form
 
+=head2 新增顯示表單方法
+
 Edit F<lib/MyApp/Controller/Books.pm> and add the following method:
+
+編輯 F<lib/MyApp/Controller/Books.pm> 並增加下面的方法：
 
     =head2 form_create
 
@@ -515,10 +656,15 @@ Edit F<lib/MyApp/Controller/Books.pm> and add the following method:
 
 This action simply invokes a view containing a form to create a book.
 
+這個動作方法簡單地呼叫包含書本表單的B<視圖>。
 
 =head2 Add a Template for the Form
 
+=head2 新增這個格式的模板
+
 Open F<root/src/books/form_create.tt2> in your editor and enter:
+
+編輯器打開 F<root/src/books/form_create.tt2> 並且輸入：
 
     [% META title = 'Manual Form Book Create' -%]
 
@@ -534,11 +680,17 @@ Open F<root/src/books/form_create.tt2> in your editor and enter:
 Note that we have specified the target of the form data as
 C<form_create_do>, the method created in the section that follows.
 
+請注意我們指定了表單的
+
 
 =head2 Add a Method to Process Form Values and Update Database
 
+=head2 新增表單資料更新資料庫的方法
+
 Edit F<lib/MyApp/Controller/Books.pm> and add the following method to
 save the form information to the database:
+
+編輯 F<lib/MyApp/Controller/Books.pm> 並且加入下面的方法，來儲存資訊至資料庫。
 
     =head2 form_create_do
 
@@ -572,8 +724,12 @@ save the form information to the database:
 
 =head2 Test Out The Form
 
+=head2 測試表單
+
 Notice that the server startup log reflects the two new chained methods
 that we added:
+
+請注意伺服器啟動日誌，反映 2 個我們加入的鏈接方法：
 
     [debug] Loaded Chained actions:
     .-------------------------------------+--------------------------------------.
@@ -593,24 +749,43 @@ author ID of 4.  You should then see the output of the same
 F<create_done.tt2> template seen in earlier examples.  Finally, click
 "Return to list" to view the full list of books.
 
+瀏覽器造訪 L<http://localhost:3000/books/form_create> 並且輸入 title "TCP/IP Illustrated, Vol 3"，rating 5，以及 author ID 4。
+您應該會看到如同先前範例的 F<create_done.tt2>。
+最後，點選 "Return to list" 查看全部的書籍。
+
 B<Note:> Having the user enter the primary key ID for the author is
 obviously crude; we will address this concern with a drop-down list and
 add validation to our forms in
 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>.
 
+B<請注意：>要求使用者輸入作者的主要 ID 很明顯是粗魯的；
+我們面對這個問題的方式可以使用B<下拉式選單>，並且加入驗證到我們的表單 L<Chapter 9|Catalyst::Manual::Tutorial::09_AdvancedCRUD>。
+
 
 =head1 A SIMPLE DELETE FEATURE
+
+=head1 簡單的刪除功能
 
 Turning our attention to the Delete portion of CRUD, this section
 illustrates some basic techniques that can be used to remove information
 from the database.
 
+讓我們把注意力改為 CRUD 的刪除部份，本章節描述了一些簡單刪除資料庫的技巧。
+
 
 =head2 Include a Delete Link in the List
+
+=head2 列表中包含刪除的連結
 
 Edit F<root/src/books/list.tt2> and update it to match the following
 (two sections have changed: 1) the additional '<th>Links</th>' table
 header, and 2) the five lines for the Delete link near the bottom):
+
+編輯 F<root/src/books/list.tt2> 並且如下面更新 
+(2 個部份改變：
+1) 增加 '<th>Links</th>' 表格標頭，
+2) 底部 5 行有關刪除的程式
+)：
 
     [% # This is a TT comment. -%]
 
@@ -661,6 +836,9 @@ will be used instead of full HTML buttons; but, in practice, anything
 that modifies data should be handled with a form sending a POST
 request).
 
+新增的程式很明顯地在表格右端設計新的欄位內容為 C<Delete> 按鈕 
+(簡單來說，使用超連結而不是 HTML 按鈕；但是作為練習，任何修改資料的功能應該是使用表單傳送 POST 請求)。
+
 Also notice that we are using a more advanced form of C<uri_for> than we
 have seen before.  Here we use C<< $c->controller->action_for >> to
 automatically generate a URI appropriate for that action based on the
@@ -672,6 +850,13 @@ template file.  As long as the name of your method does not change
 (here, "delete"), then your links will still be correct.  There are a
 few shortcuts and options when using C<action_for()>:
 
+也請注意我們使用更進階 C<uri_for> 形式相較之前看過的。
+我們這裡使用 C<< $c->controller->action_for >> 自動生成適當的 URI 來代表我們要連結的動作，
+並把 C<book.id> 的值新增到適當的位置。
+現在，如果您改變 C<:PathPart('delete')> 控制器方法像是 C<:PathPart('kill')>，您的連結會自動更新 .tt2 模板檔案。
+只要您的方法不改變名稱 (這邊說的 "delete")，您的連結依然正常運作。
+下面簡單說明使用 C<action_for()> 的幾個要點：
+
 =over 4
 
 =item *
@@ -679,11 +864,16 @@ few shortcuts and options when using C<action_for()>:
 If you are referring to a method in the current controller, you can use
 C<< $self->action_for('_method_name_') >>.
 
+如果您指向目前控制器中的方法，您可以使用 C<< $self->action_for('_method_name_') >>。
+
 =item *
 
 If you are referring to a method in a different controller, you need to
 include that controller's name as an argument to C<controller()>, as in
 C<< $c->controller('_controller_name_')->action_for('_method_name_') >>.
+
+如果您指向不同控制器中的方法，您必須使用 C<controller()> 包含控制器名稱作為參數，
+像是 C<< $c->controller('_controller_name_')->action_for('_method_name_') >>。
 
 =back
 
@@ -691,8 +881,12 @@ B<Note:> In practice you should B<never> use a GET request to delete a
 record -- always use POST for actions that will modify data.  We are
 doing it here for illustrative and simplicity purposes only.
 
+B<請注意：> 作為練習您 B<永遠不要>使用 GET 請求來刪除資料 -- 總是使用 POST 動作來修改資料。
+我們這裡的範例只是基於簡單描述的目的而已。
 
 =head2 Add a Common Method to Retrieve a Book for the Chain
+
+=head2 增加一般的鏈接方法獲取書籍資料
 
 As mentioned earlier, since we have a mixture of actions that operate on
 a single book ID and others that do not, we should not have C<base>
@@ -706,8 +900,16 @@ existing book can chain off this method, but methods such as
 C<url_create> that don't operate on an existing book can chain directly
 off base.
 
+先前提過，當我們混搭動作在單一書籍 ID 而其他書籍沒有時，我們不應該使用 C<base> 獲取書籍 ID，在資料庫搜尋返回書籍，
+將它儲存在 stash 提供給之後鏈接方法的連結使用。
+然而，因為這個邏輯不屬於 C<base>，並不是說我們不能另外建立集中管理書籍資料的查詢程式。
+我們的情況是，我們要建立一個方法名為 C<object> 可以存放特定的書籍資料在 stash。
+鏈接方法總是集中執行在現有的單一書籍中，但是像 C<url_create> 的動作並不是執行鏈接在現有的書籍中，而是可以基於 B<base>。
+
 To add the C<object> method, edit F<lib/MyApp/Controller/Books.pm> and
 add the following code:
+
+編輯 F<lib/MyApp/Controller/Books.pm> 並且增加 C<object> 方法如下：
 
     =head2 object
 
@@ -735,11 +937,17 @@ add the following code:
 Now, any other method that chains off C<object> will automatically have
 the appropriate book waiting for it in C<< $c->stash->{object} >>.
 
+現在，現在其他方法鏈接於 C<object> 會自動擁有適當的 book 於 C<< $c->stash->{object} >> 中等待使用。
+
 
 =head2 Add a Delete Action to the Controller
 
+=head2 新增及刪除控制器動作
+
 Open F<lib/MyApp/Controller/Books.pm> in your editor and add the
 following method:
+
+編輯器打開 F<lib/MyApp/Controller/Books.pm> 加入下面方法： 
 
     =head2 delete
 
@@ -765,9 +973,14 @@ This method first deletes the book object saved by the C<object> method.
 However, it also removes the corresponding entry from the C<book_author>
 table with a cascading delete.
 
+這個方法首先刪除來自 C<object> 儲存的書籍物件。
+然後同時使用I<大寫刪除指令>於 C<book_author> 相應的聯集條目。
+
 Then, rather than forwarding to a "delete done" page as we did with the
 earlier create example, it simply sets the C<status_msg> to display a
 notification to the user as the normal list view is rendered.
+
+接著，不是像之前我們建立的範例前往 "delete done" 頁面，而是簡單地設定 C<status_msg> 顯示一個通知到使用者的 list 呈現視圖。
 
 The C<delete> action uses the context C<forward> method to return the
 user to the book list.  The C<detach> method could have also been used.
@@ -775,12 +988,20 @@ Whereas C<forward> I<returns> to the original action once it is
 completed, C<detach> does I<not> return.  Other than that, the two are
 equivalent.
 
+C<delete> 動作於此語境中使用 C<forward> 方法讓使用者回到書籍列表，
+C<detach> 方法也常被使用。
+不同的是 C<forward> I<回傳>完成時回傳原本的動作，C<detach> I<並不會>回傳。
+除了這個，兩個動作相等。
 
 =head2 Try the Delete Feature
+
+=head2 嘗試刪除功能
 
 Once you save the Books controller, the server should automatically
 restart.  The C<delete> method should now appear in the "Loaded Chained
 actions" section of the startup debug output:
+
+儲存您的 Books 控制器後，伺服器應該會自動重新啟動，C<delete> 方法應該會出現在啟動除錯輸出的 "Loaded Chained actions" 部份。
 
     [debug] Loaded Chained actions:
     .-------------------------------------+--------------------------------------.
@@ -803,6 +1024,10 @@ the "Delete" link next to the first "TCPIP_Illustrated_Vol-2".  A green
 along with a list of the eight remaining books.  You will also see the
 cascading delete operation via the DBIC_TRACE output:
 
+瀏覽器前往 L<http://localhost:3000/books/list> 並且點選 "TCPIP_Illustrated_Vol-2" 旁的 "Delete" 連結。
+然後綠色的 "Book deleted" 狀態訊息應該會在頁首顯示，並且接著剩餘的 8 本書籍。
+您也會看到 DBIC_TRACE 輸出顯示大寫的刪除指令：
+
     SELECT me.id, me.title, me.rating FROM book me WHERE ( ( me.id = ? ) ): '6'
     DELETE FROM book WHERE ( id = ? ): '6'
 
@@ -810,10 +1035,16 @@ If you get the error C<file error - books/delete.tt2: not found> then you
 probably forgot to uncomment the template line in C<sub list> at the end of
 chapter 3.
 
+如果您收到錯誤訊息 C<file error - books/delete.tt2: not found> 您應該是忘記把第 3 章後面 C<sub list> 幾行取消註解了。
+
 =head2 Fixing a Dangerous URL
+
+=head2 修復危險 URL
 
 Note the URL in your browser once you have performed the deletion in the
 prior step -- it is still referencing the delete action:
+
+請注意先前的步驟您使用瀏覽器 URL 來完成刪除的動作 -- 這個 URL 依然指向刪除動作：
 
     http://localhost:3000/books/id/6/delete
 
@@ -823,6 +1054,9 @@ exception screen, it doesn't perform any undesirable actions on the
 application or database), but in other cases this could clearly lead to
 trouble.
 
+如果使用者用這個 URL 一直重新載入的話？ 上面的情況累贅的刪除是無害的 (雖然會產生例外頁面，它並不會對應用程式或資料庫做意料外的事)，
+但是其他情況可能就會產生麻煩。
+
 We can improve the logic by converting to a redirect.  Unlike
 C<< $c->forward('list')) >> or C<< $c->detach('list')) >> that perform a
 server-side alteration in the flow of processing, a redirect is a
@@ -830,9 +1064,14 @@ client-side mechanism that causes the browser to issue an entirely new
 request.  As a result, the URL in the browser is updated to match the
 destination of the redirection URL.
 
+我們可以藉由轉換成重新導向來增加更多邏輯。不像 C<< $c->forward('list')) >> 或 C<< $c->detach('list')) >> 運作在伺服器端的程序改變，
+重新導向是客戶端瀏覽器的機制，來產生全新的請求。結果，瀏覽器的 URL 更新為重新導向的目的地。
+
 To convert the forward used in the previous section to a redirect, open
 F<lib/MyApp/Controller/Books.pm> and edit the existing C<sub delete>
 method to match:
+
+把先前使用 forward 轉換為使用重新導向，打開 F<lib/MyApp/Controller/Books.pm> 並且編輯現有的 C<sub delete> 符合下面：
 
     =head2 delete
 
@@ -858,6 +1097,8 @@ method to match:
 
 =head2 Try the Delete and Redirect Logic
 
+=head2 試試使用重新導向邏輯刪除
+
 Point your browser to L<http://localhost:3000/books/list> (don't just
 hit "Refresh" in your browser since we left the URL in an invalid state
 in the previous section!) and delete the first copy of the remaining two
@@ -868,8 +1109,14 @@ displayed>. Because the stash is reset on every request (and a redirect
 involves a second request), the C<status_msg> is cleared before it can
 be displayed.
 
+瀏覽器造訪 L<http://localhost:3000/books/list> (瀏覽器不要直接點選 "重新整理" 因為我們先前章節會導致不正確的狀態！)
+並且刪除前 2 個重複的書籍 "TCPIP_Illustrated_Vol-2"。
+瀏覽器的 URL 應該會回到 L<http://localhost:3000/books/list>，這就是改進，但是注意就沒有綠色通知訊息 "Book deleted" status message is displayed> 了。
+因為 stash 會因為每個請求重設 (而重新導向為 2 次請求)，C<status_msg> 要顯示以前就被傾空了。
 
 =head2 Using 'uri_for' to Pass Query Parameters
+
+=head2 使用 'uri_for' 傳遞請求參數
 
 There are several ways to pass information across a redirect. One option
 is to use the C<flash> technique that we will see in
@@ -878,6 +1125,11 @@ tutorial; however, here we will pass the information via query
 parameters on the redirect itself.  Open
 F<lib/MyApp/Controller/Books.pm> and update the existing C<sub delete>
 method to match the following:
+
+有許多方法可以在重新導向時傳遞資訊。
+其中一種是使用 C<flash> 技巧請看 L<Chapter 5|Catalyst::Manual::Tutorial::05_Authentication> 這個教學；
+然而我們這裡使用重新導向方法自身來傳遞參數資訊。
+打開 F<lib/MyApp/Controller/Books.pm> 並且更新現有的 C<sub delete> 方法如下： 
 
     =head2 delete
 
@@ -902,6 +1154,10 @@ an arbitrary number of name/value pairs in a hash reference.  Next, we
 need to update F<root/src/wrapper.tt2> to handle C<status_msg> as a
 query parameter:
 
+這個修改簡單地平衡 C<uri_for> 任意數量的B<名稱/值>雜湊參照配對的能力。
+接著，我們需要更新 F<root/src/wrapper.tt2> 來處理來自請求參數的 C<status_msg>：
+
+
     ...
     <div id="content">
         [%# Status and error messages %]
@@ -921,8 +1177,13 @@ the "C<| html>" TT filter here since it would be easy for users to
 modify the message on the URL and possibly inject harmful code into the
 application if we left that off.
 
+雖然上面的例子只顯示 div C<content> 的部份，檔案其他部份維持原樣 -- 
+F<wrapper.tt2> 中我們只有修改 C<< <span class="message"> >> 這行增加 "C<|| c.request.params.status_msg>"。
+請注意我們這裡必須明確指定 "C<| html>" TT 過濾器，因為如果關閉，使用者很容易修改 URL 混入有害的程式碼到應用程式。
 
 =head2 Try the Delete and Redirect With Query Param Logic
+
+=head2 嘗試重新導向並使用參數的刪除
 
 Point your browser to L<http://localhost:3000/books/list> (you should
 now be able to safely hit "refresh" in your browser). Then delete the
@@ -932,24 +1193,39 @@ status message should return.  But notice that you can now hit the
 (and it correctly shows it without the "Book deleted" message on
 redisplay).
 
+瀏覽器訪問 L<http://localhost:3000/books/list> (您這次可以安全地在瀏覽器點選 "重新整理" 了)。
+然後刪剩下的 "TCPIP_Illustrated_Vol-2" 副本。
+綠色的狀態訊息 "Book deleted" 應該會恢復。
+但是請注意您現在點選 "重新整理" 之後您的瀏覽器只會重新顯示書籍列表 (並且正確地不再顯示 "Book deleted" 訊息)。
+
 B<NOTE:> Be sure to check out
 L<Authentication|Catalyst::Manual::Tutorial::05_Authentication> where we
 use an improved technique that is better suited to your real world
 applications.
 
+B<請注意：>請確認 L<Authentication|Catalyst::Manual::Tutorial::05_Authentication> 我們更好的技巧，是否對您的真實應用程式比較適合。
+
 
 =head1 EXPLORING THE POWER OF DBIC
+
+=head1 導覽 DBIC 如何強大
 
 In this section we will explore some additional capabilities offered by
 L<DBIx::Class>.  Although these features have relatively little to do
 with Catalyst per se, you will almost certainly want to take advantage
 of them in your applications.
 
+本章節我們導覽幾個額外的 L<DBIx::Class> 能力。
+雖然這些功能跟 Catalyst 本身較少關聯，您依然可以利用這些優勢在您的應用程式。
 
 =head2 Add Datetime Columns to Our Existing Books Table
 
+=head2 增加日期時間欄到現有的 Books 資料表
+
 Let's add two columns to our existing C<books> table to track when each
 book was added and when each book is updated:
+
+讓我們加入 2 欄到我們現有的 C<books> 資料表，來追蹤每一本書籍何時新增或更新的：
 
     $ sqlite3 myapp.db
     sqlite> ALTER TABLE book ADD created TIMESTAMP;
@@ -969,6 +1245,8 @@ Here are the commands without the surrounding sqlite3 prompt and output
 in case you want to cut and paste them as a single block (but still
 start sqlite3 before you paste these in):
 
+下面是沒有 sqlite3 環境命令提示字串的指令，假如您要複製貼上這一塊指令 (但是您還是要進入 sqlite3 的環境下貼上)：
+
     ALTER TABLE book ADD created TIMESTAMP;
     ALTER TABLE book ADD updated TIMESTAMP;
     UPDATE book SET created = DATETIME('NOW'), updated = DATETIME('NOW');
@@ -977,11 +1255,16 @@ start sqlite3 before you paste these in):
 This will modify the C<books> table to include the two new fields and
 populate those fields with the current time.
 
+這會修改 C<books> 資料表新增 2 個新欄位及存放現在時間到裡面。
 
 =head2 Update DBIx::Class to Automatically Handle the Datetime Columns
 
+=head2 更新 DBIx::Class 自動處理日期時間欄
+
 Next, we should re-run the DBIC helper to update the Result Classes with
 the new fields:
+
+接下來，我們應該重新執行 DBIC 協助腳本來更新結果類別 (Result Classes) 新增資料欄位：
 
     $ script/myapp_create.pl model DB DBIC::Schema MyApp::Schema \
         create=static components=TimeStamp dbi:SQLite:myapp.db \
@@ -996,17 +1279,27 @@ Notice that we modified our use of the helper slightly: we told it to
 include the L<DBIx::Class::TimeStamp> in the C<load_components> line of
 the Result Classes.
 
+請注意我們稍微改了些協助腳本指令：
+告訴它B<結果類別>中的 C<load_components> 這行包含進 L<DBIx::Class::TimeStamp>。
+
 If you open F<lib/MyApp/Schema/Result/Book.pm> in your editor you should
 see that the C<created> and C<updated> fields are now included in the
 call to C<add_columns()>. However, also notice that the C<many_to_many>
 relationships we manually added below the "C<# DO NOT MODIFY...>" line
 were automatically preserved.
 
+如果您用編輯器打開 F<lib/MyApp/Schema/Result/Book.pm> 應該會看見 C<created> 及 C<updated> 欄位現在出現在 C<add_columns()> 呼叫中。
+然而，也請注意 C<many_to_many> 我們手動加入的關聯，於 "C<# DO NOT MODIFY...>" 之後的幾行也自動被保留了。
+
+
 While we F<lib/MyApp/Schema/Result/Book.pm> open, let's update it with
 some additional information to have DBIC automatically handle the
 updating of these two fields for us.  Insert the following code at the
 bottom of the file (it B<must> be B<below> the "C<# DO NOT MODIFY...>"
 line and B<above> the C<1;> on the last line):
+
+當我們打開 F<lib/MyApp/Schema/Result/Book.pm>，讓我們更新它，讓 DBIC 用額外的資訊替我們自動更新這 2 欄。
+加入下面的程式碼於檔案末端 (B<必須>在 "C<# DO NOT MODIFY...>" 這行的 B<下面>以及末行 C<1;> 的 B<上面>)：
 
     #
     # Enable automatic date handling
@@ -1023,6 +1316,10 @@ placed at the top of the file.  The C<set_on_create> and
 C<set_on_update> options will cause DBIx::Class to automatically update
 the timestamps in these columns whenever a row is created or modified.
 
+這會覆寫 Schema::Loader 於檔案開頭的定義。
+C<set_on_create> 及 C<set_on_update> 選項讓 DBIx::Class 不管新增或修改自動更新日期時間。
+
+
 B<Note> that adding the lines above will cause the development server to
 automatically restart if you are running it with the "-r" option.  In
 other words, the development server is smart enough to restart not only
@@ -1032,7 +1329,13 @@ F<MyApp/View/> directories, but also under other directions such as our
 smart enough to B<not> restart when you edit your C<.tt2> files under
 F<root/>.
 
+B<請注意>上面範例增加幾行後，開發伺服器會自動重新啟動，如果運行時有 "-r" 命令列選項。
+換句話說，開發伺服器對於 F<MyApp/Controller/>, F<MyApp/Model/>, 以及 F<MyApp/View/> 目錄，以及其他目錄下例如我們的 F<MyApp/Schema/> 中的 "外部 DBIC 模組" 夠聰明能重新啟動。
+然而，也請注意您只修改了 F<root/> 下的 C<.tt2> 檔案它也夠聰明B<不會>重新啟動。
+
 Then enter the following URL into your web browser:
+
+網頁瀏覽器輸入下面的 URL：
 
     http://localhost:3000/books/url_create/TCPIP_Illustrated_Vol-2/5/4
 
@@ -1040,6 +1343,9 @@ You should get the same "Book Created" screen we saw earlier.  However, if
 you now use the sqlite3 command-line tool to dump the C<books> table,
 you will see that the new book we added has an appropriate date and time
 entered for it (see the last line in the listing below):
+
+您應該會收到之前看過得 "Book Created"。
+然而，如果現在您用 sqlite3 命令列工具傾印 C<books> 資料表，您會看到書籍新增並加入適當的日期時間 (請看下面的最後一行)：
 
     $ sqlite3 myapp.db "select * from book"
     1|CCSP SNRS Exam Certification Guide|5|2010-02-16 04:15:45|2010-02-16 04:15:45
@@ -1053,12 +1359,16 @@ entered for it (see the last line in the listing below):
 Notice in the debug log that the SQL DBIC generated has changed to
 incorporate the datetime logic:
 
+請注意 SQL DBIC 除錯日誌產生包含日期時間的邏輯：
+
     INSERT INTO book ( created, rating, title, updated ) VALUES ( ?, ?, ?, ? ):
     '2010-02-16 04:18:42', '5', 'TCPIP_Illustrated_Vol-2', '2010-02-16 04:18:42'
     INSERT INTO book_author ( author_id, book_id ) VALUES ( ?, ? ): '4', '10'
 
 
 =head2 Create a ResultSet Class
+
+=head2 建立結果組類別 (ResultSet Class) 
 
 An often overlooked but extremely powerful features of DBIC is that it
 allows you to supply your own subclasses of L<DBIx::Class::ResultSet>.
@@ -1068,13 +1378,23 @@ These "canned queries" in your ResultSet Class can then be invoked via a
 single call, resulting in much cleaner and easier to read controller
 code (or View code, if that's where you want to call it).
 
+一個經常被忽略的 DBIC 強大功能讓您提供自己的 L<DBIx::Class::ResultSet> 子類別。
+這功能可以讓複雜且難看的 "請求程式碼 (query code)" 從您的控制器拿掉並且封裝在您的B<結果組類別 (ResultSet Class)> 中的方法。
+這些 "罐裝請求 (canned queries)" 在您的B<結果組類別>中可以被單一呼叫執行，
+結果變得乾淨並且容易閱讀的控制器程式碼 (或視圖程式碼，如果那裡是您想呼叫程式碼的地方)。
+
 To illustrate the concept with a fairly simple example, let's create a
 method that returns books added in the last 10 minutes.  Start by making
 a directory where DBIx::Class will look for our ResultSet Class:
 
+為了解說概念我們使用非常簡單的範例，讓我們建立一個方法回傳 10 分鐘內新增的書籍。
+建立一個 DBIx::Class 會搜尋B<結果組類別>的資料夾：
+
     $ mkdir lib/MyApp/Schema/ResultSet
 
 Then open F<lib/MyApp/Schema/ResultSet/Book.pm> and enter the following:
+
+接著打開 F<lib/MyApp/Schema/ResultSet/Book.pm> 並且輸入下面程式碼：
 
     package MyApp::Schema::ResultSet::Book;
 
@@ -1103,6 +1423,8 @@ Then open F<lib/MyApp/Schema/ResultSet/Book.pm> and enter the following:
 
 Then add the following method to the F<lib/MyApp/Controller/Books.pm>:
 
+接著加入下面的方法於 F<lib/MyApp/Controller/Books.pm>：
+
     =head2 list_recent
 
     List recently created books
@@ -1129,13 +1451,19 @@ value) using the URL C<http://localhost:3000/books/list_recent/_#_> in
 your browser. For example, this would list all books added in the last
 fifteen minutes:
 
+現在試著使用不同的 "分鐘" 數值引數 (最後個數值) 在您的瀏覽器使用 URL C<http://localhost:3000/books/list_recent/_#_>。
+舉例來說，這會顯示過去 15 分鐘內新增的書籍：
+
     http://localhost:3000/books/list_recent/15
 
 Depending on how recently you added books, you might want to try a
 higher or lower value for the minutes.
 
+根據您想要多少時間內新增的書籍，您可能會試著調高或調小分鐘數。
 
 =head2 Chaining ResultSets
+
+=head2 改變結果組
 
 One of the most helpful and powerful features in L<DBIx::Class> is that
 it allows you to "chain together" a series of queries (note that this
@@ -1151,6 +1479,13 @@ combine the two capabilities.  For example, let's add an action to our
 C<Books> controller that lists books that are both recent I<and> have
 "TCP" in the title.  Open up F<lib/MyApp/Controller/Books.pm> and add
 the following method:
+
+L<DBIx::Class> 裡面其中一種最強大的功能是允許您把一系列的請求 "鏈接在一起" (請注意跟以前討論的 Catalyst "鏈接分派" 沒有關係)。
+因為每一個B<結果組>方法回傳另一個B<結果組>，您可以進行第 1 個初始請求而傳遞進第 2 個請求 (以此類推根據需要的數量)。
+請注意不管多少個B<結果組>您鏈接的，資料庫在您使用可以存取資料的方法前都不會碰它。
+以及，因為這個技巧將我們先前B<結果組類別>的功能延續到我們先前章節實做的 "罐頭搜尋"，我們可以結合這兩個能力。
+例如，讓我們替 C<Books> 控制器增加一個動作，列表最近的書籍並且包含 "TCP" 的標題。
+打開 F<lib/MyApp/Controller/Books.pm> 增加下面的方法：
 
     =head2 list_recent_tcp
 
@@ -1179,6 +1514,8 @@ the following method:
 
 To try this out, enter the following URL into your browser:
 
+試試看，瀏覽器輸入下面的 URL：
+
     http://localhost:3000/books/list_recent_tcp/100
 
 And you should get a list of books added in the last 100 minutes that
@@ -1187,10 +1524,15 @@ books within the last 100 minutes, you should get a longer list (again,
 you might have to adjust the number of minutes depending on how recently
 you added books to your database):
 
+然後您應該會看到書籍列表 100 分鐘內新增的書籍包含 "TCP" 的標題。
+然而，如果您看 100 分鐘內新增的書籍，您應該會得到較長的列表 (再次說明，您可以根據需要輸入多少分鐘內新增到資料庫的書籍)：
+
     http://localhost:3000/books/list_recent/100
 
 Take a look at the DBIC_TRACE output in the development server log for
 the first URL and you should see something similar to the following:
+
+查看您的開發伺服器 DBIC_TRACE 輸出日誌，第 1 個 URL 您應該會看到類似下面：
 
     SELECT me.id, me.title, me.rating, me.created, me.updated FROM book me
     WHERE ( ( title LIKE ? AND created > ? ) ): '%TCP%', '2010-02-16 02:49:32'
@@ -1199,6 +1541,9 @@ However, let's not pollute our controller code with this raw "TCP" query
 -- it would be cleaner to encapsulate that code in a method on our
 ResultSet Class.  To do this, open F<lib/MyApp/Schema/ResultSet/Book.pm>
 and add the following method:
+
+然而，我們不想使用原始的 "TCP" 請求污染控制器程式碼 -- 把這些封裝在我們B<結果組類別>中的方法顯得更乾淨。
+要這麼做，打開 F<lib/MyApp/Schema/ResultSet/Book.pm> 增加下面的方法：
 
     =head2 title_like
 
@@ -1219,6 +1564,10 @@ flexible.  Now update the C<list_recent_tcp> method in
 F<lib/MyApp/Controller/Books.pm> to match the following (we have
 replaced the C<< ->search >> line with the C<< ->title_like >> line
 shown here -- the rest of the method should be the same):
+
+我們定義了搜尋字串變數 C<$title_str> 讓方法更彈性。
+現在更新 F<lib/MyApp/Controller/Books.pm> 中的 C<list_recent_tcp> 方法如下
+(我們修改 C<< ->search >> 改成 C<< ->title_like >> 如下 -- 方法其他部份不變)：
 
     =head2 list_recent_tcp
 
@@ -1249,8 +1598,12 @@ Try out the C<list_recent_tcp> and C<list_recent> URLs as we did above.
 They should work just the same, but our code is obviously cleaner and
 more modular, while also being more flexible at the same time.
 
+試試 C<list_recent_tcp> 及 C<list_recent> 的 URL 我們先前編寫的。
+它們應該會做相同的事，但是我們現在的版本明顯地更清楚簡單模組化，並且同時更加地彈性。
 
 =head2 Adding Methods to Result Classes
+
+=head2 結果類別增加方法
 
 In the previous two sections we saw a good example of how we could use
 DBIx::Class ResultSet Classes to clean up our code for an entire query
@@ -1262,6 +1615,13 @@ Therefore, we can add row-specific "helper methods" to our Result
 Classes stored in F<lib/MyApp/Schema/Result/>. For example, open
 F<lib/MyApp/Schema/Result/Author.pm> and add the following method (as
 always, it must be above the closing "C<1;>"):
+
+先前兩個章節我們看了許多很好的例子，使用 DBIx::Class 結果組類別 (ResultSet Classes) 使我們全部的請求程式碼更乾淨
+(例如，我們的 "罐頭搜尋 (canned searches)" 過濾全部的請求)。
+我們也可以做相似的改進，於個別資料列的工作。
+結果組 (ResultSet) 結構在 DBIC 中反映整個請求，結果類別 (Result Class) 結構用來代表一個資料列。
+此外，我們可以加入 列-專屬的 "協助方法 (helper methods)" 儲存到我們的 F<lib/MyApp/Schema/Result/> 結果方法中。
+舉例來說，打開 F<lib/MyApp/Schema/Result/Author.pm> 及加入這些方法 (如同以往，必須在 "C<1;>" 之上)：
 
     #
     # Row-level helper methods
@@ -1276,12 +1636,17 @@ This will allow us to conveniently retrieve both the first and last name
 for an author in one shot.  Now open F<root/src/books/list.tt2> and
 change the definition of C<tt_authors> from this:
 
+這允許我們用一招方便地獲取作者的姓氏及名稱。
+現在打開 F<root/src/books/list.tt2> 並且更改 C<tt_authors> 的定義如下：
+
     ...
       [% tt_authors = [ ];
          tt_authors.push(author.last_name) FOREACH author = book.authors %]
     ...
 
 to:
+
+改為：
 
     ...
       [% tt_authors = [ ];
@@ -1291,7 +1656,11 @@ to:
 (Only C<author.last_name> was changed to C<author.full_name> -- the rest
 of the file should remain the same.)
 
+(只有 C<author.last_name> 改成 C<author.full_name> -- 檔案其餘部份不變。)
+
 Now go to the standard book list URL:
+
+現在造訪標準書籍列表 URL：
 
     http://localhost:3000/books/list
 
@@ -1303,13 +1672,22 @@ possible). Obviously, this capability becomes even more useful as you
 use it to remove even more complicated row-specific logic from your
 templates!
 
+"Author(s)" 欄現在包含姓氏及名字。
+不只如此，因為串接邏輯被封裝在結果類別內部，讓程式碼安置在我們的 TT 模板內部乾淨整潔
+(請記住，我們還是希望模板盡量保持純 HTML 標記語言的內容)。
+明顯地，這個能力實用的地方為，讓您可以把模板中複雜的資料列邏輯刪掉！
 
 =head2 Moving Complicated View Code to the Model
+
+=head2 複雜的視圖程式碼移動到模型元件
 
 The previous section illustrated how we could use a Result Class method
 to print the full names of the authors without adding any extra code to
 our view, but it still left us with a fairly ugly mess (see
 F<root/src/books/list.tt2>):
+
+先前的章節描述了我們可以使用結果類別 (Result Class) 方法印出作者的全名，而不需要加入額外的程式碼到視圖，
+但是它還是顯得那麼點醜陋雜亂 (請看 F<root/src/books/list.tt2>)：
 
     ...
     <td>
@@ -1336,6 +1714,10 @@ clean this up.  First, let's add a method to our Book Result Class to
 return the number of authors for a book.  Open
 F<lib/MyApp/Schema/Result/Book.pm> and add the following method:
 
+讓我們結合先前章節提到的技巧。
+首先，讓我們加入一個方法到我們書籍B<結果類別>，回傳書籍的作者數量。
+打開 F<lib/MyApp/Schema/Result/Book.pm> 並且輸入下面方法：
+
     =head2 author_count
 
     Return the number of authors for the current book
@@ -1352,6 +1734,8 @@ F<lib/MyApp/Schema/Result/Book.pm> and add the following method:
 
 Next, let's add a method to return a list of authors for a book to the
 same F<lib/MyApp/Schema/Result/Book.pm> file:
+
+接著，讓我們加入一個方法回傳書籍的作者列表，同樣在 F<lib/MyApp/Schema/Result/Book.pm> 檔案中：
 
     =head2 author_list
 
@@ -1376,9 +1760,14 @@ This method loops through each author, using the C<full_name> Result
 Class method we added to F<lib/MyApp/Schema/Result/Author.pm> in the
 prior section.
 
+這個方法遞迴每位作者，使用先前章節加入的 F<lib/MyApp/Schema/Result/Author.pm> 中 C<full_name> 結果類別方法。
+
 Using these two methods, we can simplify our TT code.  Open
 F<root/src/books/list.tt2> and update the "Author(s)" table cell to
 match the following:
+
+使用這 2 個方法，我們簡化 TT 模板的程式碼。
+打開 F<root/src/books/list.tt2> 並且更新 "Author(s)" 表格元素如下：
 
     ...
     <td>
@@ -1393,8 +1782,12 @@ huge comments to clue people in to the gist of our code.  The view code
 is now self-documenting and readable enough that you could probably get
 by with no comments at all.  All of the "complex" work is being done in
 our Result Class methods (and, because we have broken the code into
-nice, modular chunks, the Result Class code is hardly something you
-would call complex).
+nice, modular chunks, the Result Class code is hardly something you would call complex).
+
+雖然我們刪掉的大部分程式碼都包含註釋，但是整體的效果卻很戲劇性...
+因為我們視圖程式碼很簡單，我們不需要大量的註釋給別人摸索程式碼的要點。
+視圖程式碼現在成了自身可閱讀 (self-documenting) 甚至幾乎不需要註釋來說明。
+所有 "複雜的" 工作在B<結果類別>方法中完成 (並且，因為我們將程式打散為良好的，模組化區塊，B<結果類別>程式很難讓您稱它叫做複雜的東西)。
 
 As we saw in this section, always strive to keep your view AND
 controller code as simple as possible by pulling code out into your
@@ -1403,12 +1796,22 @@ ways, it's an excellent to way accomplish this objective.  It will make
 your code cleaner, easier to write, less error-prone, and easier to
 debug and maintain.
 
+如我們在這章節看到的，總是把您的視圖及控制器程式碼盡可能保持簡單，把複雜程式裝在模型物件中。
+因為 L<DBIx::Class> 很容易用各種方法被擴充，這是完成這個目的的絕佳方法。
+讓您的程式乾淨，容易編寫，更少錯誤傾向，及容易除錯及維護。
+
 Before you conclude this section, hit Refresh in your browser... the
 output should be the same even though the backend code has been trimmed
 down.
 
+在您總結本章節前，瀏覽器點選重新整理...
+輸出應該會是相同的，就算後台程式碼被刪減了。
+
 
 You can jump to the next chapter of the tutorial here:
+L<Authentication|Catalyst::Manual::Tutorial::05_Authentication>
+
+您可以接著跳到教學手冊的下一章節：
 L<Authentication|Catalyst::Manual::Tutorial::05_Authentication>
 
 
